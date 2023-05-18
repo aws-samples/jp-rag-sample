@@ -219,3 +219,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# credential
+src/services/local-dev-credentials.json

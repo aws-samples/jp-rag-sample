@@ -1,5 +1,8 @@
 
 import { useState } from "react";
+import ace from 'ace-builds';
+ace.config.set('basePath', 'ace-builds/src-noconflict');
+import "ace-builds/src-noconflict/theme-github";
 import AceEditor from "react-ace";
 import WithSubnavigation from "./navbar.tsx"
 import SimpleSidebar from './sidebar.tsx'
@@ -20,12 +23,27 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
 import { IconButton } from "@chakra-ui/button";
 import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel } from "@chakra-ui/accordion";
 import { Button } from "@chakra-ui/react";
+import AuthMock from "./layout/AuthMock.tsx";
+import { indexId, kendraClient, initAWSError } from "./services/AWS.ts";
+import MockDataWarning from "./services/helpers/MockDataWarning.tsx";
+import LocalCredentialsBanner from "./services/helpers/LocalCredentialsBanner.tsx";
 
 function App() {
   const [_1IsActive, set_1IsActive] = useState(true);
 
   return (
     <>
+      {/* 開発モードの場合は警告を出す */}
+      <div style={{backgroundColor: "orange"}}>
+        {initAWSError.length > 0 ? (
+          <MockDataWarning errors={initAWSError} />
+        ) : (
+          <LocalCredentialsBanner />
+        )}
+      </div>
+      {/* API通信用のモック */}
+      <AuthMock indexId={indexId} kendraClient={kendraClient} ></AuthMock>
+      {/* 検索画面 */}
       <WithSubnavigation />
       <SimpleSidebar>
         <Flex>
@@ -61,6 +79,7 @@ function App() {
                       <AccordionPanel pb={4}>
                         <AceEditor
                           theme="github"
+                          mode="text"
                           // value={}
                           minLines={10}
                           maxLines={10}
