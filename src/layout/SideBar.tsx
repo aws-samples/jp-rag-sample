@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, ReactNode, useEffect, useState } from "react";
+import React, { ChangeEventHandler, ReactNode, useState } from "react";
 import {
   Box,
   Flex,
@@ -18,9 +18,8 @@ import {
   TagLabel,
   TagCloseButton,
   HStack,
-  SliderMark,
 } from '@chakra-ui/react';
-import { DEFAULT_LANGUAGE, LANGUAGE_INDEX, DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER, LANGUAGES, SORT_ORDER_INDEX, SORT_ATTRIBUTE_INDEX, SORT_ORDER } from '../utils/constant';
+import { LANGUAGE_INDEX, LANGUAGES, SORT_ORDER_INDEX, SORT_ATTRIBUTE_INDEX, SORT_ORDER } from '../utils/constant';
 import { Filter, selectItemType } from '../utils/interface';
 import { useGlobalContext } from "../App";
 
@@ -33,7 +32,7 @@ const SelectBoxes: React.FC<{
   currentSelection: string
 }> = ({ onSelectionChange: onSelectionChange, title, itemList, currentSelection }) => {
   return (
-    <>
+    <Box pb="3">
       <Text>{title}</Text>
       <Select size='xs' onChange={onSelectionChange} defaultValue={currentSelection}>
         {
@@ -44,7 +43,7 @@ const SelectBoxes: React.FC<{
           ))
         }
       </Select>
-    </>
+    </Box>
   )
 }
 
@@ -61,7 +60,7 @@ const SortOrderBox: React.FC<{
   currentSortOrderSelection: string
 }> = ({ onSortAttrChange, onSortOrderChange, title, itemList, currentSortAttrSelection, currentSortOrderSelection }) => {
   return (
-    <>
+    <Box pb="3">
       <Text>{title}</Text>
       <HStack>
         <Select size='xs' onChange={onSortAttrChange} defaultValue={currentSortAttrSelection}>
@@ -83,7 +82,7 @@ const SortOrderBox: React.FC<{
           }
         </Select>
       </HStack>
-    </>
+    </Box>
   )
 }
 
@@ -101,7 +100,7 @@ const CheckBoxes: React.FC<{
   const isIndeterminate = checkedItems.some(Boolean) && !allChecked
 
   return (
-    <>
+    <Box pb="3">
       <Text>{title}</Text>
       <Checkbox
         isChecked={allChecked}
@@ -136,7 +135,7 @@ const CheckBoxes: React.FC<{
           ))
         }
       </Stack>
-    </>
+    </Box>
   )
 }
 
@@ -149,7 +148,7 @@ const RangeNumBox: React.FC<{
   currentRange: number[]
 }> = ({ onValueChange: onValueChange, title, itemList, currentRange }) => {
   return (
-    <>
+    <Box pb="3">
       <Text pb='5'>{title}</Text>
       <RangeSlider
         defaultValue={[currentRange[0], currentRange[1]]}
@@ -167,7 +166,7 @@ const RangeNumBox: React.FC<{
           <Text pb="10">{currentRange[1]}</Text>
         </RangeSliderThumb>
       </RangeSlider>
-    </>
+    </Box>
   )
 }
 
@@ -178,7 +177,7 @@ const RangeDateBox: React.FC<{
   currentTags: Date[]
 }> = ({ onStartDateChange: onStartDateChange, onEndDateChange: onEndDateChange, title, currentTags: currentRange }) => {
   return (
-    <>
+    <Box pb="3">
       <Text>{title}</Text>
       <Text>開始 - 終了</Text>
       <HStack>
@@ -197,7 +196,7 @@ const RangeDateBox: React.FC<{
           onChange={onEndDateChange}
         />
       </HStack>
-    </>
+    </Box>
   )
 }
 
@@ -213,7 +212,7 @@ const ContainStringBox: React.FC<{
   const [text, setText] = useState("");
 
   return (
-    <>
+    <Box pb="3">
       <Text>{title}</Text>
       <Input list='mylist' size="sm" placeholder='の文字列を含む' onChange={
         (e) => {
@@ -241,7 +240,7 @@ const ContainStringBox: React.FC<{
           </Tag>
         ))}
       </VStack>
-    </>
+    </Box>
   )
 }
 
