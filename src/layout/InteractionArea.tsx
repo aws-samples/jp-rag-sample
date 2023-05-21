@@ -4,13 +4,14 @@ import Human from './SpeachBalloon/Human';
 import Ballon from './SpeachBalloon/Ballon';
 import AI from './SpeachBalloon/AI';
 import Kendra from './SpeachBalloon/Kendra';
-import { useEffect } from "react";
 import { Conversation } from "../utils/interface";
 
 const InteractionArea = () => {
     const {
         history: history,
         setHistory: setHistory,
+        filterOptions: filterOptions,
+        setFilterOptions: setFilterOptions,
     } = useGlobalContext();
 
     return (

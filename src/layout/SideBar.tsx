@@ -22,6 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { DEFAULT_LANGUAGE, LANGUAGE_INDEX, DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER, LANGUAGES, SORT_ORDER_INDEX, SORT_ATTRIBUTE_INDEX, SORT_ORDER } from '../utils/constant';
 import { Filter, selectItemType } from '../utils/interface';
+import { useGlobalContext } from "../App";
 
 const SelectBoxes: React.FC<{
   onSelectionChange: (
@@ -261,55 +262,12 @@ function isArrayDate(arr: any[]): arr is Date[] {
 }
 
 export default function SideBar({ children }: { children: ReactNode }) {
-  const [filterOptions, setFilterOptions] = useState<Filter[]>([
-    {
-      filterType: "LAUNGUAGE_SETTING",
-      title: "言語設定",
-      options: [],
-      selected: [DEFAULT_LANGUAGE]
-    },
-    {
-      filterType: "SORT_BY",
-      title: "並び順",
-      options: [
-        { "name": "Relevance_name", value: "Relevance_value" },
-        { "name": "name", value: "value" },
-      ],
-      selected: [DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER]
-    },
-    {
-      filterType: "SELECT_MULTI_STRING",
-      title: "BOX_TEST",
-      options: [
-        { "name": "ボックス1", value: "" },
-        { "name": "ボックス2", value: "" },
-        { "name": "ボックス3", value: "" },
-        { "name": "ボックス4", value: "" },
-      ],
-      selected: [true, true, true, true]
-    },
-    {
-      filterType: "RANGE_NUM",
-      title: "RANGE_NUM",
-      options: [
-        { "name": "min", value: "100" },
-        { "name": "max", value: "200" }
-      ],
-      selected: [100, 200]
-    },
-    {
-      filterType: "RANGE_DATE",
-      title: "RANGE_DATE",
-      options: [],
-      selected: [new Date(2020, 8, 21, 21, 10, 5), new Date(Date.now())]
-    },
-    {
-      filterType: "CONTAIN_STRING",
-      title: "CONTAIN_STRING",
-      options: [],
-      selected: ["a", "b", "cc"]
-    }
-  ])
+  const {
+      history: history,
+      setHistory: setHistory,
+      filterOptions: filterOptions,
+      setFilterOptions: setFilterOptions,
+  } = useGlobalContext();
 
   return (
     <Box h="92vh"

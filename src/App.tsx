@@ -6,8 +6,9 @@ import AuthMock from "./layout/AuthMock.tsx";
 import { indexId, kendraClient, initAWSError } from "./services/AWS.ts";
 import MockDataWarning from "./services/helpers/MockDataWarning.tsx";
 import LocalCredentialsBanner from "./services/helpers/LocalCredentialsBanner.tsx";
-import { Conversation } from "./utils/interface.tsx";
+import { Conversation, Filter } from "./utils/interface.tsx";
 import InteractionArea from "./layout/InteractionArea.tsx";
+import { DEFAULT_LANGUAGE, DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "./utils/constant.tsx";
 
 
 
@@ -15,6 +16,8 @@ import InteractionArea from "./layout/InteractionArea.tsx";
 interface GlobalContextInterface {
   history: (Conversation)[];
   setHistory: Dispatch<SetStateAction<(Conversation)[]>>;
+  filterOptions: (Filter)[];
+  setFilterOptions: Dispatch<SetStateAction<(Filter)[]>>;
 }
 const GlobalContext = createContext<GlobalContextInterface | undefined>(undefined);
 export const useGlobalContext = () => {
@@ -28,8 +31,61 @@ export const useGlobalContext = () => {
 
 function App() {
   const [history, setHistory] = useState<(Conversation)[]>([]); // 会話のやり取り
+  const [filterOptions, setFilterOptions] = useState<(Filter)[]>([]); // 会話のやり取り
 
   useEffect(() => {
+    const tmpFilterOption: Filter[] = [
+      {
+        filterType: "LAUNGUAGE_SETTING",
+        title: "言語設定",
+        options: [],
+        selected: [DEFAULT_LANGUAGE]
+      },
+      {
+        filterType: "SORT_BY",
+        title: "並び順",
+        options: [
+          { "name": "Relevance_name", value: "Relevance_value" },
+          { "name": "name", value: "value" },
+        ],
+        selected: [DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER]
+      },
+      {
+        filterType: "SELECT_MULTI_STRING",
+        title: "BOX_TEST",
+        options: [
+          { "name": "ボックス1", value: "" },
+          { "name": "ボックス2", value: "" },
+          { "name": "ボックス3", value: "" },
+          { "name": "ボックス4", value: "" },
+        ],
+        selected: [true, true, true, true]
+      },
+      {
+        filterType: "RANGE_NUM",
+        title: "RANGE_NUM",
+        options: [
+          { "name": "min", value: "100" },
+          { "name": "max", value: "200" }
+        ],
+        selected: [100, 200]
+      },
+      {
+        filterType: "RANGE_DATE",
+        title: "RANGE_DATE",
+        options: [],
+        selected: [new Date(2020, 8, 21, 21, 10, 5), new Date(Date.now())]
+      },
+      {
+        filterType: "CONTAIN_STRING",
+        title: "CONTAIN_STRING",
+        options: [],
+        selected: ["a", "b", "cc"]
+      }
+    ]
+    setFilterOptions(tmpFilterOption)
+
+
     const tmphistory: Conversation[] = [
       {
         conversationType: "HUMAN_KENDRA",
@@ -963,7 +1019,7 @@ function App() {
       {/* API通信用のモック */}
       <AuthMock indexId={indexId} kendraClient={kendraClient} ></AuthMock>
       {/* 検索画面 */}
-      <GlobalContext.Provider value={{ history: history, setHistory: setHistory }}>
+      <GlobalContext.Provider value={{ history: history, setHistory: setHistory, filterOptions: filterOptions, setFilterOptions: setFilterOptions }}>
         <TopBar />
         <SideBar>
           <InteractionArea />
