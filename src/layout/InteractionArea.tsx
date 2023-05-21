@@ -13,10 +13,6 @@ const InteractionArea = () => {
         setHistory: setHistory,
     } = useGlobalContext();
 
-    useEffect(() => {
-
-    }, [])
-
     return (
         <Flex>
             <VStack

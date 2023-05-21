@@ -27,7 +27,7 @@ export default function TopBar() {
             setSearchMode("#rag")
             setText("")
             return
-        } else if (text === "#kendra" ) {
+        } else if (text === "#kendra") {
             setSearchMode("#kendra")
             setText("")
             return
@@ -71,7 +71,14 @@ export default function TopBar() {
                             </MenuList>
                         </Menu>
                     </InputLeftAddon>
-                    <Input placeholder='検索' value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} />
+                    <Input placeholder='検索' value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown} autoComplete='on' list='mylist' />
+                    <datalist id="mylist">
+                        <option value="Kendra"></option>
+                        <option value="Lex"></option>
+                        <option value="SageMaker"></option>
+                        <option value="EC2"></option>
+                        <option value="Lambda"></option>
+                    </datalist>
                 </InputGroup>
             </Flex>
         </Flex>

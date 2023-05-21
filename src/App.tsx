@@ -1,7 +1,7 @@
 
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react";
 import TopBar from "./layout/TopBar.tsx"
-import SideBar from './layout/SpeachBalloon/SideBar.tsx'
+import SideBar from './layout/SideBar.tsx'
 import AuthMock from "./layout/AuthMock.tsx";
 import { indexId, kendraClient, initAWSError } from "./services/AWS.ts";
 import MockDataWarning from "./services/helpers/MockDataWarning.tsx";
