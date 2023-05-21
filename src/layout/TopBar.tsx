@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/icons';
 import { useState } from 'react';
 
-export default function WithSubnavigation() {
+export default function TopBar() {
     const [text, setText] = useState("");
     const [searchMode, setSearchMode] = useState("#RAG");
 

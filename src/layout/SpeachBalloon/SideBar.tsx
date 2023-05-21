@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import {
   Box,
   Flex,
@@ -18,7 +19,7 @@ import {
   Input,
 } from '@chakra-ui/react';
 
-export default function SimpleSidebar({ children }: { children: ReactNode }) {
+export default function SideBar({ children }: { children: ReactNode }) {
   return (
     <Box h="92vh"
       mt="10vh"

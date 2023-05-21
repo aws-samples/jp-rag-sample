@@ -1,4 +1,4 @@
-import { KendraClient } from "@aws-sdk/client-kendra";
+import { KendraClient, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CREDENTIALS_FILE_NAME, CREDENTIALS_FILE_PATH } from "./constants";
 
@@ -60,6 +60,50 @@ export const kendraClient = !hasErrors
     }
   })
   : undefined;
+
+export enum Relevance {
+  Relevant = "RELEVANT",
+  NotRelevant = "NOT_RELEVANT",
+  Click = "CLICK",
+}
+
+export async function submitFeedback(
+  relevance: Relevance, // feedbackする関連度
+  resultId: string, // feedbackするアイテム
+  queryId: string // Query id
+) {
+
+  const command = (relevance === Relevance.Click)
+    ? new SubmitFeedbackCommand({
+      IndexId: indexId,
+      QueryId: queryId,
+      ClickFeedbackItems: [
+        {
+          ResultId: resultId,
+          ClickTime: new Date("TIMESTAMP"),
+        },
+      ],
+    })
+    : new SubmitFeedbackCommand({
+      IndexId: indexId,
+      QueryId: queryId,
+      RelevanceFeedbackItems: [
+        {
+          ResultId: resultId,
+          RelevanceValue: relevance
+        },
+      ],
+    });
+
+  await kendraClient?.send(command).then(
+    (data) => {
+      console.log(`[DEBUG success]: ${data}`);
+    },
+    (error) => {
+      console.log(`[DEBUG error]: ${error}`);
+    }
+  )
+}
 
 export const s3Client = !hasErrors
   ? new S3Client({

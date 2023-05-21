@@ -17,7 +17,7 @@ const AuthMock: React.FC<Props> = ({ kendraClient, indexId }) => {
                 IndexId: indexId,
                 PageNumber: 1,
                 PageSize: 10,
-                QueryText: "トマト",
+                QueryText: "首相",
                 AttributeFilter: {
                     AndAllFilters: [
                         {
@@ -38,7 +38,7 @@ const AuthMock: React.FC<Props> = ({ kendraClient, indexId }) => {
         })
     }, []);
     return (
-        <div>hello, world</div>
+        <></>
     );
 };
 export default AuthMock;
