@@ -10,9 +10,7 @@ export AWS_ACCOUNT_ID=${account_id}
 export AWS_REGION=${region}
 export REPOSITORY="jp-rag-sample"
 export IMAGE_TAG="latest"
-echo ${AWS_ACCOUNT_ID}
-echo ${AWS_REGION}
-# docker build
+# finch build
 finch build -t ${REPOSITORY} .
 aws ecr get-login-password --region $AWS_REGION | finch login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
