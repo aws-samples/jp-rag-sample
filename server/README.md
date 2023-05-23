@@ -1,5 +1,33 @@
 # JP RAG SAMPLE (Server)
 
+## AWS 上で動かす方法（手動）
+
+1. ECR のサービスコンソールに移動して、`jp-rag-sample` といったレポジトリを作成する
+2. IAM Role を新規作成する
+
+EC2 のサービスロールとして作成し、必要な権限をアタッチする。  
+- KendraReadOnlyPolicy  
+
+作成した後、以下の Trusted Policy に変更する。
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "tasks.apprunner.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+3. App Runner のサービスコンソール画面に移動し、新規サービスを作成し、作成した ECR の指定をする。 Step2 のところの Security で先ほど作成した IAM Role を指定する。  
+
+
 ## Getting Started
 
 This is a blank project for CDK development with Python.
