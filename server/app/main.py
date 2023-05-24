@@ -2,12 +2,21 @@
 """
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from kendra import KendraIndexRetriever
 from schemas import QueryBody
 
 app = FastAPI()
 
+origins = os.environ["ALLOW_ORIGINS"].split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    # allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 REGION = os.environ["AWS_REGION"]
 KENDRA_INDEX_ID: str = "851af651-b31b-42b5-bab1-7a64133f29d5"
 
@@ -39,4 +48,4 @@ async def handle_message(body: QueryBody):
     elif body.query_type == "llm_qa":
         pass
     else:
-        return {"statusCode": 404, "message": "invalid query type"}
+        raise HTTPException(status_code=404, detail="Invalid query type")
