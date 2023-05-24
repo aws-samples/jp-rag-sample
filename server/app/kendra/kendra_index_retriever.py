@@ -14,7 +14,7 @@ def clean_result(res_text: str) -> str:
     return res
 
 
-def get_top_n_results(resp, count: int):
+def get_top_n_results(resp: Dict, count: int):
     r = resp["ResultItems"][count]
     doc_title = r["DocumentTitle"]["Text"]
     doc_uri = r["DocumentURI"]
