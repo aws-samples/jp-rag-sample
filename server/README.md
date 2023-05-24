@@ -4,15 +4,41 @@
 
 ```zsh
 cd ./server/app
-uvicorn main:app --reload 
+uvicorn main:app --reload
 ```
+
 ## AWS 上で動かす方法（手動）
 
 1. ECR のサービスコンソールに移動して、`jp-rag-sample` といったレポジトリを作成する
 2. IAM Role を新規作成する
 
-EC2 のサービスロールとして作成し、必要な権限をアタッチする。  
-- KendraReadOnlyPolicy  
+EC2 のサービスロールとして作成し、必要な権限をアタッチする。
+
+- KendraReadOnlyPolicy
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "useEndpoint",
+      "Effect": "Allow",
+      "Action": [
+        "sagemaker:InvokeEndpointAsync",
+        "sagemaker:DescribeEndpoint",
+        "sagemaker:InvokeEndpoint"
+      ],
+      "Resource": "arn:aws:sagemaker:<region>:<account_id>:endpoint/jp-rag-sample*"
+    },
+    {
+      "Sid": "listEndpoint",
+      "Effect": "Allow",
+      "Action": "sagemaker:ListEndpoints",
+      "Resource": "*"
+    }
+  ]
+}
+```
 
 作成した後、以下の Trusted Policy に変更する。
 
@@ -31,9 +57,8 @@ EC2 のサービスロールとして作成し、必要な権限をアタッチ�
 }
 ```
 
-3. App Runner のサービスコンソール画面に移動し、新規サービスを作成し、作成した ECR の指定をする。 Step2 のところの Security で先ほど作成した IAM Role を指定する。  
+3. App Runner のサービスコンソール画面に移動し、新規サービスを作成し、作成した ECR の指定をする。 Step2 のところの Security で先ほど作成した IAM Role を指定する。
 
 ## LangChain 周りの備忘録
 
 - https://python.langchain.com/en/latest/modules/chains/index_examples/vector_db_qa.html
-
