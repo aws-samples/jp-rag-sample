@@ -80,7 +80,7 @@ export async function submitFeedback(
       ClickFeedbackItems: [
         {
           ResultId: resultId,
-          ClickTime: new Date("TIMESTAMP"),
+          ClickTime: new Date(),
         },
       ],
     })
