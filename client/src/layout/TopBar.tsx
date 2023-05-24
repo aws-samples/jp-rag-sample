@@ -10,15 +10,32 @@ import {
     Menu,
     MenuList,
     MenuItem,
+    HStack,
+    IconButton,
+    Drawer,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerHeader,
+    DrawerBody,
+    useDisclosure,
 } from '@chakra-ui/react';
 import {
     ChevronDownIcon
 } from '@chakra-ui/icons';
 import { useState } from 'react';
+import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/Ai';
+import { useGlobalContext } from '../App';
 
 export default function TopBar() {
+    const {
+        filterOptions: filterOptions,
+        setFilterOptions: setFilterOptions,
+        pinnedTexts: pinnedTexts,
+    } = useGlobalContext();
+
     const [text, setText] = useState("");
     const [searchMode, setSearchMode] = useState("#RAG");
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.nativeEvent.isComposing || e.key !== 'Enter') return
@@ -52,12 +69,12 @@ export default function TopBar() {
             borderColor={useColorModeValue('gray.200', 'gray.900')}
             align={'center'}
             zIndex={1}>
-            <Flex>
+            <Flex width={"100%"}>
                 <Text fontSize="2xl" fontWeight="bold">
                     Amazon Kendra
                 </Text>
             </Flex>
-            <Flex pl='30px'>
+            <Flex>
                 <InputGroup size='md' w="60vw">
                     <InputLeftAddon>
                         <Menu>
@@ -81,6 +98,33 @@ export default function TopBar() {
                     </datalist>
                 </InputGroup>
             </Flex>
+            <HStack display={"flex"} justifyContent={"flex-end"} width={"100%"}>
+                <IconButton icon={<AiOutlinePushpin />} backgroundColor={"transparent"} onClick={onOpen} aria-label="show-pinned-texts" />
+                <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
+                    <DrawerOverlay />
+                    <DrawerContent>
+                        <DrawerHeader borderBottomWidth='1px'>ピン止めされたテキスト</DrawerHeader>
+                        <DrawerBody>
+                            {
+                                pinnedTexts.map((item: string, idx: number) => (
+                                    (() => {
+
+                                        return (<HStack key={idx}>
+                                            <IconButton icon={<AiOutlineDelete />} backgroundColor={"transparent"} onClick={() => {
+                                                const tmpSelected: string[] = pinnedTexts
+                                                tmpSelected.splice(idx, 1)
+                                                setFilterOptions([...filterOptions])
+                                            }} aria-label="show-pinned-texts" />
+                                            <Text>{item}</Text>
+                                        </HStack>)
+                                    })()
+                                ))
+                            }
+                        </DrawerBody>
+                    </DrawerContent>
+                </Drawer>
+            </HStack>
+
         </Flex>
     );
 }

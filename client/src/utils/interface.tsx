@@ -38,7 +38,7 @@ export interface Conversation {
 export type selectItemType = {
     name: string,
     value: string
-  }
+}
 
 // フィルタの種類
 export type FilterType = "LAUNGUAGE_SETTING" | "SORT_BY" | "SELECT_ONE_STRING" | "SELECT_MULTI_STRING" | "RANGE_NUM" | "RANGE_DATE" | "CONTAIN_STRING";

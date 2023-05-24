@@ -36,6 +36,8 @@ const AuthMock: React.FC<Props> = ({ kendraClient, indexId }) => {
         fetchData().then((data) => {
             console.log(data);
         })
+
+
     }, []);
     return (
         <></>
