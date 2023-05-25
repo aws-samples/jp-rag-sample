@@ -1,10 +1,14 @@
 """main logics for FastAPI
 """
+import json
 import os
 
+import boto3
+from chain import build_sagemaker_llm_chain, run_chain
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from kendra import KendraIndexRetriever
+from langchain.chains import RetrievalQA
 from schemas import QueryBody
 
 app = FastAPI()
@@ -18,7 +22,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 REGION = os.environ["AWS_REGION"]
-KENDRA_INDEX_ID: str = "851af651-b31b-42b5-bab1-7a64133f29d5"
+KENDRA_INDEX_ID: str = os.environ["KENDRA_INDEX_ID"]
+ENDPOINT_NAME: str = os.environ["SAGEMAKER_ENDPOINT_NAME"]
+CHAIN: RetrievalQA = build_sagemaker_llm_chain(
+    kendra_index_id=KENDRA_INDEX_ID, endpoint_name=ENDPOINT_NAME, aws_region=REGION
+)
 
 
 @app.get("/")
@@ -45,7 +53,8 @@ async def handle_message(body: QueryBody):
                 for doc in response
             ]
         }
-    elif body.query_type == "llm_qa":
-        pass
+    elif body.query_type == "llm":
+        query: str = body.query
+        return run_chain(CHAIN, query)
     else:
         raise HTTPException(status_code=404, detail="Invalid query type")
