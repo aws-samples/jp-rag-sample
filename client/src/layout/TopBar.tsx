@@ -25,12 +25,16 @@ import {
 import { useState } from 'react';
 import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/Ai';
 import { useGlobalContext } from '../App';
+import { serverUrl } from '../services/AWS';
+
 
 export default function TopBar() {
     const {
         filterOptions: filterOptions,
         setFilterOptions: setFilterOptions,
         pinnedTexts: pinnedTexts,
+        currentConversation: currentConversation,
+        setCurrentConversation: setCurrentConversation,
     } = useGlobalContext();
 
     const [text, setText] = useState("");
@@ -53,6 +57,120 @@ export default function TopBar() {
             setText("")
             return
         }
+
+        async function postData(url = '', data = {}) {
+            const r = await fetch(url, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            return await r.json()
+        }
+
+        // example usage:
+        if (searchMode === "#kendra") {
+            postData(`${serverUrl}/v1/query`, {
+                "query": "string",
+                "user_id": text,
+                "query_type": "kendra"
+            })
+                .then(data => {
+                    const tmpDocResults =[]
+                    for (let r of data.results) {
+                        tmpDocResults.push(
+                            {
+                              "AdditionalAttributes": [],
+                              "DocumentAttributes": [
+                                {
+                                  "Key": "_source_uri",
+                                  "Value": {
+                                    "StringValue": r.metadata.source
+                                  }
+                                }
+                              ],
+                              "DocumentExcerpt": {
+                                "Highlights": [
+                                  ],
+                                  "Text": r.page_content
+                              },
+                              "DocumentId": r.metadata.source,
+                              "DocumentTitle": {
+                                "Highlights": [],
+                                "Text": r.metadata.title
+                              },
+                              "DocumentURI": r.metadata.source,
+                              "FeedbackToken": r.metadata.feedback_token,
+                              "Format": "TEXT",
+                              "Id": r.metadata.source,
+                              "ScoreAttributes": {
+                                "ScoreConfidence": "MEDIUM"
+                              },
+                              "Type": "DOCUMENT"
+                            })
+                    }
+                    setCurrentConversation({
+                        conversationType: "HUMAN_KENDRA",
+                        userInput: {word: text},
+                        userQuery: {
+                            IndexId: "indexId",
+                            PageNumber: 1,
+                            PageSize: 10,
+                            QueryText: "首相",
+                            AttributeFilter: {
+                              AndAllFilters: [
+                                {
+                                  EqualsTo: {
+                                    Key: "_language_code",
+                                    Value: {
+                                      "StringValue": "ja"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                        kendraResponse: {
+                            "$metadata": {
+                              "httpStatusCode": 200,
+                              "requestId": "f4bb9924-424e-4a13-a0ff-ed8330054210",
+                              "attempts": 1,
+                              "totalRetryDelay": 0
+                            },
+                            "FacetResults": [
+                              {
+                                "DocumentAttributeKey": "_data_source_id",
+                                "DocumentAttributeValueCountPairs": [
+                                  {
+                                    "Count": 163,
+                                    "DocumentAttributeValue": {
+                                      "StringValue": "68ce80bd-df1a-45ca-b096-fcb5add21a72"
+                                    }
+                                  },
+                                  {
+                                    "Count": 3,
+                                    "DocumentAttributeValue": {
+                                      "StringValue": "69d50512-bf7b-43e8-a3a1-58c0064d5fcf"
+                                    }
+                                  }
+                                ],
+                                "DocumentAttributeValueType": "STRING_VALUE"
+                              }
+                            ],
+                            "FeaturedResultsItems": [],
+                            "QueryId": "1c5dfec8-f334-4dd6-b5ec-345c67c4c3c9",
+                            "ResultItems": tmpDocResults,
+                            "TotalNumberOfResults": 170
+                          },
+                        aiResponse: undefined
+                    })
+                });
+
+        }
+
+
     }
 
     return (

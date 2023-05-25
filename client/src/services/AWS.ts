@@ -40,6 +40,11 @@ if (config) {
       `There is no indexId provided in ${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
     );
   }
+  if (!config.serverUrl) {
+    _loadingErrors.push(
+      `There is no serverUrl provided in ${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
+    );
+  }
 }
 
 const hasErrors = _loadingErrors.length > 0;
@@ -50,6 +55,7 @@ if (hasErrors) {
 export const initAWSError = _loadingErrors;
 
 export const indexId = config ? config.indexId : undefined;
+export const serverUrl = config ? config.serverUrl : undefined;
 
 export const kendraClient = !hasErrors
   ? new KendraClient({
@@ -95,14 +101,8 @@ export async function submitFeedback(
       ],
     });
 
-  await kendraClient?.send(command).then(
-    (data) => {
-      console.log(`[DEBUG success]: ${data}`);
-    },
-    (error) => {
-      console.log(`[DEBUG error]: ${error}`);
-    }
-  )
+  // Feedbackを送信
+  await kendraClient?.send(command)
 }
 
 export const s3Client = !hasErrors

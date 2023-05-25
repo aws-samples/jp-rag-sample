@@ -17,9 +17,7 @@ const Ballon: React.FC<{  bid: number, text: string, children: ReactNode,}> = ({
                     <IconButton aria-label='Search database' icon={<AiOutlineDelete />} backgroundColor={"transparent"} onClick={() => {
                         if (bid === -1) {
                             setCurrentConversation(undefined)
-                            console.log("[DEBUG] -1 called")
                         } else {
-                            console.log(`[DEBUG] ${bid} called`)
                             history.splice(bid, 1)
                             setHistory([...history])
                         }

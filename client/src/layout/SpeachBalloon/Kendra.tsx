@@ -40,7 +40,7 @@ export const KendraResultFeatured: React.FC<{
                             <TabList>
                                 {resultItems.map((_resultItem: FeaturedResultsItem, idx: number) => (
                                     <Tab key={idx}>
-                                        Featured {idx}
+                                        おすすめの文章 {idx}
                                     </Tab>
                                 ))}
                             </TabList>
@@ -128,7 +128,7 @@ export const KendraResultExcerpt: React.FC<{
                         <TabList>
                             {resultItems.map((_resultItem: QueryResultItem, idx: number) => (
                                 <Tab key={idx}>
-                                    抜粋 {idx}
+                                    抜粋された文章 {idx}
                                 </Tab>
                             ))}
                         </TabList>
@@ -142,7 +142,7 @@ export const KendraResultExcerpt: React.FC<{
                                             <Heading size="sm">
                                                 <Link color="green.500" href={resultItem.DocumentURI} onClick={() => {
                                                     submitFeedback(Relevance['Click'], resultItem.Id ?? "", queryId)
-                                                }}>
+                                                }} isExternal>
                                                     <strong>
                                                         {
                                                             getAnswer(resultItem.AdditionalAttributes ?? [])
@@ -165,9 +165,23 @@ export const KendraResultExcerpt: React.FC<{
                                             </Box>
                                             <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>
                                                 <IconButton aria-label='Search database' icon={<AiOutlineLike />} backgroundColor={"transparent"} onClick={() => {
+                                                    toast({
+                                                        title: 'フィードバックありがとうございます',
+                                                        description: "",
+                                                        status: 'success',
+                                                        duration: 1000,
+                                                        isClosable: true,
+                                                    })
                                                     submitFeedback(Relevance['Relevant'], resultItem.Id ?? "", queryId)
                                                 }} />
                                                 <IconButton aria-label='Search database' icon={<AiOutlineDislike />} backgroundColor={"transparent"} onClick={() => {
+                                                    toast({
+                                                        title: 'フィードバックありがとうございます',
+                                                        description: "",
+                                                        status: 'success',
+                                                        duration: 1000,
+                                                        isClosable: true,
+                                                    })
                                                     submitFeedback(Relevance['NotRelevant'], resultItem.Id ?? "", queryId)
                                                 }} />
                                             </HStack>
@@ -221,7 +235,7 @@ export const KendraResultFAQ: React.FC<{
                                 <TabList>
                                     {resultItems.map((_resultItem: QueryResultItem, idx: number) => (
                                         <Tab key={idx}>
-                                            FAQ {idx}
+                                            よくある質問 {idx}
                                         </Tab>
                                     ))}
                                 </TabList>
@@ -234,7 +248,7 @@ export const KendraResultFAQ: React.FC<{
                                                 <Heading size="sm">
                                                     <Link color="green.500" href={resultItem.DocumentURI} onClick={() => {
                                                         submitFeedback(Relevance['Click'], resultItem.Id ?? "", queryId)
-                                                    }}>
+                                                    }} isExternal>
                                                         <HighlightedTexts textWithHighlights={
                                                             getFAQWithHighlight(resultItem.AdditionalAttributes ?? [], "QuestionText") ?? { Highlights: [], Text: "読み込みエラー" }
                                                         } />
@@ -255,9 +269,23 @@ export const KendraResultFAQ: React.FC<{
                                                 </Box>
                                                 <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>
                                                     <IconButton aria-label='Search database' icon={<AiOutlineLike />} backgroundColor={"transparent"} onClick={() => {
+                                                        toast({
+                                                            title: 'フィードバックありがとうございます',
+                                                            description: "",
+                                                            status: 'success',
+                                                            duration: 1000,
+                                                            isClosable: true,
+                                                        })
                                                         submitFeedback(Relevance['Relevant'], resultItem.Id ?? "", queryId)
                                                     }} />
                                                     <IconButton aria-label='Search database' icon={<AiOutlineDislike />} backgroundColor={"transparent"} onClick={() => {
+                                                        toast({
+                                                            title: 'フィードバックありがとうございます',
+                                                            description: "",
+                                                            status: 'success',
+                                                            duration: 1000,
+                                                            isClosable: true,
+                                                        })
                                                         submitFeedback(Relevance['NotRelevant'], resultItem.Id ?? "", queryId)
                                                     }} />
                                                 </HStack>
@@ -306,7 +334,7 @@ export const KendraResultDoc: React.FC<{
                                     <Heading size="sm">
                                         <Link color="green.500" href={resultItem.DocumentURI ?? "#"} onClick={() => {
                                             submitFeedback(Relevance['Click'], resultItem.Id ?? "", queryId)
-                                        }}>
+                                        }} isExternal>
                                             <HighlightedTexts textWithHighlights={resultItem.DocumentTitle ?? { Highlights: [], Text: "読み込みエラー" }} />
                                             <ExternalLinkIcon mx='2px' />
                                         </Link>
@@ -325,9 +353,23 @@ export const KendraResultDoc: React.FC<{
                                     </Box>
                                     <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>
                                         <IconButton aria-label='Search database' icon={<AiOutlineLike />} backgroundColor={"transparent"} onClick={() => {
+                                            toast({
+                                                title: 'フィードバックありがとうございます',
+                                                description: "",
+                                                status: 'success',
+                                                duration: 1000,
+                                                isClosable: true,
+                                            })
                                             submitFeedback(Relevance['Relevant'], resultItem.Id ?? "", queryId)
                                         }} />
                                         <IconButton aria-label='Search database' icon={<AiOutlineDislike />} backgroundColor={"transparent"} onClick={() => {
+                                            toast({
+                                                title: 'フィードバックありがとうございます',
+                                                description: "",
+                                                status: 'success',
+                                                duration: 1000,
+                                                isClosable: true,
+                                            })
                                             submitFeedback(Relevance['NotRelevant'], resultItem.Id ?? "", queryId)
                                         }} />
                                     </HStack>
@@ -359,92 +401,95 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
     const [excerptItems, setExcerptItems] = useState<QueryResultItem[]>([]);
     const [docItems, setDocItems] = useState<QueryResultItem[]>([]);
 
+    // render → await 関数でparse →　描画
+
     useEffect(() => {
         const tmpFeaturedItems: FeaturedResultsItem[] = [];
         const tmpFaqItems: QueryResultItem[] = [];
         const tmpExcerptItems: QueryResultItem[] = [];
         const tmpDocItems: QueryResultItem[] = [];
 
-        const parseData = async () => {
-            // Featured Item が S3 のとき presigned urlに変更
-            if (data && data?.kendraResponse?.FeaturedResultsItems) {
+        // Featured Item が S3 のとき presigned urlに変更
+        if (data && data?.kendraResponse?.FeaturedResultsItems) {
 
-                for (const result of data.kendraResponse.FeaturedResultsItems) {
-                    if (s3Client && result.DocumentURI) {
-                        try {
-                            let res = result.DocumentURI.split("/");
-                            if (res[2].startsWith("s3")) {
+            for (const result of data.kendraResponse.FeaturedResultsItems) {
+                if (s3Client && result.DocumentURI) {
+                    try {
+                        let res = result.DocumentURI.split("/");
+                        if (res[2].startsWith("s3")) {
 
-                                // bucket名とkeyを取得
-                                let bucket = res[3];
-                                let key = res[4];
-                                for (var i = 5; i < res.length; i++) {
-                                    key = key + "/" + res[i];
-                                }
-                                // s3 の presigned url に置き換え
-                                const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-                                await getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
-                                    result.DocumentURI = uri;
-                                });
+                            // bucket名とkeyを取得
+                            let bucket = res[3];
+                            let key = res[4];
+                            for (var i = 5; i < res.length; i++) {
+                                key = key + "/" + res[i];
                             }
-                        } catch {
-                            // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
+                            // s3 の presigned url に置き換え
+                            const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+                            getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
+                                result.DocumentURI = uri;
+                            });
                         }
-                    }
-                    tmpFeaturedItems.push(result)
-                }
-            }
-
-            // FAQ、抜粋した回答、ドキュメントを分離
-            if (data && data?.kendraResponse?.ResultItems) {
-                for (const result of data.kendraResponse.ResultItems) {
-                    if (s3Client && result.DocumentURI) {
-                        try {
-                            let res = result.DocumentURI.split("/");
-                            if (res[2].startsWith("s3")) {
-
-                                // bucket名とkeyを取得
-                                let bucket = res[3];
-                                let key = res[4];
-                                for (var i = 5; i < res.length; i++) {
-                                    key = key + "/" + res[i];
-                                }
-                                // s3 の presigned url に置き換え
-                                const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-                                getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
-                                    result.DocumentURI = uri;
-                                });
-
-                            }
-                        } catch {
-                            // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
-                        }
-                    }
-                    switch (result.Type) {
-                        case "ANSWER":
-                            tmpExcerptItems.push(result);
-                            break;
-                        case "QUESTION_ANSWER":
-                            tmpFaqItems.push(result);
-                            break;
-                        case "DOCUMENT":
-                            tmpDocItems.push(result);
-                            break;
-                        default:
-                            break;
+                    } catch {
+                        // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
                     }
                 }
+                tmpFeaturedItems.push(result)
+                // featuredItems.push(result)
             }
-
-            setFeaturedItems(tmpFeaturedItems)
-            setFaqItems(tmpFaqItems)
-            setExcerptItems(tmpExcerptItems)
-            setDocItems(tmpDocItems)
         }
-        parseData()
 
 
-    }, []);
+        // FAQ、抜粋した回答、ドキュメントを分離
+        if (data && data?.kendraResponse?.ResultItems) {
+            for (const result of data.kendraResponse.ResultItems) {
+                if (s3Client && result.DocumentURI) {
+                    try {
+                        let res = result.DocumentURI.split("/");
+                        if (res[2].startsWith("s3")) {
+
+                            // bucket名とkeyを取得
+                            let bucket = res[3];
+                            let key = res[4];
+                            for (var i = 5; i < res.length; i++) {
+                                key = key + "/" + res[i];
+                            }
+                            // s3 の presigned url に置き換え
+                            const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+                            getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
+                                result.DocumentURI = uri;
+                            });
+
+                        }
+                    } catch {
+                        // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
+                    }
+                }
+                switch (result.Type) {
+                    case "ANSWER":
+                        tmpExcerptItems.push(result);
+                        // excerptItems.push(result);
+                        break;
+                    case "QUESTION_ANSWER":
+                        tmpFaqItems.push(result);
+                        // faqItems.push(result);
+                        break;
+                    case "DOCUMENT":
+                        tmpDocItems.push(result);
+                        // docItems.push(result);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        setFeaturedItems(tmpFeaturedItems)
+        setFaqItems(tmpFaqItems)
+        setExcerptItems(tmpExcerptItems)
+        setDocItems(tmpDocItems)
+
+    }, [data]);
 
     return (
         <>
@@ -462,5 +507,6 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
             <Human data={data} />
         </>
     )
+
 };
 export default Kendra;
