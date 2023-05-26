@@ -1,15 +1,15 @@
 """Define types 
 """
-from typing import Dict, List
+from typing import Dict, List, Literal
 
 from pydantic import BaseModel, Field
 
 
-class MessageBody(BaseModel):
-    message: str
+class QueryBody(BaseModel):
+    query: str
     user_id: str
+    query_type: Literal["kendra", "llm"]
 
 
 class SearchCondition(BaseModel):
     hogehoge: str
-
