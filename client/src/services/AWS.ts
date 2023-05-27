@@ -1,4 +1,4 @@
-import { KendraClient, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
+import { AttributeFilter, KendraClient, QueryCommand, QueryCommandInput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CREDENTIALS_FILE_NAME, CREDENTIALS_FILE_PATH } from "./constants";
 
@@ -104,6 +104,39 @@ export async function submitFeedback(
   // Feedbackを送信
   await kendraClient?.send(command)
 }
+
+export function getKendraQuery(
+  queryText: string,
+  attributeFilter: AttributeFilter,
+  sortingConfiguration: SortingConfiguration | undefined
+): QueryCommandInput {
+  return {
+    IndexId: indexId,
+    PageNumber: 1,
+    PageSize: 10,
+    QueryText: queryText,
+    AttributeFilter: attributeFilter,
+    SortingConfiguration: sortingConfiguration,
+  }
+}
+
+export function overwriteQuery(
+  prevQuery: QueryCommandInput,
+  newAttributeFilter: AttributeFilter,
+  newSortingConfiguration: SortingConfiguration | undefined
+): QueryCommandInput {
+  return  {
+    ...prevQuery,
+    AttributeFilter: newAttributeFilter,
+    SortingConfiguration: newSortingConfiguration,
+  }
+}
+
+
+export async function kendraQuery(param: QueryCommandInput) {
+  return kendraClient?.send(new QueryCommand(param));
+}
+
 
 export const s3Client = !hasErrors
   ? new S3Client({

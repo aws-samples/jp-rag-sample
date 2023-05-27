@@ -401,8 +401,6 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
     const [excerptItems, setExcerptItems] = useState<QueryResultItem[]>([]);
     const [docItems, setDocItems] = useState<QueryResultItem[]>([]);
 
-    // render → await 関数でparse →　描画
-
     useEffect(() => {
         const tmpFeaturedItems: FeaturedResultsItem[] = [];
         const tmpFaqItems: QueryResultItem[] = [];
@@ -435,7 +433,6 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
                     }
                 }
                 tmpFeaturedItems.push(result)
-                // featuredItems.push(result)
             }
         }
 
@@ -468,15 +465,12 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
                 switch (result.Type) {
                     case "ANSWER":
                         tmpExcerptItems.push(result);
-                        // excerptItems.push(result);
                         break;
                     case "QUESTION_ANSWER":
                         tmpFaqItems.push(result);
-                        // faqItems.push(result);
                         break;
                     case "DOCUMENT":
                         tmpDocItems.push(result);
-                        // docItems.push(result);
                         break;
                     default:
                         break;

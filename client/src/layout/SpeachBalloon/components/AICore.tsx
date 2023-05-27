@@ -17,7 +17,7 @@ const AICore: React.FC<{ data: AiResponse }> = ({ data }) => {
         <Avatar bg='yellow.500' icon={<AiFillRobot fontSize='1.5rem' />} />
         <VStack align="start" w="85vw">
           <Heading size="sm">
-            AI
+            AI の回答
           </Heading>
           <Box onClick={() => {
             setPinnedTexts([...pinnedTexts, data.aiUtterance ?? "読み込みエラー"])

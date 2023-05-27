@@ -48,10 +48,14 @@ export enum SortOrderEnum {
   Asc = "ASC",
 }
 
+export const SEARCH_MODE_LIST = ["#rag", "#kendra", "#ai", "#historycalrag"]
+export const DEFAULT_SEARCH_MODE = "#rag"
+
 export const DEFAULT_SORT_ORDER = SortOrderEnum.Desc;
 
 export const LANGUAGE_INDEX = 0;
 export const SORT_ATTRIBUTE_INDEX = 0
 export const SORT_ORDER_INDEX = 1;
-
 export const SORT_ORDER = ["ASC", "DESC"];
+export const MIN_INDEX = 0;
+export const MAX_INDEX = 1;

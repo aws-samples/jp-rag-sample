@@ -18,10 +18,13 @@ import {
   TagLabel,
   TagCloseButton,
   HStack,
+  useToast,
 } from '@chakra-ui/react';
-import { LANGUAGE_INDEX, LANGUAGES, SORT_ORDER_INDEX, SORT_ATTRIBUTE_INDEX, SORT_ORDER } from '../utils/constant';
+import { LANGUAGE_INDEX, LANGUAGES, SORT_ORDER_INDEX, SORT_ATTRIBUTE_INDEX, SORT_ORDER, MAX_INDEX, MIN_INDEX } from '../utils/constant';
 import { Filter, selectItemType } from '../utils/interface';
 import { useGlobalContext } from "../App";
+import { getAttributeFilter, getCurrentSortOrder, isArrayBoolean, isArrayDate, isArrayNumber, isArrayString } from "../utils/function";
+import { kendraQuery, overwriteQuery } from "../services/AWS";
 
 const SelectBoxes: React.FC<{
   onSelectionChange: (
@@ -59,26 +62,19 @@ const SortOrderBox: React.FC<{
   currentSortAttrSelection: string
   currentSortOrderSelection: string
 }> = ({ onSortAttrChange, onSortOrderChange, title, itemList, currentSortAttrSelection, currentSortOrderSelection }) => {
+
   return (
     <Box pb="3">
       <Text>{title}</Text>
       <HStack>
         <Select size='xs' onChange={onSortAttrChange} defaultValue={currentSortAttrSelection}>
           {
-            itemList.map((item) => (
-              (() => {
-                return (<option value={item.value} key={item.value} >{item.name}</option>)
-              })()
-            ))
+            itemList.map((item) => <option value={item.value} key={item.value} >{item.name}</option>)
           }
         </Select>
         <Select size='xs' onChange={onSortOrderChange} defaultValue={currentSortOrderSelection}>
           {
-            SORT_ORDER.map((item) => (
-              (() => {
-                return (<option value={item} key={item} >{item}</option>)
-              })()
-            ))
+            SORT_ORDER.map((item) => <option value={item} key={item} >{item}</option>)
           }
         </Select>
       </HStack>
@@ -151,11 +147,11 @@ const RangeNumBox: React.FC<{
     <Box pb="3">
       <Text pb='5'>{title}</Text>
       <RangeSlider
-        defaultValue={[currentRange[0], currentRange[1]]}
+        defaultValue={[currentRange[MIN_INDEX], currentRange[MAX_INDEX]]}
         onChange={onValueChange}
         colorScheme='green'
-        min={Number(itemList[0].value)}
-        max={Number(itemList[1].value)}>
+        min={Number(itemList[MIN_INDEX].value)}
+        max={Number(itemList[MAX_INDEX].value)}>
         <RangeSliderTrack>
           <RangeSliderFilledTrack />
         </RangeSliderTrack>
@@ -244,29 +240,15 @@ const ContainStringBox: React.FC<{
   )
 }
 
-function isArrayBoolean(arr: any[]): arr is boolean[] {
-  return arr.every((item) => typeof item === 'boolean');
-}
-
-function isArrayString(arr: any[]): arr is string[] {
-  return arr.every((item) => typeof item === 'string');
-}
-
-function isArrayNumber(arr: any[]): arr is number[] {
-  return arr.every((item) => typeof item === 'number');
-}
-
-function isArrayDate(arr: any[]): arr is Date[] {
-  return arr.every((item) => item instanceof Date);
-}
-
-export default function SideBar({ children }: { children: ReactNode }) {
+export default function FilterBar({ children }: { children: ReactNode }) {
   const {
-      history: history,
-      setHistory: setHistory,
-      filterOptions: filterOptions,
-      setFilterOptions: setFilterOptions,
+    currentConversation: currentConversation,
+    setCurrentConversation: setCurrentConversation,
+    filterOptions: filterOptions,
+    setFilterOptions: setFilterOptions,
   } = useGlobalContext();
+
+  const toast = useToast()
 
   return (
     <Box h="92vh"
@@ -314,7 +296,7 @@ export default function SideBar({ children }: { children: ReactNode }) {
                         currentSortOrderSelection={tmpCheckBoxItem.selected[SORT_ORDER_INDEX]}
                         key={tmpCheckBoxItemId} />
                     )
-                  } else if (tmpCheckBoxItem.filterType === "SELECT_MULTI_STRING" && isArrayBoolean(tmpCheckBoxItem.selected)) {
+                  } else if (tmpCheckBoxItem.filterType === "SELECT_MULTI_STRING_FROM_LIST" && isArrayBoolean(tmpCheckBoxItem.selected)) {
                     // チェックボックス
                     return (
                       <CheckBoxes
@@ -393,7 +375,49 @@ export default function SideBar({ children }: { children: ReactNode }) {
             }
           </div>
           {/* ボタン */}
-          <Button colorScheme='green' size='xs'>適用</Button>
+          <Button colorScheme='green' size='xs' onClick={() => {
+            /*
+             * Filterした Kendraへのリクエスト
+             *
+             * 
+             * F. Kendraへのリクエストをフィルタ
+             * 
+             * F-1. currentConversation.userQuery があるとき (top barから検索済みであること)を確認
+             * F-2. currentConversation.userQuery の言語設定、ソート順、フィルタを変更しクエリを再実行
+             * F-3. 受け取ったレスポンスを元にInteractionAreaを描画
+             */
+
+            const run = async () => {
+              // F-1. currentConversation.userQuery があるとき (top barから検索済みであること)を確認
+              if (currentConversation?.userQuery !== undefined) {
+
+                // F-2. currentConversation.userQuery の言語設定、ソート順、フィルタを変更しクエリを再実行
+                const q = overwriteQuery(
+                  currentConversation.userQuery,
+                  getAttributeFilter(filterOptions),
+                  getCurrentSortOrder(filterOptions)
+                )
+                await kendraQuery(q).then(data => {
+                  // F-3. 受け取ったレスポンスを元にInteractionAreaを描画
+                  setCurrentConversation({
+                    ...currentConversation,
+                    kendraResponse: data
+                  })
+                }).catch(err => {
+                  console.log(err)
+                  toast({
+                    title: 'エラー (不正なフィルタ)',
+                    description: "",
+                    status: 'error',
+                    duration: 1000,
+                    isClosable: true,
+                  })
+                })
+              }
+            }
+            run()
+
+          }}>適用</Button>
         </VStack>
       </Box>
       {/* 本体 */}
