@@ -1,13 +1,13 @@
-import { CREDENTIALS_FILE_NAME, CREDENTIALS_FILE_PATH } from "../constants";
-
-export default function MockDataWarning(props: { errors?: string[] }) {
+export const MockDataWarning: React.FC<{ errors: string[] }> = ({ errors }) => {
   return (
     <div>
       <span>
         <b>
-          {props.errors && props.errors.length > 0
-            ? props.errors.map(err => <div>{err}</div>)
-            : `${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME} をロードできませんでした。READMEの Getting Started を参照してください。`}
+          {
+            errors.map((err, idx) => {
+              return (<div key={idx}>{err}</div>)
+            })
+          }
         </b>
       </span>
       <span>
@@ -16,3 +16,4 @@ export default function MockDataWarning(props: { errors?: string[] }) {
     </div>
   );
 }
+export default MockDataWarning;

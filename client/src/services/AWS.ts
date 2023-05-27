@@ -1,50 +1,32 @@
 import { AttributeFilter, KendraClient, QueryCommand, QueryCommandInput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
 import { S3Client } from "@aws-sdk/client-s3";
-import { CREDENTIALS_FILE_NAME, CREDENTIALS_FILE_PATH } from "./constants";
 
 const _loadingErrors = [];
 
-// If you get an error here, please revisit the Getting Started section of the README
-let config = null;
-try {
-  const response = await fetch(`./${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`)
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  config = await response.json();
-} catch (e) {
-  console.log(e);
+if (!import.meta.env.VITE_ACCESS_KEY_ID) {
   _loadingErrors.push(
-    `${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME} could not be loaded. See Getting Started in the README.`
+    "環境変数にACCESS_KEY_IDがありません"
   );
 }
-
-if (config) {
-  if (!config.accessKeyId) {
-    _loadingErrors.push(
-      `There is no accessKeyId provided in${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
-    );
-  }
-  if (!config.secretAccessKey) {
-    _loadingErrors.push(
-      `There is no secretAccessKey provided in ${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
-    );
-  }
-  if (!config.region) {
-    _loadingErrors.push(
-      `There is no region provided in ${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
-    );
-  }
-  if (!config.indexId || config.indexId.length === 0) {
-    _loadingErrors.push(
-      `There is no indexId provided in ${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
-    );
-  }
-  if (!config.serverUrl) {
-    _loadingErrors.push(
-      `There is no serverUrl provided in ${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
-    );
-  }
+if (!import.meta.env.VITE_SECRET_ACCESS_KEY) {
+  _loadingErrors.push(
+    "環境変数にSECRET_ACCESS_KEYがありません"
+  );
+}
+if (!import.meta.env.VITE_REGION) {
+  _loadingErrors.push(
+    "環境変数にREGIONがありません"
+  );
+}
+if (!import.meta.env.VITE_INDEX_ID) {
+  _loadingErrors.push(
+    "環境変数にINDEX_IDがありません"
+  );
+}
+if (!import.meta.env.VITE_SERVER_URL) {
+  _loadingErrors.push(
+    "環境変数にSERVER_URLがありません"
+  );
 }
 
 const hasErrors = _loadingErrors.length > 0;
@@ -52,17 +34,20 @@ if (hasErrors) {
   console.error(JSON.stringify(_loadingErrors));
 }
 
-export const initAWSError = _loadingErrors;
+export const initAWSError:string[] = _loadingErrors;
 
-export const indexId = config ? config.indexId : undefined;
-export const serverUrl = config ? config.serverUrl : undefined;
+const accessKeyId:string = import.meta.env.VITE_ACCESS_KEY_ID ?? ""
+const secretAccessKey = import.meta.env.VITE_SECRET_ACCESS_KEY ?? ""
+const region = import.meta.env.VITE_REGION ?? ""
+export const indexId:string = import.meta.env.VITE_INDEX_ID ?? ""
+export const serverUrl:string = import.meta.env.VITE_SERVER_URL ?? ""
 
 export const kendraClient = !hasErrors
   ? new KendraClient({
-    region: config.region,
+    region: region,
     credentials: {
-      accessKeyId: config.accessKeyId,
-      secretAccessKey: config.secretAccessKey,
+      accessKeyId: accessKeyId,
+      secretAccessKey: secretAccessKey,
     }
   })
   : undefined;
@@ -140,10 +125,10 @@ export async function kendraQuery(param: QueryCommandInput) {
 
 export const s3Client = !hasErrors
   ? new S3Client({
-    region: config.region,
+    region: region,
     credentials: {
-      accessKeyId: config.accessKeyId,
-      secretAccessKey: config.secretAccessKey,
+      accessKeyId: accessKeyId,
+      secretAccessKey: secretAccessKey,
     }
   })
   : undefined;
