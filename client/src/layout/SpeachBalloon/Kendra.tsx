@@ -4,7 +4,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
 import { IconButton } from "@chakra-ui/button";
 import { Conversation } from "../../utils/interface";
 import AICore from "./components/AICore";
-import { AiOutlineDislike, AiOutlineLike } from "react-icons/Ai";
+import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import HighlightedTexts from "./components/HighlightedTexts";
 import { FeaturedResultsItem, QueryResultItem, AdditionalResultAttribute, TextWithHighlights } from "@aws-sdk/client-kendra";
 import { Relevance, s3Client, submitFeedback } from "../../services/AWS";

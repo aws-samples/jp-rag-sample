@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Box, HStack, IconButton, Text } from "@chakra-ui/react";
-import { AiOutlineDelete } from "react-icons/Ai";
+import { AiOutlineDelete } from "react-icons/ai";
 import { useGlobalContext } from '../../App';
 
 const Ballon: React.FC<{  bid: number, text: string, children: ReactNode,}> = ({ bid, text, children }) => {

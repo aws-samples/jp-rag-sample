@@ -1,5 +1,5 @@
 import { Avatar, Box, HStack, Heading, VStack, useToast } from "@chakra-ui/react";
-import { AiFillRobot } from "react-icons/Ai";
+import { AiFillRobot } from "react-icons/ai";
 import { AiResponse } from "../../../utils/interface";
 import { useGlobalContext } from '../../../App';
 
