@@ -1,5 +1,5 @@
 import { Avatar, Box, HStack, Heading, VStack, useToast } from "@chakra-ui/react";
-import { AiOutlineUser } from "react-icons/Ai";
+import { AiOutlineUser } from "react-icons/ai";
 import { Conversation } from "../../utils/interface";
 import { useGlobalContext } from "../../App";
 

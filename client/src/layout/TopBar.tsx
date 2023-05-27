@@ -23,7 +23,7 @@ import {
 import {
   ChevronDownIcon
 } from '@chakra-ui/icons';
-import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/Ai';
+import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
 import { getKendraQuery, kendraQuery, serverUrl } from '../services/AWS';
 import { SEARCH_MODE_LIST } from '../utils/constant';
