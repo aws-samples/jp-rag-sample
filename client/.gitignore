@@ -221,3 +221,4 @@ dist-ssr
 *.sw?
 # credential
 src/services/local-dev-credentials.json
+.env.development

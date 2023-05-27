@@ -1121,12 +1121,6 @@ export function dummyHistory(): Conversation[] {
                 }
             },
             kendraResponse: {
-                "$metadata": {
-                    "httpStatusCode": 200,
-                    "requestId": "f4bb9924-424e-4a13-a0ff-ed8330054210",
-                    "attempts": 1,
-                    "totalRetryDelay": 0
-                },
                 "FacetResults": [
                     {
                         "DocumentAttributeKey": "_data_source_id",
