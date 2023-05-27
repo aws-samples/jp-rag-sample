@@ -1,4 +1,4 @@
-import { QueryRequest, QueryResult } from "@aws-sdk/client-kendra";
+import { DocumentAttributeValueCountPair, QueryRequest, QueryResult } from "@aws-sdk/client-kendra";
 
 export interface Dic {
     /** 辞書型 */
@@ -38,10 +38,10 @@ export interface Conversation {
 export type selectItemType = {
     name: string,
     value: string
-  }
+}
 
 // フィルタの種類
-export type FilterType = "LAUNGUAGE_SETTING" | "SORT_BY" | "SELECT_ONE_STRING" | "SELECT_MULTI_STRING" | "RANGE_NUM" | "RANGE_DATE" | "CONTAIN_STRING";
+export type FilterType = "LAUNGUAGE_SETTING" | "SORT_BY" | "SELECT_ONE_STRING" | "CONTAIN_STRING" | "RANGE_NUM" | "RANGE_DATE" | "SELECT_MULTI_STRING_FROM_LIST";
 
 // フィルタ
 export interface Filter {
@@ -49,4 +49,8 @@ export interface Filter {
     title: string,
     options: selectItemType[],
     selected: string[] | boolean[] | number[] | Date[]
+}
+
+export interface DocumentAttributeValueCountPairMap {
+    [attributeName: string]: DocumentAttributeValueCountPair[];
 }

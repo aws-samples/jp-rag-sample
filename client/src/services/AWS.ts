@@ -1,4 +1,4 @@
-import { KendraClient, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
+import { AttributeFilter, KendraClient, QueryCommand, QueryCommandInput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
 import { S3Client } from "@aws-sdk/client-s3";
 import { CREDENTIALS_FILE_NAME, CREDENTIALS_FILE_PATH } from "./constants";
 
@@ -40,6 +40,11 @@ if (config) {
       `There is no indexId provided in ${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
     );
   }
+  if (!config.serverUrl) {
+    _loadingErrors.push(
+      `There is no serverUrl provided in ${CREDENTIALS_FILE_PATH}/${CREDENTIALS_FILE_NAME}`
+    );
+  }
 }
 
 const hasErrors = _loadingErrors.length > 0;
@@ -50,6 +55,7 @@ if (hasErrors) {
 export const initAWSError = _loadingErrors;
 
 export const indexId = config ? config.indexId : undefined;
+export const serverUrl = config ? config.serverUrl : undefined;
 
 export const kendraClient = !hasErrors
   ? new KendraClient({
@@ -80,7 +86,7 @@ export async function submitFeedback(
       ClickFeedbackItems: [
         {
           ResultId: resultId,
-          ClickTime: new Date("TIMESTAMP"),
+          ClickTime: new Date(),
         },
       ],
     })
@@ -95,15 +101,42 @@ export async function submitFeedback(
       ],
     });
 
-  await kendraClient?.send(command).then(
-    (data) => {
-      console.log(`[DEBUG success]: ${data}`);
-    },
-    (error) => {
-      console.log(`[DEBUG error]: ${error}`);
-    }
-  )
+  // Feedbackを送信
+  await kendraClient?.send(command)
 }
+
+export function getKendraQuery(
+  queryText: string,
+  attributeFilter: AttributeFilter,
+  sortingConfiguration: SortingConfiguration | undefined
+): QueryCommandInput {
+  return {
+    IndexId: indexId,
+    PageNumber: 1,
+    PageSize: 10,
+    QueryText: queryText,
+    AttributeFilter: attributeFilter,
+    SortingConfiguration: sortingConfiguration,
+  }
+}
+
+export function overwriteQuery(
+  prevQuery: QueryCommandInput,
+  newAttributeFilter: AttributeFilter,
+  newSortingConfiguration: SortingConfiguration | undefined
+): QueryCommandInput {
+  return  {
+    ...prevQuery,
+    AttributeFilter: newAttributeFilter,
+    SortingConfiguration: newSortingConfiguration,
+  }
+}
+
+
+export async function kendraQuery(param: QueryCommandInput) {
+  return kendraClient?.send(new QueryCommand(param));
+}
+
 
 export const s3Client = !hasErrors
   ? new S3Client({
