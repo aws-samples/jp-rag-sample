@@ -14,10 +14,16 @@ class ContentHandler(LLMContentHandler):
     accepts = "application/json"
 
     def transform_input(self, prompt: str, model_kwargs: dict) -> bytes:
+        context, question = prompt.split("#####")
+        input = f"""
+AIは資料から抜粋して質問に答えます。資料にない内容は答えず「わかりません」と答えます。
+{context}
+上記の資料に基づき以下の質問について資料から抜粋して回答してください。資料にない内容は答えず「わかりません」と答えてください。
+"""
         input_str = json.dumps(
             {
-                "instruction": "与えられたドキュメントの情報をベースとして、質問内容に対する詳細な回答を生成してください。ドキュメントの中に情報が存在しなければ、「わかりません」と回答してください。",
-                "input": prompt,
+                "instruction": question.replace("\n", "<NL>"),
+                "input": input.replace("\n", "<NL>"),
                 **model_kwargs,
             }
         )

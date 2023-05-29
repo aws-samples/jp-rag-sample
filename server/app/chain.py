@@ -7,14 +7,17 @@ def build_sagemaker_llm_chain(
     kendra_index_id, endpoint_name: str, aws_region: str = "ap-northeast-1"
 ):
     """build chain for sagemaker backed LLM"""
+    # rinna 特化の config
     llm = make_sagemaker_backed_llm(
         endpoint_name,
         aws_region,
         model_kwargs={
-            "max_new_tokens": 128,
-            "temperature": 0.7,
+            "max_new_tokens": 256,
+            "temperature": 0.3,
             "do_sample": True,
-            "pad_token_id": 1,
+            "pad_token_id": 0,
+            "bos_token_id": 2,
+            "eos_token_id": 3,
         },
     )
     retriever = KendraIndexRetriever(
