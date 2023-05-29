@@ -2,17 +2,8 @@
 """
 from langchain.prompts import PromptTemplate
 
+# rinna の場合は instruction と input で分けて入れるのでこちらでは生データとして入力する
 rinna_prompt = PromptTemplate(
     input_variables=["context", "question"],
-    template="""
-前提
-下記は質問とそれに対して根拠になりうる検索結果の一覧です。あなたは誠実な AI となって以下の回答から質問に対する答えの要約を返してください。
------
-質問
-{question} 
------
-ドキュメント
-{context}
-
-""",
+    template="""{context}#####{question}""",
 )

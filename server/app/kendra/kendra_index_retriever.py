@@ -15,10 +15,25 @@ def clean_result(res_text: str) -> str:
 
 
 def get_top_n_results(resp: Dict, count: int):
+    """Kendra のレスポンスから必要情報を抜き出す.
+    API の形式については以下のドキュメントを参照.
+    https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kendra/client/query.html
+    """
     r = resp["ResultItems"][count]
-    doc_title = r["DocumentTitle"]["Text"]
     doc_uri = r["DocumentURI"]
     r_type = r["Type"]
+    if r_type == "DOCUMENT" or r_type == "ANSWER":
+        doc_title = r["DocumentTitle"]["Text"]
+    elif r_type == "QUESTION_ANSWER":
+        additional_attribute = list(
+            filter(lambda x: x["Key"] == "QuestionText", r["AdditionalAttributes"])
+        )[0]
+        print(additional_attribute)
+        doc_title = additional_attribute["Value"]["TextWithHighlightsValue"]["Text"]
+        # doc_title = ""
+    else:
+        doc_title = ""
+
     feedback_token = r["FeedbackToken"]
     if (
         r["AdditionalAttributes"]
@@ -30,9 +45,7 @@ def get_top_n_results(resp: Dict, count: int):
     else:
         res_text = r["DocumentExcerpt"]["Text"]
     doc_excerpt = clean_result(res_text)
-    combined_text = (
-        "Document Title: " + doc_title + "\nDocument Excerpt: \n" + doc_excerpt + "\n"
-    )
+    combined_text = doc_title + "\n抜粋: \n" + doc_excerpt + "\n"
     return {
         "page_content": combined_text,
         "metadata": {
@@ -41,6 +54,7 @@ def get_top_n_results(resp: Dict, count: int):
             "excerpt": doc_excerpt,
             "type": r_type,
             "feedback_token": feedback_token,
+            "raw_data": r,
         },
     }
 
@@ -58,7 +72,6 @@ def kendra_query(
             }
         },
     )
-    print("query result:", response)
     if len(response["ResultItems"]) > kcount:
         r_count = kcount
     else:
