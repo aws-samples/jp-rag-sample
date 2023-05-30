@@ -2,7 +2,6 @@
 Chain for question-answering against a vector database
 """
 import re
-from collections import defaultdict
 from typing import Any, Dict, List, Optional
 
 import boto3
