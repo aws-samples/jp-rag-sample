@@ -1,15 +1,14 @@
 """main logics for FastAPI
 """
-import json
 import os
 
-import boto3
 from chain import build_sagemaker_llm_chain, run_chain
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from kendra import KendraIndexRetriever
 from langchain.chains import RetrievalQA
-from schemas import QueryBody
+from playground.rinna_playground_chain import build_rinna_llm_chain
+from schemas import QueryBody, RinnaPlaygroundReqBody
 
 app = FastAPI()
 
@@ -58,3 +57,20 @@ async def handle_message(body: QueryBody):
         return run_chain(CHAIN, query)
     else:
         raise HTTPException(status_code=404, detail="Invalid query type")
+
+
+@app.post("/v1/playground/rinna")
+async def rinna_playground(body: RinnaPlaygroundReqBody):
+    """rinna へのプロンプトエンジニアリングを行う場所"""
+    input_template = body.input_template
+    instruction_template = body.instruction_template
+    model_kwargs = body.model_kwargs.dict()
+    chain = build_rinna_llm_chain(
+        input_template,
+        instruction_template,
+        kendra_index_id=KENDRA_INDEX_ID,
+        endpoint_name=ENDPOINT_NAME,
+        model_kwargs=model_kwargs,
+        aws_region=REGION,
+    )
+    return run_chain(chain, body.query)
