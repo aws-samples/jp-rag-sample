@@ -14,6 +14,26 @@ def clean_result(res_text: str) -> str:
     return res
 
 
+def sort_by_confidence_score(resps: List[Dict]):
+    """Kendra の検索結果から sort を実施する
+    'VERY_HIGH'|'HIGH'|'MEDIUM'|'LOW'|'NOT_AVAILABLE' から選択"""
+    confidence_order = ["VERY_HIGH", "HIGH", "MEDIUM", "LOW", "NOT_AVAILABLE"]
+    searched_results = {
+        "VERY_HIGH": [],
+        "HIGH": [],
+        "MEDIUM": [],
+        "LOW": [],
+        "NOT_AVAILABLE": [],
+    }
+    for resp in resps:
+        key = resp["ScoreAttributes"]["ScoreConfidence"]
+        searched_results[key].append(resp)
+    result = []
+    for _key in confidence_order:
+        result += searched_results[_key]
+    return result
+
+
 def get_top_n_results(resp: Dict, count: int):
     """Kendra のレスポンスから必要情報を抜き出す.
     API の形式については以下のドキュメントを参照.
@@ -76,6 +96,7 @@ def kendra_query(
         r_count = kcount
     else:
         r_count = len(response["ResultItems"])
+    response["ResultItems"] = sort_by_confidence_score(response["ResultItems"])
     docs = [get_top_n_results(response, i) for i in range(0, r_count)]
     return [
         Document(page_content=d["page_content"], metadata=d["metadata"]) for d in docs
@@ -127,4 +148,5 @@ class KendraIndexRetriever(BaseRetriever):
         )
 
     async def aget_relevant_documents(self, query: str) -> List[Document]:
+        return await super().aget_relevant_documents(query)
         return await super().aget_relevant_documents(query)
