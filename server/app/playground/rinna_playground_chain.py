@@ -7,7 +7,12 @@ from langchain import SagemakerEndpoint
 from langchain.chains import RetrievalQA
 from langchain.llms.sagemaker_endpoint import LLMContentHandler
 from langchain.prompts import PromptTemplate
-from llm import make_sagemaker_backed_llm, rinna_prompt
+
+# rinna の場合は instruction と input で分けて入れるのでこちらでは生データとして入力する
+rinna_prompt = PromptTemplate(
+    input_variables=["context", "question"],
+    template="""{context}#####{question}""",
+)
 
 
 def build_rinna_llm_chain(
@@ -93,10 +98,3 @@ def make_sagemaker_backed_llm(
         content_handler=content_handler,
     )
     return llm
-
-
-# rinna の場合は instruction と input で分けて入れるのでこちらでは生データとして入力する
-rinna_prompt = PromptTemplate(
-    input_variables=["context", "question"],
-    template="""{context}#####{question}""",
-)
