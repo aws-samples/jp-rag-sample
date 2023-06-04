@@ -7,8 +7,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from kendra import KendraIndexRetriever
 from langchain.chains import RetrievalQA
+from playground.calm_playground import build_calm_llm_chain
 from playground.rinna_playground_chain import build_rinna_llm_chain
-from schemas import QueryBody, RinnaPlaygroundReqBody
+from schemas import CalmPlaygroundReqBody, QueryBody, RinnaPlaygroundReqBody
 
 app = FastAPI()
 
@@ -23,6 +24,7 @@ app.add_middleware(
 REGION = os.environ["AWS_REGION"]
 KENDRA_INDEX_ID: str = os.environ["KENDRA_INDEX_ID"]
 ENDPOINT_NAME: str = os.environ["SAGEMAKER_ENDPOINT_NAME"]
+CALM_ENDPOINT_NAME: str = os.environ["CALM_ENDPOINT_NAME"]
 CHAIN: RetrievalQA = build_sagemaker_llm_chain(
     kendra_index_id=KENDRA_INDEX_ID, endpoint_name=ENDPOINT_NAME, aws_region=REGION
 )
@@ -70,6 +72,21 @@ async def rinna_playground(body: RinnaPlaygroundReqBody):
         instruction_template,
         kendra_index_id=KENDRA_INDEX_ID,
         endpoint_name=ENDPOINT_NAME,
+        model_kwargs=model_kwargs,
+        aws_region=REGION,
+    )
+    return run_chain(chain, body.query)
+
+
+@app.post("/v1/playground/calm")
+async def calm_playground(body: CalmPlaygroundReqBody):
+    """OpenCaLM を LLM とした RetrievalQA の動作確認をする場所"""
+    prompt_template = body.prompt_template
+    model_kwargs = body.model_kwargs.dict()
+    chain = build_calm_llm_chain(
+        prompt_template,
+        KENDRA_INDEX_ID,
+        endpoint_name=CALM_ENDPOINT_NAME,
         model_kwargs=model_kwargs,
         aws_region=REGION,
     )
