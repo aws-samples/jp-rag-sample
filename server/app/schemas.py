@@ -44,3 +44,21 @@ class RinnaPlaygroundReqBody(BaseModel):
         ),
     )
     model_kwargs: RinnaModelKwargs
+
+
+class KendraDocument(BaseModel):
+    excerpt: str
+    title: str = Field(description="ドキュメントのタイトル. QUESTION_ANSWER の場合は質問文がここに入る想定")
+    content: str
+    type: Literal["DOCUMENT", "QUESTION_ANSWER", "ANSWER"]
+
+
+class ChatHistory(BaseModel):
+    utterance: str
+    type: Literal["AI", "Human"]
+
+
+class LLMWithDocReqBody(BaseModel):
+    userUtterance: str = Field(description="ユーザーの発言内容")
+    history: List[ChatHistory] = Field(description="AI とユーザーとのやり取りの履歴")
+    documents: List[KendraDocument]
