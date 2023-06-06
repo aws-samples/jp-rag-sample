@@ -1,7 +1,9 @@
 """main logics for FastAPI
 """
 import os
+from typing import Dict
 
+import boto3
 from chain import build_sagemaker_llm_chain, run_chain
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -103,3 +105,31 @@ async def calm_playground(body: CalmPlaygroundReqBody):
 async def llm_with_doc_handler(body: LLMWithDocReqBody):
     """LLM に対してドキュメントとチャット履歴を直接渡して返り値をもらう"""
     return llm_with_doc(body, endpoint_name=ENDPOINT_NAME, aws_region=REGION)
+
+
+@app.post("/v2/kendra/query")
+async def kendra_query(body: Dict):
+    """Kendra の Query API を透過的に叩く"""
+    print(body)
+    request_body = body["input"]
+    kendra_client = boto3.client("kendra", region_name=REGION)
+    response = kendra_client.query(**request_body)
+    return response
+
+
+@app.post("/v2/kendra/send")
+async def kendra_send(body: Dict):
+    """Kendra の SubmitFeedback API を透過的に叩く"""
+    kendra_client = boto3.client("kendra", region_name=REGION)
+    kendra_request_body = body["input"]
+    response = kendra_client.submit_feedback(**kendra_request_body)
+    return response
+
+
+@app.post("/v2/kendra/describeIndex")
+async def kendra_describe(body: Dict):
+    """Kendra の DesribeIndex API を透過的に叩く"""
+    kendra_client = boto3.client("kendra", region_name=REGION)
+    kendra_request_body = body["input"]
+    response = kendra_client.describe_index(**kendra_request_body)
+    return response

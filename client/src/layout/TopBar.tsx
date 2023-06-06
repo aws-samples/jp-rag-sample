@@ -1,29 +1,29 @@
 import {
-  Input,
-  Flex,
-  Text,
-  useColorModeValue,
-  InputGroup,
-  InputLeftAddon,
+  ChevronDownIcon
+} from '@chakra-ui/icons';
+import {
   Button,
-  MenuButton,
-  Menu,
-  MenuList,
-  MenuItem,
-  HStack,
-  IconButton,
   Drawer,
-  DrawerOverlay,
+  DrawerBody,
   DrawerContent,
   DrawerHeader,
-  DrawerBody,
+  DrawerOverlay,
+  Flex,
+  HStack,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+  useColorModeValue,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import {
-  ChevronDownIcon
-} from '@chakra-ui/icons';
-import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
+import { AiOutlineDelete, AiOutlinePushpin } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
 import { getKendraQuery, kendraQuery, serverUrl } from '../services/AWS';
 import { SEARCH_MODE_LIST } from '../utils/constant';
@@ -90,6 +90,7 @@ export default function TopBar() {
           getAttributeFilter(filterOptions),
           getCurrentSortOrder(filterOptions))
         await kendraQuery(q).then(data => {
+            console.log(data);
             const a: Conversation = {
               conversationType: "HUMAN_KENDRA",
               userInput: { word: currentInputText },

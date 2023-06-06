@@ -1,7 +1,7 @@
-import { SortingConfiguration, AttributeFilter, QueryCommandOutput, DescribeIndexCommand } from "@aws-sdk/client-kendra";
-import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
+import { AttributeFilter, DescribeIndexCommand, QueryCommandOutput, SortingConfiguration } from "@aws-sdk/client-kendra";
+import { indexId, serverUrl } from "../services/AWS";
+import { DEFAULT_LANGUAGE, DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER, MAX_INDEX, MIN_INDEX, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX } from "./constant";
 import { Filter, selectItemType } from "./interface";
-import { indexId, kendraClient } from "../services/AWS";
 
 export function isArrayBoolean(arr: any[]): arr is boolean[] {
     return arr.every((item) => typeof item === 'boolean');
@@ -42,7 +42,7 @@ export function getAttributeFilter(filterOptions: Filter[]): AttributeFilter {
     /*
      * Query用に現在のフィルタ設定を抽出する
     */
-    let fs: AttributeFilter[] = [];
+    const fs: AttributeFilter[] = [];
     for (const filterOption of filterOptions) {
         // 言語設定
         if (filterOption.filterType === "LAUNGUAGE_SETTING" && isArrayString(filterOption.selected)) {
@@ -163,7 +163,7 @@ export async function getSortOrderFromIndex(): Promise<Filter> {
     /*
      * Index から並び順の候補を取得
     */
-    let sortingAttributeDateList: selectItemType[] = [
+    const sortingAttributeDateList: selectItemType[] = [
         { name: DEFAULT_SORT_ATTRIBUTE, value: DEFAULT_SORT_ATTRIBUTE }
     ];
 
@@ -171,7 +171,16 @@ export async function getSortOrderFromIndex(): Promise<Filter> {
     const command = new DescribeIndexCommand({
         Id: indexId
     });
-    await kendraClient?.send(command).then((v) => {
+    const url = `${serverUrl}/v2/kendra/describeIndex`
+    const r = await fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(command)
+      })
+    await r.json().then((v) => {
         const configList = v.DocumentMetadataConfigurations
         // sortableなファセットの候補を取得
         if (configList) {

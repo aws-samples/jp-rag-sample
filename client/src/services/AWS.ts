@@ -87,7 +87,16 @@ export async function submitFeedback(
     });
 
   // Feedbackを送信
-  await kendraClient?.send(command)
+  const url = `${serverUrl}/v2/kendra/send`
+  const r = await fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(command)
+  })
+  return await r.json()
 }
 
 export function getKendraQuery(
@@ -118,11 +127,20 @@ export function overwriteQuery(
 }
 
 
+
 export async function kendraQuery(param: QueryCommandInput) {
-  return kendraClient?.send(new QueryCommand(param));
+  const data = new QueryCommand(param);
+  const url = `${serverUrl}/v2/kendra/query`
+  const r = await fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  return await r.json()
 }
-
-
 export const s3Client = !hasErrors
   ? new S3Client({
     region: region,
