@@ -7,9 +7,15 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from kendra import KendraIndexRetriever
 from langchain.chains import RetrievalQA
+from logics import llm_with_doc
 from playground.calm_playground import build_calm_llm_chain
 from playground.rinna_playground_chain import build_rinna_llm_chain
-from schemas import CalmPlaygroundReqBody, QueryBody, RinnaPlaygroundReqBody
+from schemas import (
+    CalmPlaygroundReqBody,
+    LLMWithDocReqBody,
+    QueryBody,
+    RinnaPlaygroundReqBody,
+)
 
 app = FastAPI()
 
@@ -91,3 +97,9 @@ async def calm_playground(body: CalmPlaygroundReqBody):
         aws_region=REGION,
     )
     return run_chain(chain, body.query)
+
+
+@app.post("/v2/llm-with-doc")
+async def llm_with_doc_handler(body: LLMWithDocReqBody):
+    """LLM に対してドキュメントとチャット履歴を直接渡して返り値をもらう"""
+    return llm_with_doc(body, endpoint_name=ENDPOINT_NAME, aws_region=REGION)

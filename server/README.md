@@ -3,10 +3,9 @@
 ## ローカル開発
 
 ```zsh
-export ALLOW_ORIGINS=http://localhost:5173
-export CALM_ENDPOINT_NAME=Open-calm-7b-ft
-export AWS_REGION=us-west-2
-export SAGEMAKER_ENDPOINT_NAME=Rinna-Inference
+export AWS_REGION="us-weest-2"
+export ALLOW_ORIGINS="http://localhost:5173"
+export SAGEMAKER_ENDPOINT_NAME="Rinna-Inference"
 export KENDRA_INDEX_ID=d841dfc5-4de5-437e-932d-8ed079b83d91
 cd ./server/app
 uvicorn main:app --reload
