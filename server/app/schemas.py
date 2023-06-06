@@ -57,12 +57,14 @@ class CalmModelKwargs(BaseModel):
 
 
 class CalmPlaygroundReqBody(BaseModel):
-    query: str = Field(None, description="ユーザーからの質問内容を指定する")
+    query: str = Field("Kendra 概要を教えて", description="ユーザーからの質問内容を指定する")
     prompt_template: str = Field(
-        """システム: AIは資料から抜粋して質問に答えます。資料にない内容は答えず「わかりません」と答えます。
-{context}
-ユーザー: 上記の資料に基づき以下の質問について資料から抜粋して回答してください。資料にない内容は答えず「わかりません」と答えてください。
-""",
+        (
+            "Below is an instruction that describes a task, paired with "
+            "an input that provides further context."
+            "Write a response that appropriately completes the request."
+            "### Instruction: {question} ### Input: {context} ### Response"
+        ),
         description=(
             "CaLM の prompt に入れたい文字列を入力する。 {context} と"
             " {question} と入れることで Kendra の検索結果およびユーザーの質問内容を入れることができる。"

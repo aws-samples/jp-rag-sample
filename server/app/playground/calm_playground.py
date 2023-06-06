@@ -1,3 +1,4 @@
+import codecs
 import json
 import os
 from typing import Any, Dict, Optional, Tuple
@@ -8,7 +9,7 @@ from langchain.chains import RetrievalQA
 from langchain.llms.sagemaker_endpoint import LLMContentHandler
 from langchain.prompts import PromptTemplate
 
-# rinna の場合は instruction と input で分けて入れるのでこちらでは生データとして入力する
+# playground の場合は instruction と input で分けて入れるのでこちらでは生データとして入力する
 calm_prompt = PromptTemplate(
     input_variables=["context", "question"],
     template="""{context}#####{question}""",
@@ -25,7 +26,7 @@ def build_calm_llm_chain(
     """build chain for sagemaker backed LLM"""
     # calm 特化の config
     if not model_kwargs:
-        model_wargs = {
+        model_kwargs = {
             "max_new_tokens": 256,
             "temperature": 0.3,
             "do_sample": True,
@@ -51,9 +52,7 @@ def build_calm_llm_chain(
             return input_str.encode("utf-8")
 
         def transform_output(self, output: bytes) -> str:
-            print(output.read())
-            response_json = json.loads(output.read().decode("utf-8"))
-            return response_json.replace("<NL>", "\n")
+            return json.load(codecs.getreader("utf-8")(output))
 
     content_handler = ContentHandler()
     llm = make_sagemaker_backed_llm(
