@@ -4,11 +4,11 @@ import os
 from typing import Dict
 
 import boto3
-from chain import build_sagemaker_llm_chain, run_chain
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from kendra import KendraIndexRetriever
 from langchain.chains import RetrievalQA
+from llm import build_sagemaker_llm_chain, run_chain
 from logics import llm_with_doc
 from playground.calm_playground import build_calm_llm_chain
 from playground.rinna_playground_chain import build_rinna_llm_chain
@@ -16,6 +16,7 @@ from schemas import (
     CalmPlaygroundReqBody,
     LLMWithDocReqBody,
     QueryBody,
+    RagQueryBody,
     RinnaPlaygroundReqBody,
 )
 
@@ -33,9 +34,6 @@ REGION = os.environ["AWS_REGION"]
 KENDRA_INDEX_ID: str = os.environ["KENDRA_INDEX_ID"]
 ENDPOINT_NAME: str = os.environ["SAGEMAKER_ENDPOINT_NAME"]
 CALM_ENDPOINT_NAME: str = os.environ["CALM_ENDPOINT_NAME"]
-CHAIN: RetrievalQA = build_sagemaker_llm_chain(
-    kendra_index_id=KENDRA_INDEX_ID, endpoint_name=ENDPOINT_NAME, aws_region=REGION
-)
 
 
 @app.get("/")
@@ -63,6 +61,11 @@ async def handle_message(body: QueryBody):
             ]
         }
     elif body.query_type == "llm":
+        CHAIN: RetrievalQA = build_sagemaker_llm_chain(
+            kendra_index_id=KENDRA_INDEX_ID,
+            aws_region=REGION,
+            llm_type="rinna",
+        )
         query: str = body.query
         return run_chain(CHAIN, query)
     else:
@@ -99,6 +102,16 @@ async def calm_playground(body: CalmPlaygroundReqBody):
         aws_region=REGION,
     )
     return run_chain(chain, body.query)
+
+
+@app.post("/v2/rag/query")
+async def handle_message(body: RagQueryBody):
+    """Kendra への検索 + LLM による要約を兼ね備えた API"""
+    CHAIN: RetrievalQA = build_sagemaker_llm_chain(
+        kendra_index_id=KENDRA_INDEX_ID, aws_region=REGION, llm_type=body.llm_type
+    )
+    query: str = body.query
+    return run_chain(CHAIN, query)
 
 
 @app.post("/v2/llm-with-doc")
