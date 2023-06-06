@@ -1,2 +1,1 @@
-from llm.llm import make_sagemaker_backed_llm
-from llm.prompts import rinna_prompt
+from llm.llm import build_sagemaker_llm_chain, run_chain

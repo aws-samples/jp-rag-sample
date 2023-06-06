@@ -11,6 +11,13 @@ class QueryBody(BaseModel):
     query_type: Literal["kendra", "llm"]
 
 
+class RagQueryBody(BaseModel):
+    query: str
+    llm_type: Literal["rinna", "calm"] = Field(
+        "rinna", description="裏側の LLM として何を使うのか切り替える"
+    )
+
+
 class SearchCondition(BaseModel):
     hogehoge: str
 
