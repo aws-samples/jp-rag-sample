@@ -46,6 +46,33 @@ class RinnaPlaygroundReqBody(BaseModel):
     model_kwargs: RinnaModelKwargs
 
 
+class CalmModelKwargs(BaseModel):
+    max_new_tokens: int = Field(128)
+    temperature: float = Field(0.3)
+    do_sample: bool = Field(True)
+    pad_token_id: int = Field(0)
+    bos_token_id: int = Field(2)
+    eos_token_id: int = Field(3)
+    stop_ids: list[int] = Field([50278, 50279, 50277, 1, 0])
+
+
+class CalmPlaygroundReqBody(BaseModel):
+    query: str = Field("Kendra 概要を教えて", description="ユーザーからの質問内容を指定する")
+    prompt_template: str = Field(
+        (
+            "Below is an instruction that describes a task, paired with "
+            "an input that provides further context."
+            "Write a response that appropriately completes the request."
+            "### Instruction: {question} ### Input: {context} ### Response"
+        ),
+        description=(
+            "CaLM の prompt に入れたい文字列を入力する。 {context} と"
+            " {question} と入れることで Kendra の検索結果およびユーザーの質問内容を入れることができる。"
+        ),
+    )
+    model_kwargs: CalmModelKwargs
+
+
 class KendraDocument(BaseModel):
     excerpt: str
     title: str = Field(description="ドキュメントのタイトル. QUESTION_ANSWER の場合は質問文がここに入る想定")
