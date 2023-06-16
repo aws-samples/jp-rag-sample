@@ -1,0 +1,22 @@
+# JP RAG SAMPLE (LLM)
+
+ローカルもしくは [CloudShell](https://us-west-2.console.aws.amazon.com/cloudshell) から [rinna/japanese-gpt-neox-3.6b-instruction-ppo](https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-ppo) をデプロイするスクリプト。
+
+その他のモデルのデプロイやモデルのファインチューニングについては[こちら](https://github.com/aws-samples/aws-ml-jp/tree/main/tasks/generative-ai/text-to-text/fine-tuning/instruction-tuning)のレポジトリを参照してください。
+
+## デプロイ
+
+前提条件：信頼関係に SageMaker の AssumeRole を許可する以下のポリシーがある IAM Role を使用する。
+
+```
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "sagemaker.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+```
+
+ローカルもしくは [CloudShell](https://us-west-2.console.aws.amazon.com/cloudshell) で `deploy_llm.sh` を実行するとエンドポイントがデプロイされる。
+
