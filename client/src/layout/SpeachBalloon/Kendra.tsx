@@ -7,10 +7,8 @@ import AICore from "./components/AICore";
 import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import HighlightedTexts from "./components/HighlightedTexts";
 import { FeaturedResultsItem, QueryResultItem, AdditionalResultAttribute, TextWithHighlights } from "@aws-sdk/client-kendra";
-import { Relevance, s3Client, submitFeedback } from "../../services/AWS";
+import { Relevance, submitFeedback } from "../../services/AWS";
 import Human from "./Human";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { useEffect, useState } from "react";
 import { useGlobalContext } from '../../App';
 import { Link } from '@chakra-ui/react'
@@ -407,31 +405,9 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
         const tmpExcerptItems: QueryResultItem[] = [];
         const tmpDocItems: QueryResultItem[] = [];
 
-        // Featured Item が S3 のとき presigned urlに変更
+        // Featured Item
         if (data && data?.kendraResponse?.FeaturedResultsItems) {
-
             for (const result of data.kendraResponse.FeaturedResultsItems) {
-                if (s3Client && result.DocumentURI) {
-                    try {
-                        let res = result.DocumentURI.split("/");
-                        if (res[2].startsWith("s3")) {
-
-                            // bucket名とkeyを取得
-                            let bucket = res[3];
-                            let key = res[4];
-                            for (var i = 5; i < res.length; i++) {
-                                key = key + "/" + res[i];
-                            }
-                            // s3 の presigned url に置き換え
-                            const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-                            getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
-                                result.DocumentURI = uri;
-                            });
-                        }
-                    } catch {
-                        // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
-                    }
-                }
                 tmpFeaturedItems.push(result)
             }
         }
@@ -440,28 +416,6 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
         // FAQ、抜粋した回答、ドキュメントを分離
         if (data && data?.kendraResponse?.ResultItems) {
             for (const result of data.kendraResponse.ResultItems) {
-                if (s3Client && result.DocumentURI) {
-                    try {
-                        let res = result.DocumentURI.split("/");
-                        if (res[2].startsWith("s3")) {
-
-                            // bucket名とkeyを取得
-                            let bucket = res[3];
-                            let key = res[4];
-                            for (var i = 5; i < res.length; i++) {
-                                key = key + "/" + res[i];
-                            }
-                            // s3 の presigned url に置き換え
-                            const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-                            getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
-                                result.DocumentURI = uri;
-                            });
-
-                        }
-                    } catch {
-                        // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
-                    }
-                }
                 switch (result.Type) {
                     case "ANSWER":
                         tmpExcerptItems.push(result);

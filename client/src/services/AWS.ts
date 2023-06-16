@@ -1,5 +1,7 @@
 import { AttributeFilter, KendraClient, QueryCommand, QueryCommandInput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
-import { S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { InvokeEndpointCommand, InvokeEndpointInput, SageMakerRuntimeClient } from "@aws-sdk/client-sagemaker-runtime";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const _loadingErrors = [];
 
@@ -119,7 +121,46 @@ export function overwriteQuery(
 
 
 export async function kendraQuery(param: QueryCommandInput) {
-  return kendraClient?.send(new QueryCommand(param));
+  const data = await kendraClient?.send(new QueryCommand(param))
+  if (s3Client && data && data.ResultItems) {
+    for await (const result of data.ResultItems) {
+      if (result.DocumentURI) {
+        try {
+          let res = result.DocumentURI.split("/");
+          if (res[2].startsWith("s3")) {
+
+            // bucket名とkeyを取得
+            let bucket = res[3];
+            let key = res[4];
+            for (var i = 5; i < res.length; i++) {
+              key = key + "/" + res[i];
+            }
+            // s3 の presigned url に置き換え
+            const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+            await getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
+              result.DocumentURI = uri;
+              console.log(uri)
+            });
+          }
+        } catch {
+          // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
+        }
+      }
+
+    }
+  }
+
+
+  if (data && data.ResultItems) {
+    for (const result of data.ResultItems) {
+      if (s3Client && result.DocumentURI && result.DocumentTitle?.Text) {
+
+      }
+    }
+  }
+
+
+  return data;
 }
 
 
