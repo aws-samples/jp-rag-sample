@@ -145,7 +145,7 @@ export const KendraResultExcerpt: React.FC<{
                                                 }} isExternal>
                                                     <strong>
                                                         {
-                                                            getAnswer(resultItem.AdditionalAttributes ?? [])
+                                                            <HighlightedTexts textWithHighlights={resultItem.DocumentTitle ?? { Highlights: [], Text: "読み込みエラー" }} />
                                                         }
                                                     </strong>
                                                     <ExternalLinkIcon mx='2px' />

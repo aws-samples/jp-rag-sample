@@ -37,11 +37,11 @@ const SelectBoxes: React.FC<{
   return (
     <Box pb="3">
       <Text>{title}</Text>
-      <Select size='xs' onChange={onSelectionChange} defaultValue={currentSelection}>
+      <Select size='xs' onChange={onSelectionChange} defaultValue={currentSelection} width={"100%"}>
         {
           itemList.map((item) => (
             (() => {
-              return (<option value={item.value} key={item.value} >{item.name}</option>)
+              return (<option value={item.value} key={item.value}>{item.name}</option>)
             })()
           ))
         }
