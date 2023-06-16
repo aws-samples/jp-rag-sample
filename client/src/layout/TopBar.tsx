@@ -260,11 +260,6 @@ export default function TopBar() {
           </InputLeftAddon>
           <Input placeholder='検索' value={currentInputText} onChange={(e) => setCurrentInputText(e.target.value)} onKeyDown={handleKeyDown} autoComplete='on' list='mylist' />
           <datalist id="mylist">
-            <option value="Kendra"></option>
-            <option value="Lex"></option>
-            <option value="SageMaker"></option>
-            <option value="EC2"></option>
-            <option value="Lambda"></option>
           </datalist>
         </InputGroup>
       </Flex>
