@@ -50,7 +50,3 @@ export interface Filter {
     options: selectItemType[],
     selected: string[] | boolean[] | number[] | Date[]
 }
-
-export interface DocumentAttributeValueCountPairMap {
-    [attributeName: string]: DocumentAttributeValueCountPair[];
-}
