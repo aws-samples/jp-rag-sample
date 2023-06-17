@@ -1,29 +1,29 @@
 import {
-  ChevronDownIcon
-} from '@chakra-ui/icons';
-import {
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  Flex,
-  HStack,
-  IconButton,
   Input,
-  InputGroup,
-  InputLeftAddon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
+  Flex,
   Text,
   useColorModeValue,
+  InputGroup,
+  InputLeftAddon,
+  Button,
+  MenuButton,
+  Menu,
+  MenuList,
+  MenuItem,
+  HStack,
+  IconButton,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { AiOutlineDelete, AiOutlinePushpin } from 'react-icons/ai';
+import {
+  ChevronDownIcon
+} from '@chakra-ui/icons';
+import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
 import { getKendraQuery, kendraQuery, serverUrl } from '../services/AWS';
 import { SEARCH_MODE_LIST } from '../utils/constant';
@@ -90,7 +90,6 @@ export default function TopBar() {
           getAttributeFilter(filterOptions),
           getCurrentSortOrder(filterOptions))
         await kendraQuery(q).then(data => {
-            console.log(data);
             const a: Conversation = {
               conversationType: "HUMAN_KENDRA",
               userInput: { word: currentInputText },
@@ -261,11 +260,6 @@ export default function TopBar() {
           </InputLeftAddon>
           <Input placeholder='検索' value={currentInputText} onChange={(e) => setCurrentInputText(e.target.value)} onKeyDown={handleKeyDown} autoComplete='on' list='mylist' />
           <datalist id="mylist">
-            <option value="Kendra"></option>
-            <option value="Lex"></option>
-            <option value="SageMaker"></option>
-            <option value="EC2"></option>
-            <option value="Lambda"></option>
           </datalist>
         </InputGroup>
       </Flex>

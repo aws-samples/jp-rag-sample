@@ -1,14 +1,14 @@
 
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react";
-import FilterBar from './layout/FilterBar.tsx';
-import InteractionArea from "./layout/InteractionArea.tsx";
-import TopBar from "./layout/TopBar.tsx";
+import TopBar from "./layout/TopBar.tsx"
+import FilterBar from './layout/FilterBar.tsx'
 import { initAWSError } from "./services/AWS.ts";
-import LocalCredentialsBanner from "./services/helpers/LocalCredentialsBanner.tsx";
 import MockDataWarning from "./services/helpers/MockDataWarning.tsx";
-import { DEFAULT_LANGUAGE, DEFAULT_SEARCH_MODE } from "./utils/constant.tsx";
-import { getSortOrderFromIndex } from "./utils/function.tsx";
+import LocalCredentialsBanner from "./services/helpers/LocalCredentialsBanner.tsx";
 import { Conversation, Filter } from "./utils/interface.tsx";
+import InteractionArea from "./layout/InteractionArea.tsx";
+import { getSortOrderFromIndex } from "./utils/function.tsx";
+import { DEFAULT_LANGUAGE, DEFAULT_SEARCH_MODE } from "./utils/constant.tsx";
 
 
 
@@ -43,7 +43,7 @@ export const useGlobalContext = () => {
   return context;
 }
 
-const App = () => {
+function App() {
   const [currentConversation, setCurrentConversation] = useState<Conversation | undefined>(); // 現在の結果
   const [history, setHistory] = useState<(Conversation)[]>([]); // 会話の履歴
   const [filterOptions, setFilterOptions] = useState<(Filter)[]>([]); // 現在適用中のフィルタ

@@ -1,10 +1,11 @@
 """main logics for FastAPI
 """
+import json
 import os
 from typing import Dict
 
 import boto3
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from kendra import KendraIndexRetriever
 from langchain.chains import RetrievalQA
@@ -19,6 +20,7 @@ from schemas import (
     RagQueryBody,
     RinnaPlaygroundReqBody,
 )
+import json
 
 app = FastAPI()
 
@@ -120,29 +122,33 @@ async def llm_with_doc_handler(body: LLMWithDocReqBody):
     return llm_with_doc(body, endpoint_name=ENDPOINT_NAME, aws_region=REGION)
 
 
-@app.post("/v2/kendra/query")
-async def kendra_query(body: Dict):
+kendra_client = boto3.client("kendra", region_name=REGION)
+
+
+@app.post(
+    "/v2/kendra/",
+    summary='Amazon Kendra API',
+    description='Request AWS Endpoint transparently For more Info, See https://docs.aws.amazon.com/ja_jp/kendra/latest/dg/API_Reference.html',
+    response_description='Response  For more Info, See https://docs.aws.amazon.com/ja_jp/kendra/latest/dg/API_Reference.html',
+)
+async def kendra_query(r: Request):
+    json_str = await r.body()
+    json_dict = json.loads(json_str.decode())
+    
     """Kendra の Query API を透過的に叩く"""
-    print(body)
-    request_body = body["input"]
-    kendra_client = boto3.client("kendra", region_name=REGION)
-    response = kendra_client.query(**request_body)
-    return response
-
-
-@app.post("/v2/kendra/send")
-async def kendra_send(body: Dict):
-    """Kendra の SubmitFeedback API を透過的に叩く"""
-    kendra_client = boto3.client("kendra", region_name=REGION)
-    kendra_request_body = body["input"]
-    response = kendra_client.submit_feedback(**kendra_request_body)
-    return response
-
-
-@app.post("/v2/kendra/describeIndex")
-async def kendra_describe(body: Dict):
-    """Kendra の DesribeIndex API を透過的に叩く"""
-    kendra_client = boto3.client("kendra", region_name=REGION)
-    kendra_request_body = body["input"]
-    response = kendra_client.describe_index(**kendra_request_body)
-    return response
+    if r.headers["x-amz-target"] == "AWSKendraFrontendService.Query":
+        # Query
+        json_dict["IndexId"] = KENDRA_INDEX_ID
+        response = kendra_client.query(**json_dict)
+        return response
+    elif r.headers["x-amz-target"] == "AWSKendraFrontendService.DescribeIndex":
+        # DescribeIndex
+        json_dict["Id"] = KENDRA_INDEX_ID
+        response = kendra_client.describe_index(**json_dict)
+        return response
+    elif r.headers["x-amz-target"] == "AWSKendraFrontendService.SubmitFeedback":
+        # SubmitFeedback
+        json_dict["IndexId"] = KENDRA_INDEX_ID
+        response = kendra_client.submit_feedback(**json_dict)
+        return response
+    raise HTTPException(status_code=404, detail="Invalid Request")

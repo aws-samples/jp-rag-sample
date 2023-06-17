@@ -49,49 +49,6 @@ const InteractionArea = () => {
                         return (<></>)
                     })()
                 }
-                <Accordion defaultIndex={[-1]} allowMultiple>
-                    <AccordionItem>
-                        <h2>
-                            <AccordionButton>
-                                <Box as="span" flex='1' textAlign='left'>
-                                    履歴
-                                </Box>
-                                <AccordionIcon />
-                            </AccordionButton>
-                        </h2>
-                        <AccordionPanel pb={4}>
-                            {
-                                history.map((h: Conversation, idx: number) => (
-                                    (() => {
-                                        if (h.conversationType === "HUMAN") {
-                                            {/* 人間 */ }
-                                            return (
-                                                <Ballon key={idx} bid={idx} text={h.userInput.word}>
-                                                    <Human data={h} />
-                                                </Ballon>
-                                            )
-                                        } else if (h.conversationType === "HUMAN_AI") {
-                                            {/* AI */ }
-                                            return (
-                                                <Ballon  key={idx} bid={idx}  text={h.userInput.word}>
-                                                    <AI data={h} />
-                                                </Ballon>
-                                            )
-                                        } else if (h.conversationType === "HUMAN_KENDRA" || h.conversationType === "HUMAN_KENDRA_AI") {
-                                            {/* Kendra */ }
-                                            return (
-                                                <Ballon key={idx} bid={idx}  text={h.userInput.word}>
-                                                    <Kendra data={h}></Kendra>
-                                                </Ballon>
-                                            )
-                                        }
-                                        return (<></>)
-                                    })()
-                                ))
-                            }
-                        </AccordionPanel>
-                    </AccordionItem>
-                </Accordion>
             </VStack>
         </Flex>
     )
