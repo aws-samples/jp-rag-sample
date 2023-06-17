@@ -1,4 +1,4 @@
-import { DocumentAttributeValueCountPair, QueryRequest, QueryResult } from "@aws-sdk/client-kendra";
+import { QueryRequest, QueryResult } from "@aws-sdk/client-kendra";
 
 export interface Dic {
     /** 辞書型 */
