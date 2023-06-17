@@ -139,7 +139,6 @@ export async function kendraQuery(param: QueryCommandInput) {
             const command = new GetObjectCommand({ Bucket: bucket, Key: key });
             await getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
               result.DocumentURI = uri;
-              console.log(uri)
             });
           }
         } catch {

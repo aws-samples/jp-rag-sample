@@ -25,10 +25,10 @@ import {
 } from '@chakra-ui/icons';
 import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
-import { getKendraQuery, kendraQuery, serverUrl } from '../services/AWS';
+import { getKendraQuery, kendraQuery } from '../services/AWS';
 import { SEARCH_MODE_LIST } from '../utils/constant';
-import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery, postData } from '../utils/function';
-import { Conversation } from '../utils/interface';
+import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery, inference } from '../utils/function';
+import { Conversation, DocumentForInf } from '../utils/interface';
 
 
 export default function TopBar() {
@@ -72,10 +72,11 @@ export default function TopBar() {
        * K. top barからの検索時
        * 
        * K-1. 今 Interaction Areaに何かが表示されている場合は、historyに退避
-       * K-2. 現在設定中のfilterは見ずに、言語設定とソート順序だけを反映させてKendraへQuery
-       * K-3. 受け取ったレスポンスを元にInteractionAreaを描画
-       * K-4. Query結果からフィルタ候補を取得
-       * K-5. FilterBarの設定とソート順序以外を更新
+       * K-2. フィルタをリセット
+       * K-3. 現在設定中のfilterは見ずに、言語設定とソート順序だけを反映させてKendraへQuery
+       * K-4. 受け取ったレスポンスを元にInteractionAreaを描画
+       * K-5. Query結果からフィルタ候補を取得
+       * K-6. FilterBarの設定とソート順序以外を更新
        */
 
       // K-1. 今 Interaction Areaに何かが表示されている場合は、historyに退避
@@ -83,48 +84,72 @@ export default function TopBar() {
         setHistory([currentConversation, ...history])
         setCurrentConversation(undefined)
       }
-      // K-2. 現在設定中のfilterは見ずに、言語設定とソート順序だけを反映させてKendraへQuery
+      // K-2. フィルタをリセット
+      setFilterOptions([
+        filterOptions[0], // 言語設定
+        filterOptions[1], // ソート順序
+      ])
+      // K-3. 現在設定中のfilterは見ずに、言語設定とソート順序だけを反映させてKendraへQuery
       const run = async () => {
         const q = getKendraQuery(
           currentInputText,
           getAttributeFilter(filterOptions),
           getCurrentSortOrder(filterOptions))
         await kendraQuery(q).then(data => {
-            const a: Conversation = {
-              conversationType: "HUMAN_KENDRA",
-              userInput: { word: currentInputText },
-              userQuery: q,
-              kendraResponse: data,
-              aiResponse: undefined
-            }
-            // K-3. 受け取ったレスポンスを元にInteractionAreaを描画
-            setCurrentConversation(a)
-            // K-4. Query結果からフィルタ候補を取得
-            // K-5. FilterBarの設定とソート順序以外を更新
-            if (data) { 
-              setFilterOptions([
-                filterOptions[0], // 言語設定
-                filterOptions[1], // ソート順序
-                ...getFiltersFromQuery(data)]) // クエリから受け取ったフィルタ候補
-             }
-          }).catch(err => {
-            console.log(err)
-            toast({
-              title: 'エラー (kendraへの問い合わせに失敗しました)',
-              description: "",
-              status: 'error',
-              duration: 1000,
-              isClosable: true,
-            })
+          const a: Conversation = {
+            conversationType: "HUMAN_KENDRA",
+            userInput: { word: currentInputText },
+            userQuery: q,
+            kendraResponse: data,
+            aiResponse: undefined
+          }
+          // K-4. 受け取ったレスポンスを元にInteractionAreaを描画
+          setCurrentConversation(a)
+          // K-5. Query結果からフィルタ候補を取得
+          // K-6. FilterBarの設定とソート順序以外を更新
+          if (data) {
+            setFilterOptions([
+              filterOptions[0], // 言語設定
+              filterOptions[1], // ソート順序
+              ...getFiltersFromQuery(data)]) // クエリから受け取ったフィルタ候補
+          }
+        }).catch(err => {
+          console.log(err)
+          toast({
+            title: 'エラー (kendraへの問い合わせに失敗しました)',
+            description: "",
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
           })
+        })
       }
       run()
 
     } else if (currentSearchMode === "#rag") {
       /*
        * ragへのリクエスト
+       * 
+       * R-1. History へ追加
+       * R-2. フィルタをリセット
+       * R-3. 考え中の表示
+       * R-4. Kendra へリクエスト
+       * R-5. Kendra のレスポンスを表示
+       * R-6. フィルタを表示
+       * R-7. AI へリクエスト
+       * R-8. AI のレスポンスを表示
        */
-      // 考え中の表示
+      // R-1. History へ追加
+      if (currentConversation !== undefined) {
+        setHistory([currentConversation, ...history])
+        setCurrentConversation(undefined)
+      }
+      // R-2. フィルタをリセット
+      setFilterOptions([
+        filterOptions[0], // 言語設定
+        filterOptions[1], // ソート順序
+      ])
+      // R-3. 考え中の表示
       setCurrentConversation({
         conversationType: "HUMAN_KENDRA_AI",
         userInput: { word: currentInputText },
@@ -140,86 +165,194 @@ export default function TopBar() {
         },
         kendraResponse: undefined
       })
-      // rag API へのリクエスト
-      postData(`${serverUrl}/v1/query`, {
-        "query": currentInputText,
-        "user_id": "string",
-        "query_type": "llm"
-      })
-        .then(data => {
-          console.log(data)
-          const tmpDocResults = []
-          for (let sd of data.source_documents) {
-            tmpDocResults.push(
-              {
-                "AdditionalAttributes": [],
-                "DocumentAttributes": [
-                  {
-                    "Key": "_source_uri",
-                    "Value": {
-                      "StringValue": sd.metadata.source
-                    }
-                  }
-                ],
-                "DocumentExcerpt": {
-                  "Highlights": [
-                  ],
-                  "Text": sd.metadata.excerpt
-                },
-                "DocumentId": sd.metadata.source,
-                "DocumentTitle": {
-                  "Highlights": [],
-                  "Text": sd.metadata.title
-                },
-                "DocumentURI": sd.metadata.source,
-                "FeedbackToken": sd.metadata.feedback_token,
-                "Format": "TEXT",
-                "Id": sd.metadata.source,
-                "ScoreAttributes": {
-                  "ScoreConfidence": "MEDIUM"
-                },
-                "Type": "DOCUMENT"
-              })
+
+      // R-4. Kendra へリクエスト
+      const run = async () => {
+        const q = getKendraQuery(
+          currentInputText,
+          getAttributeFilter(filterOptions),
+          getCurrentSortOrder(filterOptions))
+        const kendraResponse = await kendraQuery(q).then(data => {
+          const a: Conversation = {
+            conversationType: "HUMAN_KENDRA",
+            userInput: { word: currentInputText },
+            userQuery: q,
+            kendraResponse: data,
+            aiResponse: {
+              userUtterance: currentInputText,
+              aiUtterance: "考え中...",
+              actualPrompt: "",
+              memory: undefined,
+              usedTemplatePrompt: "",
+              promptVariables: {},
+              llmParam: {}
+            }
           }
-          // 表示変更
+          // R-5. Kendra のレスポンスを表示
+          setCurrentConversation(a)
+          // R-6. フィルタを表示
+          if (data) {
+            setFilterOptions([
+              filterOptions[0], // 言語設定
+              filterOptions[1], // ソート順序
+              ...getFiltersFromQuery(data)]) // クエリから受け取ったフィルタ候補
+          }
+          return data
+        }).catch(err => {
+          console.log(err)
+          toast({
+            title: 'エラー (kendraへの問い合わせに失敗しました)',
+            description: "",
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          })
+        })
+
+        // コンテキストとして食わせる
+        const context: DocumentForInf[] = []
+
+        let ci = 0
+        if (kendraResponse && kendraResponse?.ResultItems) {
+          for await (const resultItem of kendraResponse?.ResultItems) {
+            if (resultItem.ScoreAttributes?.ScoreConfidence === "VERY_HIGH") {
+              if (resultItem.Type === "QUESTION_ANSWER" && resultItem.AdditionalAttributes) {
+                context.push({
+                  excerpt: resultItem.DocumentExcerpt?.Text ?? "",
+                  title: resultItem.AdditionalAttributes[0]?.Value?.TextWithHighlightsValue?.Text ?? "",
+                  content: "",
+                  type: "DOCUMENT"
+                })
+              } else {
+                context.push({
+                  excerpt: resultItem.DocumentExcerpt?.Text ?? "",
+                  title: resultItem.DocumentTitle?.Text ?? "",
+                  content: "",
+                  type: "DOCUMENT"
+                })
+              }
+              ci++
+            }
+            if (ci > 3) { break }
+          }
+        }
+        // R-7. AI へリクエスト
+        await inference({
+          userUtterance: currentInputText,
+          history: [],
+          documents: context
+        }).then(data => {
+          // R-8. AI のレスポンスを表示
           setCurrentConversation({
             conversationType: "HUMAN_KENDRA_AI",
             userInput: { word: currentInputText },
             userQuery: undefined,
             aiResponse: {
               userUtterance: currentInputText,
-              aiUtterance: data.answer,
+              aiUtterance: data,
               actualPrompt: "",
               memory: undefined,
               usedTemplatePrompt: "",
               promptVariables: {},
               llmParam: {}
             },
-            kendraResponse: {
-              "FacetResults": [],
-              "FeaturedResultsItems": [],
-              "QueryId": "",
-              "ResultItems": tmpDocResults,
-              "TotalNumberOfResults": tmpDocResults.length
-            }
+            kendraResponse: kendraResponse ?? undefined
           })
-        });
+        }).catch(err => {
+          console.log(err)
+          toast({
+            title: 'エラー (LLM への問い合わせに失敗しました)',
+            description: "",
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          })
+        })
+
+      }
+      run()
     } else if (currentSearchMode === "#ai") {
-      toast({
-        title: '工事中',
-        description: "",
-        status: 'error',
-        duration: 1000,
-        isClosable: true,
+      /* AI へのリクエスト
+       *
+       * A-1. History に追加
+       * A-2. フィルタをリセット
+       * A-3. 考え中の表示
+       * A-4. AI へのリクエスト
+       * A-5. AI からのレスポンスを表示
+       */
+
+      // A-1. History に追加
+      if (currentConversation !== undefined) {
+        setHistory([currentConversation, ...history])
+        setCurrentConversation(undefined)
+      }
+      // A-2. フィルタをリセット
+      setFilterOptions([
+        filterOptions[0], // 言語設定
+        filterOptions[1], // ソート順序
+      ])
+      // A-3. 考え中の表示
+      setCurrentConversation({
+        conversationType: "HUMAN_AI",
+        userInput: { word: currentInputText },
+        userQuery: undefined,
+        aiResponse: {
+          userUtterance: currentInputText,
+          aiUtterance: "考え中...",
+          actualPrompt: "",
+          memory: undefined,
+          usedTemplatePrompt: "",
+          promptVariables: {},
+          llmParam: {}
+        },
+        kendraResponse: undefined
       })
-    } else if (currentSearchMode === "#historycalrag") {
-      toast({
-        title: '工事中',
-        description: "",
-        status: 'error',
-        duration: 1000,
-        isClosable: true,
-      })
+
+      const run = async () => {
+        // ピン止めされたテキストをコンテキストとして食わせる
+        const context: DocumentForInf[] = []
+        pinnedTexts.forEach((p) => {
+          context.push({
+            excerpt: p,
+            title: "",
+            content: "",
+            type: "DOCUMENT"
+          })
+        })
+        // A-4. AI へのリクエスト
+        await inference({
+          userUtterance: currentInputText,
+          history: [],
+          documents: context
+        }).then(data => {
+          // A-5. AI からのレスポンスを表示
+          setCurrentConversation({
+            conversationType: "HUMAN_AI",
+            userInput: { word: currentInputText },
+            userQuery: undefined,
+            aiResponse: {
+              userUtterance: currentInputText,
+              aiUtterance: data,
+              actualPrompt: "",
+              memory: undefined,
+              usedTemplatePrompt: "",
+              promptVariables: {},
+              llmParam: {}
+            },
+            kendraResponse: undefined
+          })
+        }).catch(err => {
+          console.log(err)
+          toast({
+            title: 'エラー (LLM への問い合わせに失敗しました)',
+            description: "",
+            status: 'error',
+            duration: 1000,
+            isClosable: true,
+          })
+        })
+      }
+      run()
     }
   }
 

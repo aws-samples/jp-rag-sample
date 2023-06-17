@@ -1,7 +1,7 @@
 import { SortingConfiguration, AttributeFilter, QueryCommandOutput, DescribeIndexCommand } from "@aws-sdk/client-kendra";
 import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
-import { Filter, selectItemType } from "./interface";
-import { indexId, kendraClient } from "../services/AWS";
+import { DataForInf, Filter, selectItemType } from "./interface";
+import { indexId, kendraClient, serverUrl } from "../services/AWS";
 
 export function isArrayBoolean(arr: any[]): arr is boolean[] {
     return arr.every((item) => typeof item === 'boolean');
@@ -290,4 +290,24 @@ export async function postData(url = '', data = {}) {
         body: JSON.stringify(data)
     })
     return await r.json()
+}
+
+// LLM で推論し作文
+export async function inference(data: DataForInf) {
+    const r = await fetch(`${serverUrl}/v2/llm-with-doc`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    let respondedText: string = await r.json()
+
+    // ノイズを除去
+    const last_id = respondedText.lastIndexOf('。');
+    if (last_id !== 0) {
+        respondedText = respondedText.substring(0, last_id + 1);
+    }
+    return respondedText
 }
