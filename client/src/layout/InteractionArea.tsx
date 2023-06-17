@@ -4,13 +4,10 @@ import Human from './SpeachBalloon/Human';
 import Ballon from './SpeachBalloon/Ballon';
 import AI from './SpeachBalloon/AI';
 import Kendra from './SpeachBalloon/Kendra';
-import { Conversation } from "../utils/interface";
-import { Accordion, AccordionItem, AccordionButton, AccordionIcon, AccordionPanel, Box } from '@chakra-ui/react';
 
 const InteractionArea = () => {
     const {
         currentConversation: currentConversation,
-        history: history,
     } = useGlobalContext();
 
     return (
