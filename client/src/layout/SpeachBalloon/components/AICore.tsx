@@ -1,15 +1,9 @@
-import { Avatar, Box, HStack, Heading, VStack, useToast } from "@chakra-ui/react";
+import { Avatar, Box, HStack, Heading, VStack } from "@chakra-ui/react";
 import { AiFillRobot } from "react-icons/ai";
 import { AiResponse } from "../../../utils/interface";
-import { useGlobalContext } from '../../../App';
+import QuotedTexts from "./QuotedTexts";
 
 const AICore: React.FC<{ data: AiResponse }> = ({ data }) => {
-  const {
-    pinnedTexts: pinnedTexts,
-    setPinnedTexts: setPinnedTexts,
-  } = useGlobalContext();
-
-  const toast = useToast()
 
   return (
     <Box>
@@ -19,16 +13,9 @@ const AICore: React.FC<{ data: AiResponse }> = ({ data }) => {
           <Heading size="sm">
             AI の回答
           </Heading>
-          <Box onClick={() => {
-            setPinnedTexts([...pinnedTexts, data.aiUtterance ?? "読み込みエラー"])
-            toast({
-              title: 'テキストがピン止めされました',
-              description: "",
-              status: 'success',
-              duration: 1000,
-              isClosable: true,
-            })
-          }}>{data.aiUtterance}</Box>
+          <Box>
+            <QuotedTexts fulltext={data.aiUtterance} contexts={data.contexts}/>
+            </Box>
         </VStack>
       </HStack>
     </Box>

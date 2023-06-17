@@ -160,7 +160,7 @@ export default function TopBar() {
           actualPrompt: "",
           memory: undefined,
           usedTemplatePrompt: "",
-          promptVariables: {},
+          contexts: [],
           llmParam: {}
         },
         kendraResponse: undefined
@@ -184,7 +184,7 @@ export default function TopBar() {
               actualPrompt: "",
               memory: undefined,
               usedTemplatePrompt: "",
-              promptVariables: {},
+              contexts: [],
               llmParam: {}
             }
           }
@@ -220,14 +220,14 @@ export default function TopBar() {
                 context.push({
                   excerpt: resultItem.DocumentExcerpt?.Text ?? "",
                   title: resultItem.AdditionalAttributes[0]?.Value?.TextWithHighlightsValue?.Text ?? "",
-                  content: "",
+                  content: resultItem.DocumentURI ?? "",
                   type: "DOCUMENT"
                 })
               } else {
                 context.push({
                   excerpt: resultItem.DocumentExcerpt?.Text ?? "",
                   title: resultItem.DocumentTitle?.Text ?? "",
-                  content: "",
+                  content: resultItem.DocumentURI ?? "",
                   type: "DOCUMENT"
                 })
               }
@@ -253,7 +253,7 @@ export default function TopBar() {
               actualPrompt: "",
               memory: undefined,
               usedTemplatePrompt: "",
-              promptVariables: {},
+              contexts: context,
               llmParam: {}
             },
             kendraResponse: kendraResponse ?? undefined
@@ -302,7 +302,7 @@ export default function TopBar() {
           actualPrompt: "",
           memory: undefined,
           usedTemplatePrompt: "",
-          promptVariables: {},
+          contexts: [],
           llmParam: {}
         },
         kendraResponse: undefined
@@ -336,7 +336,7 @@ export default function TopBar() {
               actualPrompt: "",
               memory: undefined,
               usedTemplatePrompt: "",
-              promptVariables: {},
+              contexts: [],
               llmParam: {}
             },
             kendraResponse: undefined
