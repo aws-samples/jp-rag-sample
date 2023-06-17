@@ -215,7 +215,7 @@ export default function TopBar() {
         let ci = 0
         if (kendraResponse && kendraResponse?.ResultItems) {
           for await (const resultItem of kendraResponse?.ResultItems) {
-            if (resultItem.ScoreAttributes?.ScoreConfidence === "VERY_HIGH") {
+            if (["VERY_HIGH", "HIGH", "MEDIUM"].includes(resultItem.ScoreAttributes?.ScoreConfidence ?? "")) {
               if (resultItem.Type === "QUESTION_ANSWER" && resultItem.AdditionalAttributes) {
                 context.push({
                   excerpt: resultItem.DocumentExcerpt?.Text ?? "",
