@@ -70,7 +70,7 @@ def llm_with_doc(body: LLMWithDocReqBody, endpoint_name: str, aws_region: str):
         chain = LLMChain(llm=CLAUDE, prompt=PromptTemplate(
             template="""Human: 資料:
 {context}
-上記の資料をもとに以下の質問に回答してください。参考にした資料は[1]の形式で書き、資料がないものは「わかりません」と答えてください。\n質問: 
+上記の資料をもとに以下の質問に回答しなさい。[0]の形式で参考にした資料を示しなさい。また資料がないものは「わかりません」と答えなさい。\n質問: 
 {question}
 
 Assistant:""",
