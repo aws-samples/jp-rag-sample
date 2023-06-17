@@ -92,33 +92,6 @@ export const KendraResultExcerpt: React.FC<{
     const toast = useToast()
 
     if (queryId !== undefined && resultItems.length > 0) {
-        function getAnswer(textWithHighlights: AdditionalResultAttribute[]): string {
-            const MAX_TOP_ANSWER_LENGTH = 25;
-
-            for (const textWithHighlight of textWithHighlights) {
-                if (
-                    textWithHighlight &&
-                    textWithHighlight.Value?.TextWithHighlightsValue?.Highlights &&
-                    textWithHighlight.Value?.TextWithHighlightsValue?.Text
-                ) {
-                    for (const highlight of textWithHighlight.Value.TextWithHighlightsValue.Highlights) {
-                        const begin = highlight.BeginOffset ?? 0;
-                        const end = highlight.EndOffset ?? textWithHighlight.Value.TextWithHighlightsValue.Text.length ?? 0;
-
-                        const length = end - begin;
-                        if (
-                            highlight &&
-                            highlight.TopAnswer &&
-                            length < MAX_TOP_ANSWER_LENGTH
-                        ) {
-                            return textWithHighlight.Value.TextWithHighlightsValue.Text.substring(begin, end);
-                        }
-                    }
-                }
-            }
-            return "";
-        }
-
         return (
             <Box borderColor="green.500">
                 <VStack align="start" w="85vw" minH='10vh' p='10px' bg={true ? "white" : "yellow.100"}>
@@ -143,7 +116,7 @@ export const KendraResultExcerpt: React.FC<{
                                                 }} isExternal>
                                                     <strong>
                                                         {
-                                                            <HighlightedTexts textWithHighlights={resultItem.DocumentTitle ?? { Highlights: [], Text: "読み込みエラー" }} />
+                                                            getNounAnswerFromExcerpt(getFAQWithHighlight(resultItem.AdditionalAttributes ?? [], "AnswerText"))
                                                         }
                                                     </strong>
                                                     <ExternalLinkIcon mx='2px' />
@@ -205,6 +178,19 @@ function getFAQWithHighlight(AdditionalAttributes: AdditionalResultAttribute[], 
         }
     }
     return { Highlights: [], Text: "該当なし" }
+}
+
+// AnswerText から 名詞を取り出す
+function getNounAnswerFromExcerpt(textWithHighlights: TextWithHighlights | undefined): string {
+
+    if (textWithHighlights?.Highlights?.length === 1) {
+        const highlight = textWithHighlights.Highlights[0];
+        const begin = highlight.BeginOffset ?? 0;
+        const end = highlight.EndOffset ?? textWithHighlights.Text?.length ?? 0;
+
+        return textWithHighlights.Text?.substring(begin, end) ?? "";
+    }
+    return "";
 }
 
 // FAQ を表示
