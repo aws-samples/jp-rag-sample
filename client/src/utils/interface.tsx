@@ -1,4 +1,4 @@
-import { DocumentAttributeValueCountPair, QueryRequest, QueryResult } from "@aws-sdk/client-kendra";
+import { QueryRequest, QueryResult } from "@aws-sdk/client-kendra";
 
 export interface Dic {
     /** 辞書型 */
@@ -51,6 +51,21 @@ export interface Filter {
     selected: string[] | boolean[] | number[] | Date[]
 }
 
-export interface DocumentAttributeValueCountPairMap {
-    [attributeName: string]: DocumentAttributeValueCountPair[];
+// LLM で推論するためのデータ型
+type DocTypeForInf = "DOCUMENT" | "QUESTION_ANSWER" | "ANSWER";
+export interface DocumentForInf {
+    excerpt: string,
+    title: string,
+    content: string,
+    type: DocTypeForInf
+}
+type SpeakerTypeForInf = "AI" | "Human";
+interface UtteranceForInf {
+    utterance: string,
+    type: SpeakerTypeForInf
+}
+export interface DataForInf {
+    userUtterance: string,
+    history: UtteranceForInf[],
+    documents: DocumentForInf[],
 }
