@@ -1,6 +1,5 @@
 import { AttributeFilter, KendraClient, QueryCommand, QueryCommandInput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { InvokeEndpointCommand, InvokeEndpointInput, SageMakerRuntimeClient } from "@aws-sdk/client-sagemaker-runtime";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const _loadingErrors = [];
@@ -36,13 +35,13 @@ if (hasErrors) {
   console.error(JSON.stringify(_loadingErrors));
 }
 
-export const initAWSError:string[] = _loadingErrors;
+export const initAWSError: string[] = _loadingErrors;
 
-const accessKeyId:string = import.meta.env.VITE_ACCESS_KEY_ID ?? ""
+const accessKeyId: string = import.meta.env.VITE_ACCESS_KEY_ID ?? ""
 const secretAccessKey = import.meta.env.VITE_SECRET_ACCESS_KEY ?? ""
 const region = import.meta.env.VITE_REGION ?? ""
-export const indexId:string = import.meta.env.VITE_INDEX_ID ?? ""
-export const serverUrl:string = import.meta.env.VITE_SERVER_URL ?? ""
+export const indexId: string = import.meta.env.VITE_INDEX_ID ?? ""
+export const serverUrl: string = import.meta.env.VITE_SERVER_URL ?? ""
 
 export const kendraClient = !hasErrors
   ? new KendraClient({
@@ -50,7 +49,8 @@ export const kendraClient = !hasErrors
     credentials: {
       accessKeyId: accessKeyId,
       secretAccessKey: secretAccessKey,
-    }
+    },
+    endpoint: `${serverUrl}/v2/kendra/`,
   })
   : undefined;
 
@@ -112,7 +112,7 @@ export function overwriteQuery(
   newAttributeFilter: AttributeFilter,
   newSortingConfiguration: SortingConfiguration | undefined
 ): QueryCommandInput {
-  return  {
+  return {
     ...prevQuery,
     AttributeFilter: newAttributeFilter,
     SortingConfiguration: newSortingConfiguration,

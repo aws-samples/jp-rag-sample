@@ -14,11 +14,46 @@ def clean_result(res_text: str) -> str:
     return res
 
 
+def sort_by_confidence_score(resps: List[Dict]):
+    """Kendra の検索結果から sort を実施する
+    'VERY_HIGH'|'HIGH'|'MEDIUM'|'LOW'|'NOT_AVAILABLE' から選択"""
+    confidence_order = ["VERY_HIGH", "HIGH", "MEDIUM", "LOW", "NOT_AVAILABLE"]
+    searched_results = {
+        "VERY_HIGH": [],
+        "HIGH": [],
+        "MEDIUM": [],
+        "LOW": [],
+        "NOT_AVAILABLE": [],
+    }
+    for resp in resps:
+        key = resp["ScoreAttributes"]["ScoreConfidence"]
+        searched_results[key].append(resp)
+    result = []
+    for _key in confidence_order:
+        result += searched_results[_key]
+    return result
+
+
 def get_top_n_results(resp: Dict, count: int):
+    """Kendra のレスポンスから必要情報を抜き出す.
+    API の形式については以下のドキュメントを参照.
+    https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kendra/client/query.html
+    """
     r = resp["ResultItems"][count]
-    doc_title = r["DocumentTitle"]["Text"]
     doc_uri = r["DocumentURI"]
     r_type = r["Type"]
+    if r_type == "DOCUMENT" or r_type == "ANSWER":
+        doc_title = r["DocumentTitle"]["Text"]
+    elif r_type == "QUESTION_ANSWER":
+        additional_attribute = list(
+            filter(lambda x: x["Key"] == "QuestionText", r["AdditionalAttributes"])
+        )[0]
+        print(additional_attribute)
+        doc_title = additional_attribute["Value"]["TextWithHighlightsValue"]["Text"]
+        # doc_title = ""
+    else:
+        doc_title = ""
+
     feedback_token = r["FeedbackToken"]
     if (
         r["AdditionalAttributes"]
@@ -30,9 +65,7 @@ def get_top_n_results(resp: Dict, count: int):
     else:
         res_text = r["DocumentExcerpt"]["Text"]
     doc_excerpt = clean_result(res_text)
-    combined_text = (
-        "Document Title: " + doc_title + "\nDocument Excerpt: \n" + doc_excerpt + "\n"
-    )
+    combined_text = doc_title + "\n抜粋: \n" + doc_excerpt + "\n"
     return {
         "page_content": combined_text,
         "metadata": {
@@ -41,6 +74,7 @@ def get_top_n_results(resp: Dict, count: int):
             "excerpt": doc_excerpt,
             "type": r_type,
             "feedback_token": feedback_token,
+            "raw_data": r,
         },
     }
 
@@ -58,11 +92,11 @@ def kendra_query(
             }
         },
     )
-    print("query result:", response)
     if len(response["ResultItems"]) > kcount:
         r_count = kcount
     else:
         r_count = len(response["ResultItems"])
+    response["ResultItems"] = sort_by_confidence_score(response["ResultItems"])
     docs = [get_top_n_results(response, i) for i in range(0, r_count)]
     return [
         Document(page_content=d["page_content"], metadata=d["metadata"]) for d in docs
@@ -114,4 +148,5 @@ class KendraIndexRetriever(BaseRetriever):
         )
 
     async def aget_relevant_documents(self, query: str) -> List[Document]:
+        return await super().aget_relevant_documents(query)
         return await super().aget_relevant_documents(query)
