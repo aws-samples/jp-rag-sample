@@ -4,3 +4,4 @@ langchain>=0.0.176
 boto3>=1.26.137
 fastapi>=0.95.2
 uvicorn>=0.22.0
+anthropic>=0.2.10
