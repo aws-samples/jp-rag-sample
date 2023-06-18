@@ -123,6 +123,8 @@ const CheckBoxes: React.FC<{
                   key={item.name}
                   value={idx}
                   colorScheme='green'
+                  width={"100%"}
+                  wordBreak={"break-all"}
                 >
                   {item.name}
                 </Checkbox>
