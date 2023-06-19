@@ -25,13 +25,14 @@ import {
 } from '@chakra-ui/icons';
 import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
-import { getKendraQuery, kendraQuery } from '../services/AWS';
+import { getKendraQuery, inference, kendraQuery } from '../services/AWS';
 import { SEARCH_MODE_LIST } from '../utils/constant';
-import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery, inference } from '../utils/function';
+import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '../utils/function';
 import { Conversation, DocumentForInf } from '../utils/interface';
+import { UseAuthenticator } from '@aws-amplify/ui-react-core';
+export type SignOut = UseAuthenticator['signOut'];
 
-
-export default function TopBar() {
+export default function TopBar({ logout }: { logout: SignOut | undefined }) {
   const {
     currentConversation: currentConversation,
     setCurrentConversation: setCurrentConversation,
@@ -369,7 +370,8 @@ export default function TopBar() {
       borderStyle={'solid'}
       borderColor={useColorModeValue('gray.200', 'gray.900')}
       align={'center'}
-      zIndex={1}>
+      zIndex={1}
+      top={0}>
       <Flex width={"100%"}>
         <Text fontSize="2xl" fontWeight="bold">
           Amazon Kendra
@@ -397,6 +399,9 @@ export default function TopBar() {
         </InputGroup>
       </Flex>
       <HStack display={"flex"} justifyContent={"flex-end"} width={"100%"}>
+        <Button backgroundColor={"transparent"} onClick={logout} aria-label="show-pinned-texts" >
+          ログアウト
+        </Button>
         <IconButton icon={<AiOutlinePushpin />} backgroundColor={"transparent"} onClick={onOpen} aria-label="show-pinned-texts" />
         <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />

@@ -2,14 +2,14 @@
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react";
 import TopBar from "./layout/TopBar.tsx"
 import FilterBar from './layout/FilterBar.tsx'
-import { initAWSError } from "./services/AWS.ts";
-import MockDataWarning from "./services/helpers/MockDataWarning.tsx";
-import LocalCredentialsBanner from "./services/helpers/LocalCredentialsBanner.tsx";
+import { getSortOrderFromIndex, setS3Client, setJwtToken } from "./services/AWS.ts";
 import { Conversation, Filter } from "./utils/interface.tsx";
 import InteractionArea from "./layout/InteractionArea.tsx";
-import { getSortOrderFromIndex } from "./utils/function.tsx";
 import { DEFAULT_LANGUAGE, DEFAULT_SEARCH_MODE } from "./utils/constant.tsx";
-
+// Amplify
+import { Auth } from 'aws-amplify';
+import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
 
 
 // Global変数
@@ -50,86 +50,101 @@ function App() {
   const [pinnedTexts, setPinnedTexts] = useState<string[]>([]); // ピン止されたテキスト一覧
   const [currentSearchMode, setCurrentSearchMode] = useState<string>(DEFAULT_SEARCH_MODE); // 検索モード
   const [currentInputText, setCurrentInputText] = useState<string>(""); // 入力中の文字列
+  const [loginSucceeded, setLoginSucceeded] = useState<boolean>(false); // ログイン完了フラグ
 
   useEffect(() => {
     // Stateの初期設定
-
-    // 言語設定とソートの候補を取得
-    const filterOption: Filter[] = [
-      {
-        filterType: "LAUNGUAGE_SETTING",
-        title: "言語設定",
-        options: [],
-        selected: [DEFAULT_LANGUAGE]
+    if (loginSucceeded) {
+      // 言語設定とソートの候補を取得
+      const filterOption: Filter[] = [
+        {
+          filterType: "LAUNGUAGE_SETTING",
+          title: "言語設定",
+          options: [],
+          selected: [DEFAULT_LANGUAGE]
+        }
+      ]
+      const getSOrtOrderFromIndexAndSetSortOption = async () => {
+        const so = await getSortOrderFromIndex()
+        filterOption.push(so)
+        setFilterOptions(filterOption)
       }
-    ]
-    const getSOrtOrderFromIndexAndSetSortOption = async () => {
-      const so = await getSortOrderFromIndex()
-      filterOption.push(so)
-      setFilterOptions(filterOption)
+      getSOrtOrderFromIndexAndSetSortOption()
+
+      // AWS の認証情報を更新
+      const updateCreds = async () => {
+        const awsCreds = await Auth.currentUserCredentials()
+        setS3Client(awsCreds.accessKeyId, awsCreds.secretAccessKey, awsCreds.sessionToken)
+      }
+      updateCreds()
+
+      // TODO: 削除
+      // // ソート順序の Dummy データを挿入
+      // filterOption.push(...dummyFullFilterOptions())
+      // setFilterOptions(filterOption)
+
+      // // Dummy の Query結果を挿入
+      // const tmpCurrentConversation: Conversation = dummyHumanKendraAiConversation()
+      // setCurrentConversation(tmpCurrentConversation)
+
+      // // Dummy の履歴データを挿入
+      // const tmphistory: Conversation[] = dummyHistory()
+      // setHistory(tmphistory)
+
+      // Dummy Kendraへのリクエスト
+      // const run = async () => {
+      //   const q = getKendraQuery(
+      //     currentInputText,
+      //     getAttributeFilter(filterOptions),
+      //     getCurrentSortOrder(filterOptions))
+
+      //   console.log("[DEBUG] : fetchData",
+      //     await kendraQuery(q))
+      // }
+      // run()
     }
-    getSOrtOrderFromIndexAndSetSortOption()
 
-    // TODO: 削除
-    // // ソート順序の Dummy データを挿入
-    // filterOption.push(...dummyFullFilterOptions())
-    // setFilterOptions(filterOption)
+  }, [loginSucceeded])
 
-    // // Dummy の Query結果を挿入
-    // const tmpCurrentConversation: Conversation = dummyHumanKendraAiConversation()
-    // setCurrentConversation(tmpCurrentConversation)
-
-    // // Dummy の履歴データを挿入
-    // const tmphistory: Conversation[] = dummyHistory()
-    // setHistory(tmphistory)
-
-    // Dummy Kendraへのリクエスト
-    // const run = async () => {
-    //   const q = getKendraQuery(
-    //     currentInputText,
-    //     getAttributeFilter(filterOptions),
-    //     getCurrentSortOrder(filterOptions))
-  
-    //   console.log("[DEBUG] : fetchData",
-    //     await kendraQuery(q))
-    // }
-    // run()
-
-  }, [])
-
-return (
-  <>
-    {/* 開発モードの場合は警告を出す */}
-    <div style={{ backgroundColor: "orange" }}>
-      {initAWSError.length > 0 ? (
-        <MockDataWarning errors={initAWSError} />
-      ) : (
-        <LocalCredentialsBanner />
+  return (
+    <Authenticator>
+      {({ signOut, user }) => (
+        <>
+          {
+            (() => {
+              if (!loginSucceeded) {
+                // Login 成功後 user pool から jwt token, id pool から iam credential を取得 
+                setJwtToken(user?.getSignInUserSession()?.getAccessToken().getJwtToken() ?? "")
+                setLoginSucceeded(true)
+              }
+            })()
+          }
+          {/* 検索画面 */}
+          <GlobalContext.Provider value={{
+            currentConversation: currentConversation,
+            setCurrentConversation: setCurrentConversation,
+            history: history,
+            setHistory: setHistory,
+            filterOptions: filterOptions,
+            setFilterOptions: setFilterOptions,
+            pinnedTexts: pinnedTexts,
+            setPinnedTexts: setPinnedTexts,
+            currentSearchMode: currentSearchMode,
+            setCurrentSearchMode: setCurrentSearchMode,
+            currentInputText: currentInputText,
+            setCurrentInputText: setCurrentInputText,
+          }}>
+            {/* API通信用のモック */}
+            <TopBar logout={signOut} />
+            <FilterBar>
+              <InteractionArea />
+            </FilterBar>
+          </GlobalContext.Provider>
+        </>
       )}
-    </div>
-    {/* 検索画面 */}
-    <GlobalContext.Provider value={{
-      currentConversation: currentConversation,
-      setCurrentConversation: setCurrentConversation,
-      history: history,
-      setHistory: setHistory,
-      filterOptions: filterOptions,
-      setFilterOptions: setFilterOptions,
-      pinnedTexts: pinnedTexts,
-      setPinnedTexts: setPinnedTexts,
-      currentSearchMode: currentSearchMode,
-      setCurrentSearchMode: setCurrentSearchMode,
-      currentInputText: currentInputText,
-      setCurrentInputText: setCurrentInputText,
-    }}>
-      {/* API通信用のモック */}
-      <TopBar />
-      <FilterBar>
-        <InteractionArea />
-      </FilterBar>
-    </GlobalContext.Provider>
-  </>
-)
+    </Authenticator>
+
+  )
 }
 
 export default App
