@@ -31,7 +31,7 @@ export function dummyHumanKendraAiConversation(): Conversation {
             actualPrompt: "AIさん、こんばんは",
             memory: { "入力以前のやりとり": "any" },
             usedTemplatePrompt: "AIさん、{userinput}",
-            promptVariables: { "userinput": "こんばんは" },
+            contexts: [],
             llmParam: { "LLM parameter": "any" },
         }
     }
@@ -2043,7 +2043,7 @@ export function dummyHistory(): Conversation[] {
                 actualPrompt: "AIさん、こんばんは",
                 memory: { "入力以前のやりとり": "any" },
                 usedTemplatePrompt: "AIさん、{userinput}",
-                promptVariables: { "userinput": "こんばんは" },
+                contexts: [],
                 llmParam: { "LLM parameter": "any" },
             }
         },
@@ -2058,7 +2058,7 @@ export function dummyHistory(): Conversation[] {
                 actualPrompt: "AIさん、こんばんは",
                 memory: { "入力以前のやりとり": "any" },
                 usedTemplatePrompt: "AIさん、{userinput}",
-                promptVariables: { "userinput": "こんばんは" },
+                contexts: [],
                 llmParam: { "LLM parameter": "any" },
             }
         },

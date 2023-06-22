@@ -5,7 +5,7 @@ import os
 from typing import Dict
 
 import boto3
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from kendra import KendraIndexRetriever
 from langchain.chains import RetrievalQA
@@ -21,6 +21,11 @@ from schemas import (
     RinnaPlaygroundReqBody,
 )
 import json
+# jwt validation
+from pydantic import BaseSettings
+from fastapi_cognito import CognitoAuth, CognitoSettings
+from fastapi_cognito import CognitoToken
+
 
 app = FastAPI()
 
@@ -36,6 +41,24 @@ REGION = os.environ["AWS_REGION"]
 KENDRA_INDEX_ID: str = os.environ["KENDRA_INDEX_ID"]
 ENDPOINT_NAME: str = os.environ["SAGEMAKER_ENDPOINT_NAME"]
 CALM_ENDPOINT_NAME: str = os.environ["CALM_ENDPOINT_NAME"]
+
+# jwt validation
+class Settings(BaseSettings):
+    check_expiration = True
+    jwt_header_prefix = "Bearer"
+    jwt_header_name = "Authorization"
+    userpools = {
+        "ja": {
+            "region": REGION,
+            "userpool_id": os.environ["USERPOOL_ID"],
+            "app_client_id": os.environ["APP_CLIENT_ID"]
+        },
+    }
+settings = Settings()
+cognito_ja = CognitoAuth(settings=CognitoSettings.from_global_settings(settings))
+
+# kendra
+kendra_client = boto3.client("kendra", region_name=REGION)
 
 
 @app.get("/")
@@ -117,38 +140,30 @@ async def handle_message(body: RagQueryBody):
 
 
 @app.post("/v2/llm-with-doc")
-async def llm_with_doc_handler(body: LLMWithDocReqBody):
+async def llm_with_doc_handler(body: LLMWithDocReqBody, _: CognitoToken = Depends(cognito_ja.auth_required)):
     """LLM に対してドキュメントとチャット履歴を直接渡して返り値をもらう"""
     return llm_with_doc(body, endpoint_name=ENDPOINT_NAME, aws_region=REGION)
 
 
-kendra_client = boto3.client("kendra", region_name=REGION)
-
-
-@app.post(
-    "/v2/kendra/",
-    summary='Amazon Kendra API',
-    description='Request AWS Endpoint transparently For more Info, See https://docs.aws.amazon.com/ja_jp/kendra/latest/dg/API_Reference.html',
-    response_description='Response  For more Info, See https://docs.aws.amazon.com/ja_jp/kendra/latest/dg/API_Reference.html',
-)
-async def kendra_query(r: Request):
-    json_str = await r.body()
-    json_dict = json.loads(json_str.decode())
-    
+@app.post("/v2/kendra/query")
+async def kendra_query(body: Dict, _: CognitoToken = Depends(cognito_ja.auth_required)):
     """Kendra の Query API を透過的に叩く"""
-    if r.headers["x-amz-target"] == "AWSKendraFrontendService.Query":
-        # Query
-        json_dict["IndexId"] = KENDRA_INDEX_ID
-        response = kendra_client.query(**json_dict)
-        return response
-    elif r.headers["x-amz-target"] == "AWSKendraFrontendService.DescribeIndex":
-        # DescribeIndex
-        json_dict["Id"] = KENDRA_INDEX_ID
-        response = kendra_client.describe_index(**json_dict)
-        return response
-    elif r.headers["x-amz-target"] == "AWSKendraFrontendService.SubmitFeedback":
-        # SubmitFeedback
-        json_dict["IndexId"] = KENDRA_INDEX_ID
-        response = kendra_client.submit_feedback(**json_dict)
-        return response
-    raise HTTPException(status_code=404, detail="Invalid Request")
+    request_body = body["input"]
+    response = kendra_client.query(**request_body)
+    return response
+
+
+@app.post("/v2/kendra/send")
+async def kendra_send(body: Dict, _: CognitoToken = Depends(cognito_ja.auth_required)):
+    """Kendra の SubmitFeedback API を透過的に叩く"""
+    kendra_request_body = body["input"]
+    response = kendra_client.submit_feedback(**kendra_request_body)
+    return response
+
+
+@app.post("/v2/kendra/describeIndex")
+async def kendra_describe(body: Dict, auth: CognitoToken = Depends(cognito_ja.auth_required)):
+    """Kendra の DesribeIndex API を透過的に叩く"""
+    kendra_request_body = body["input"]
+    response = kendra_client.describe_index(**kendra_request_body)
+    return response

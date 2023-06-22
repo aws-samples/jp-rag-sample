@@ -1,19 +1,12 @@
-import { AttributeFilter, KendraClient, QueryCommand, QueryCommandInput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { AttributeFilter, DescribeIndexCommand, QueryCommand, QueryCommandInput, QueryCommandOutput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { DataForInf, Filter, selectItemType } from "../utils/interface";
+import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "../utils/constant";
+import { Amplify } from 'aws-amplify';
 
 const _loadingErrors = [];
 
-if (!import.meta.env.VITE_ACCESS_KEY_ID) {
-  _loadingErrors.push(
-    "環境変数にACCESS_KEY_IDがありません"
-  );
-}
-if (!import.meta.env.VITE_SECRET_ACCESS_KEY) {
-  _loadingErrors.push(
-    "環境変数にSECRET_ACCESS_KEYがありません"
-  );
-}
 if (!import.meta.env.VITE_REGION) {
   _loadingErrors.push(
     "環境変数にREGIONがありません"
@@ -37,22 +30,43 @@ if (hasErrors) {
 
 export const initAWSError: string[] = _loadingErrors;
 
-const accessKeyId: string = import.meta.env.VITE_ACCESS_KEY_ID ?? ""
-const secretAccessKey = import.meta.env.VITE_SECRET_ACCESS_KEY ?? ""
 const region = import.meta.env.VITE_REGION ?? ""
 export const indexId: string = import.meta.env.VITE_INDEX_ID ?? ""
 export const serverUrl: string = import.meta.env.VITE_SERVER_URL ?? ""
+let accessKeyId: string = ""
+let secretAccessKey = ""
+let sessionToken = ""
+let jwtToken: string = "";
 
-export const kendraClient = !hasErrors
-  ? new KendraClient({
+Amplify.configure({
+  Auth: {
+    region: region,
+    userPoolId: import.meta.env.VITE_USER_POOL_ID ?? "",
+    userPoolWebClientId: import.meta.env.VITE_USER_POOL_CLIENT_ID ?? "",
+    identityPoolId: import.meta.env.VITE_IDENTITY_POOL_ID ?? "",
+  }
+});
+
+export function setJwtToken(token: string) {
+  jwtToken = token
+}
+
+let s3Client: S3Client;
+
+export function setS3Client(awsAccessKeyId: string, awsSecretAccessKey: string, awsSessionToken: string) {
+  accessKeyId = awsAccessKeyId
+  secretAccessKey = awsSecretAccessKey
+  sessionToken = awsSessionToken
+
+  s3Client = new S3Client({
     region: region,
     credentials: {
       accessKeyId: accessKeyId,
       secretAccessKey: secretAccessKey,
-    },
-    endpoint: `${serverUrl}/v2/kendra/`,
+      sessionToken: sessionToken
+    }
   })
-  : undefined;
+}
 
 export enum Relevance {
   Relevant = "RELEVANT",
@@ -65,7 +79,9 @@ export async function submitFeedback(
   resultId: string, // feedbackするアイテム
   queryId: string // Query id
 ) {
-
+  /**
+   * 増分学習のための Feedbackを送信
+   */
   const command = (relevance === Relevance.Click)
     ? new SubmitFeedbackCommand({
       IndexId: indexId,
@@ -89,10 +105,24 @@ export async function submitFeedback(
     });
 
   // Feedbackを送信
-  await kendraClient?.send(command)
+  const url = `${serverUrl}/v2/kendra/send`
+  const r = await fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`,
+    },
+    body: JSON.stringify(command)
+  })
+  return await r.json()
 }
 
+
 export function getKendraQuery(
+  /**
+   * Kendra Query API への request Bodyを作成
+   */
   queryText: string,
   attributeFilter: AttributeFilter,
   sortingConfiguration: SortingConfiguration | undefined
@@ -107,7 +137,11 @@ export function getKendraQuery(
   }
 }
 
+
 export function overwriteQuery(
+  /**
+   * Kendra Query API への request Bodyへフィルタリング情報を付与
+   */
   prevQuery: QueryCommandInput,
   newAttributeFilter: AttributeFilter,
   newSortingConfiguration: SortingConfiguration | undefined
@@ -121,7 +155,23 @@ export function overwriteQuery(
 
 
 export async function kendraQuery(param: QueryCommandInput) {
-  const data = await kendraClient?.send(new QueryCommand(param))
+  /**
+   * Kendra Query API を実行
+   */
+  const data = await fetch(`${serverUrl}/v2/kendra/query`, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`,
+    },
+    body: JSON.stringify(new QueryCommand(param))
+  })
+    .then(response => response.json())
+    .then((r: QueryCommandOutput) => { return r })
+
+
+  // Kendra Response の S3 URL に Presigned URL を付与
   if (s3Client && data && data.ResultItems) {
     for await (const result of data.ResultItems) {
       if (result.DocumentURI) {
@@ -137,9 +187,10 @@ export async function kendraQuery(param: QueryCommandInput) {
             }
             // s3 の presigned url に置き換え
             const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-            await getSignedUrl(s3Client, command, { expiresIn: 3600 }).then((uri: string) => {
-              result.DocumentURI = uri;
-            });
+
+            const uri = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+
+            result.DocumentURI = uri;
           }
         } catch {
           // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
@@ -163,12 +214,75 @@ export async function kendraQuery(param: QueryCommandInput) {
 }
 
 
-export const s3Client = !hasErrors
-  ? new S3Client({
-    region: region,
-    credentials: {
-      accessKeyId: accessKeyId,
-      secretAccessKey: secretAccessKey,
+export async function getSortOrderFromIndex(): Promise<Filter> {
+  /*
+   * Index から並び順の候補を取得
+  */
+  let sortingAttributeDateList: selectItemType[] = [
+    { name: DEFAULT_SORT_ATTRIBUTE, value: DEFAULT_SORT_ATTRIBUTE }
+  ];
+
+  // indexidを使いkendraから情報を取得
+  const command = new DescribeIndexCommand({
+    Id: indexId
+  });
+  const url = `${serverUrl}/v2/kendra/describeIndex`
+
+  const r = await fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`,
+    },
+    body: JSON.stringify(command)
+  })
+  await r.json().then((v) => {
+    const configList = v.DocumentMetadataConfigurations
+    // sortableなファセットの候補を取得
+    if (configList) {
+      for (const documentMetadataConfig of configList) {
+        if (documentMetadataConfig
+          && documentMetadataConfig.Search?.Sortable
+          && documentMetadataConfig.Name) {
+          sortingAttributeDateList.push({
+            name: documentMetadataConfig.Name,
+            value: documentMetadataConfig.Name
+          });
+        }
+      }
     }
   })
-  : undefined;
+
+  return {
+    filterType: "SORT_BY",
+    title: "並び順",
+    options: sortingAttributeDateList,
+    selected: [DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER]
+  }
+
+}
+
+
+export async function inference(data: DataForInf) {
+  /**
+   * LLM で推論し作文
+   */
+  const r = await fetch(`${serverUrl}/v2/llm-with-doc`, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`,
+    },
+    body: JSON.stringify(data)
+  })
+  let respondedText: string = await r.json()
+
+  // ノイズを除去
+  const last_id = respondedText.lastIndexOf('。');
+  if (last_id !== 0) {
+    respondedText = respondedText.substring(0, last_id + 1);
+  }
+  return respondedText
+}

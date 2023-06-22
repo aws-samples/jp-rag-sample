@@ -17,7 +17,7 @@ export interface AiResponse {
     actualPrompt: string // AIに入力されたプロンプト
     memory: any // 入力以前のやりとり
     usedTemplatePrompt: string // 利用したテンプレート
-    promptVariables: Dic // テンプレートに埋め込む変数
+    contexts: DocumentForInf[] // テンプレートに埋め込む変数
     llmParam: Dic // LLMの設定値
 }
 // やり取りの種類

@@ -1,7 +1,6 @@
-import { SortingConfiguration, AttributeFilter, QueryCommandOutput, DescribeIndexCommand } from "@aws-sdk/client-kendra";
-import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
-import { DataForInf, Filter, selectItemType } from "./interface";
-import { indexId, kendraClient, serverUrl } from "../services/AWS";
+import { SortingConfiguration, AttributeFilter, QueryCommandOutput } from "@aws-sdk/client-kendra";
+import { DEFAULT_SORT_ATTRIBUTE, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
+import { Filter, selectItemType } from "./interface";
 
 export function isArrayBoolean(arr: any[]): arr is boolean[] {
     return arr.every((item) => typeof item === 'boolean');
@@ -159,44 +158,6 @@ export function getAttributeFilter(filterOptions: Filter[]): AttributeFilter {
     }
 }
 
-export async function getSortOrderFromIndex(): Promise<Filter> {
-    /*
-     * Index から並び順の候補を取得
-    */
-    let sortingAttributeDateList: selectItemType[] = [
-        { name: DEFAULT_SORT_ATTRIBUTE, value: DEFAULT_SORT_ATTRIBUTE }
-    ];
-
-    // indexidを使いkendraから情報を取得
-    const command = new DescribeIndexCommand({
-        Id: indexId
-    });
-    await kendraClient?.send(command).then((v) => {
-        const configList = v.DocumentMetadataConfigurations
-        // sortableなファセットの候補を取得
-        if (configList) {
-            for (const documentMetadataConfig of configList) {
-                if (documentMetadataConfig
-                    && documentMetadataConfig.Search?.Sortable
-                    && documentMetadataConfig.Name) {
-                    sortingAttributeDateList.push({
-                        name: documentMetadataConfig.Name,
-                        value: documentMetadataConfig.Name
-                    });
-                }
-            }
-        }
-    })
-
-    return {
-        filterType: "SORT_BY",
-        title: "並び順",
-        options: sortingAttributeDateList,
-        selected: [DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER]
-    }
-
-}
-
 export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
     /*
      * Query結果からフィルタ可能なファセットを取得
@@ -292,22 +253,3 @@ export async function postData(url = '', data = {}) {
     return await r.json()
 }
 
-// LLM で推論し作文
-export async function inference(data: DataForInf) {
-    const r = await fetch(`${serverUrl}/v2/llm-with-doc`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    let respondedText: string = await r.json()
-
-    // ノイズを除去
-    const last_id = respondedText.lastIndexOf('。');
-    if (last_id !== 0) {
-        respondedText = respondedText.substring(0, last_id + 1);
-    }
-    return respondedText
-}

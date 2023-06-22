@@ -25,13 +25,14 @@ import {
 } from '@chakra-ui/icons';
 import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
-import { getKendraQuery, kendraQuery } from '../services/AWS';
+import { getKendraQuery, inference, kendraQuery } from '../services/AWS';
 import { SEARCH_MODE_LIST } from '../utils/constant';
-import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery, inference } from '../utils/function';
+import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '../utils/function';
 import { Conversation, DocumentForInf } from '../utils/interface';
+import { UseAuthenticator } from '@aws-amplify/ui-react-core';
+export type SignOut = UseAuthenticator['signOut'];
 
-
-export default function TopBar() {
+export default function TopBar({ logout }: { logout: SignOut | undefined }) {
   const {
     currentConversation: currentConversation,
     setCurrentConversation: setCurrentConversation,
@@ -160,7 +161,7 @@ export default function TopBar() {
           actualPrompt: "",
           memory: undefined,
           usedTemplatePrompt: "",
-          promptVariables: {},
+          contexts: [],
           llmParam: {}
         },
         kendraResponse: undefined
@@ -184,7 +185,7 @@ export default function TopBar() {
               actualPrompt: "",
               memory: undefined,
               usedTemplatePrompt: "",
-              promptVariables: {},
+              contexts: [],
               llmParam: {}
             }
           }
@@ -215,19 +216,19 @@ export default function TopBar() {
         let ci = 0
         if (kendraResponse && kendraResponse?.ResultItems) {
           for await (const resultItem of kendraResponse?.ResultItems) {
-            if (resultItem.ScoreAttributes?.ScoreConfidence === "VERY_HIGH") {
+            if (["VERY_HIGH", "HIGH", "MEDIUM"].includes(resultItem.ScoreAttributes?.ScoreConfidence ?? "")) {
               if (resultItem.Type === "QUESTION_ANSWER" && resultItem.AdditionalAttributes) {
                 context.push({
                   excerpt: resultItem.DocumentExcerpt?.Text ?? "",
                   title: resultItem.AdditionalAttributes[0]?.Value?.TextWithHighlightsValue?.Text ?? "",
-                  content: "",
+                  content: resultItem.DocumentURI ?? "",
                   type: "DOCUMENT"
                 })
               } else {
                 context.push({
                   excerpt: resultItem.DocumentExcerpt?.Text ?? "",
                   title: resultItem.DocumentTitle?.Text ?? "",
-                  content: "",
+                  content: resultItem.DocumentURI ?? "",
                   type: "DOCUMENT"
                 })
               }
@@ -253,7 +254,7 @@ export default function TopBar() {
               actualPrompt: "",
               memory: undefined,
               usedTemplatePrompt: "",
-              promptVariables: {},
+              contexts: context,
               llmParam: {}
             },
             kendraResponse: kendraResponse ?? undefined
@@ -302,7 +303,7 @@ export default function TopBar() {
           actualPrompt: "",
           memory: undefined,
           usedTemplatePrompt: "",
-          promptVariables: {},
+          contexts: [],
           llmParam: {}
         },
         kendraResponse: undefined
@@ -336,7 +337,7 @@ export default function TopBar() {
               actualPrompt: "",
               memory: undefined,
               usedTemplatePrompt: "",
-              promptVariables: {},
+              contexts: [],
               llmParam: {}
             },
             kendraResponse: undefined
@@ -369,7 +370,8 @@ export default function TopBar() {
       borderStyle={'solid'}
       borderColor={useColorModeValue('gray.200', 'gray.900')}
       align={'center'}
-      zIndex={1}>
+      zIndex={1}
+      top={0}>
       <Flex width={"100%"}>
         <Text fontSize="2xl" fontWeight="bold">
           Amazon Kendra
@@ -397,6 +399,9 @@ export default function TopBar() {
         </InputGroup>
       </Flex>
       <HStack display={"flex"} justifyContent={"flex-end"} width={"100%"}>
+        <Button backgroundColor={"transparent"} onClick={logout} aria-label="show-pinned-texts" >
+          ログアウト
+        </Button>
         <IconButton icon={<AiOutlinePushpin />} backgroundColor={"transparent"} onClick={onOpen} aria-label="show-pinned-texts" />
         <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />
