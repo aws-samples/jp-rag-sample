@@ -77,31 +77,6 @@ function App() {
         setS3Client(awsCreds.accessKeyId, awsCreds.secretAccessKey, awsCreds.sessionToken)
       }
       updateCreds()
-
-      // TODO: 削除
-      // // ソート順序の Dummy データを挿入
-      // filterOption.push(...dummyFullFilterOptions())
-      // setFilterOptions(filterOption)
-
-      // // Dummy の Query結果を挿入
-      // const tmpCurrentConversation: Conversation = dummyHumanKendraAiConversation()
-      // setCurrentConversation(tmpCurrentConversation)
-
-      // // Dummy の履歴データを挿入
-      // const tmphistory: Conversation[] = dummyHistory()
-      // setHistory(tmphistory)
-
-      // Dummy Kendraへのリクエスト
-      // const run = async () => {
-      //   const q = getKendraQuery(
-      //     currentInputText,
-      //     getAttributeFilter(filterOptions),
-      //     getCurrentSortOrder(filterOptions))
-
-      //   console.log("[DEBUG] : fetchData",
-      //     await kendraQuery(q))
-      // }
-      // run()
     }
 
   }, [loginSucceeded])

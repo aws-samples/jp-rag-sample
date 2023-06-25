@@ -240,16 +240,3 @@ export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
     }
     return fs
 }
-
-export async function postData(url = '', data = {}) {
-    const r = await fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    return await r.json()
-}
-
