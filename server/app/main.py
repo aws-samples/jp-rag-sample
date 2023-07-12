@@ -3,11 +3,9 @@
 import os
 from typing import Dict, Literal
 
-import boto3
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_cognito import CognitoAuth, CognitoSettings, CognitoToken
-from kendra import KendraIndexRetriever
 from logics import llm_with_doc
 from pydantic import BaseSettings
 from schemas import LLMWithDocReqBody
@@ -26,11 +24,6 @@ REGION = os.environ["AWS_REGION"]
 KENDRA_INDEX_ID: str = os.environ["KENDRA_INDEX_ID"]
 SAGEMAKER_ENDPOINT_NAME: str = os.environ.get("SAGEMAKER_ENDPOINT_NAME", None)
 LLM: Literal["rinna", "claude"] = os.environ.get("LLM", "rinna")
-
-kendra_client = boto3.client("kendra", region_name=REGION)
-retriever = KendraIndexRetriever(
-    kendraindex=KENDRA_INDEX_ID, awsregion=REGION, return_source_documents=True
-)
 
 
 # jwt validation
