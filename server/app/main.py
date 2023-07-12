@@ -3,6 +3,7 @@
 import os
 from typing import Dict, Literal
 
+import boto3
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_cognito import CognitoAuth, CognitoSettings, CognitoToken
@@ -24,6 +25,7 @@ REGION = os.environ["AWS_REGION"]
 KENDRA_INDEX_ID: str = os.environ["KENDRA_INDEX_ID"]
 SAGEMAKER_ENDPOINT_NAME: str = os.environ.get("SAGEMAKER_ENDPOINT_NAME", None)
 LLM: Literal["rinna", "claude"] = os.environ.get("LLM", "rinna")
+kendra_client = boto3.client("kendra", region_name=REGION)
 
 
 # jwt validation
@@ -42,81 +44,6 @@ class Settings(BaseSettings):
 
 settings = Settings()
 cognito_ja = CognitoAuth(settings=CognitoSettings.from_global_settings(settings))
-
-# kendra
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-# @app.post("/v1/query")
-# async def handle_message(body: QueryBody):
-#     if body.query_type == "kendra":
-#         query: str = body.query
-#         response = retriever.get_relevant_documents(query)
-#         return {
-#             "results": [
-#                 {
-#                     "page_content": doc.page_content,
-#                     "metadata": doc.metadata,
-#                 }
-#                 for doc in response
-#             ]
-#         }
-#     elif body.query_type == "llm":
-#         CHAIN: RetrievalQA = build_sagemaker_llm_chain(
-#             kendra_index_id=KENDRA_INDEX_ID,
-#             aws_region=REGION,
-#             llm_type="rinna",
-#         )
-#         query: str = body.query
-#         return run_chain(CHAIN, query)
-#     else:
-#         raise HTTPException(status_code=404, detail="Invalid query type")
-
-
-# @app.post("/v1/playground/rinna")
-# async def rinna_playground(body: RinnaPlaygroundReqBody):
-#     """rinna へのプロンプトエンジニアリングを行う場所"""
-#     input_template = body.input_template
-#     instruction_template = body.instruction_template
-#     model_kwargs = body.model_kwargs.dict()
-#     chain = build_rinna_llm_chain(
-#         input_template,
-#         instruction_template,
-#         kendra_index_id=KENDRA_INDEX_ID,
-#         endpoint_name=ENDPOINT_NAME,
-#         model_kwargs=model_kwargs,
-#         aws_region=REGION,
-#     )
-#     return run_chain(chain, body.query)
-
-
-# @app.post("/v1/playground/calm")
-# async def calm_playground(body: CalmPlaygroundReqBody):
-#     """OpenCaLM を LLM とした RetrievalQA の動作確認をする場所"""
-#     prompt_template = body.prompt_template
-#     model_kwargs = body.model_kwargs.dict()
-#     chain = build_calm_llm_chain(
-#         prompt_template,
-#         KENDRA_INDEX_ID,
-#         endpoint_name=CALM_ENDPOINT_NAME,
-#         model_kwargs=model_kwargs,
-#         aws_region=REGION,
-#     )
-#     return run_chain(chain, body.query)
-
-
-# @app.post("/v2/rag/query")
-# async def handle_message(body: RagQueryBody):
-#     """Kendra への検索 + LLM による要約を兼ね備えた API"""
-#     CHAIN: RetrievalQA = build_sagemaker_llm_chain(
-#         kendra_index_id=KENDRA_INDEX_ID, aws_region=REGION, llm_type=body.llm_type
-#     )
-#     query: str = body.query
-#     return run_chain(CHAIN, query)
 
 
 @app.post("/v2/llm-with-doc")
