@@ -12,4 +12,4 @@ RUN useradd appuser && chown -R appuser /app
 USER appuser
 
 ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "4"]
-HEALTHCHECK CMD http://localhost/
+HEALTHCHECK CMD curl -s -S -o /dev/null http://localhost:8080/docs || exit 1
