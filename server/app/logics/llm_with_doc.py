@@ -2,6 +2,7 @@ from typing import Literal
 
 from chain import (
     build_claude_chain,
+    build_claude_chain_without_doc,
     build_rinna_chain,
     run_claude_chain,
     run_rinna_chain,
@@ -20,6 +21,9 @@ def llm_with_doc(
         chain = build_rinna_chain(endpoint_name, aws_region)
         return run_rinna_chain(chain, body)
     elif llm_type == "claude":
-        chain = build_claude_chain()
+        if body.documents:
+            chain = build_claude_chain()
+        else:
+            chain = build_claude_chain_without_doc()
         return run_claude_chain(chain, body)
     raise ValueError(f"unsupported LLM")

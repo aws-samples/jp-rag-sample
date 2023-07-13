@@ -23,6 +23,18 @@ Assistant:""",
     return LLMChain(llm=claude, prompt=prompt)
 
 
+def build_claude_chain_without_doc():
+    """ context が与えられていない場合、 Contextを含めない Prompt とする Chain"""
+    claude = ChatAnthropic(anthropic_api_key=ANTHROPIC_API_KEY)
+    prompt = PromptTemplate(
+        template="""Human: {question}
+
+Assistant:""",
+        input_variables=["question"],
+    )
+    return LLMChain(llm=claude, prompt=prompt)
+
+
 def run_claude_chain(chain: LLMChain, body: LLMWithDocReqBody):
     return chain.run(
         context=_make_context_for_claude_from_docs(body.documents),
