@@ -27,6 +27,7 @@ import {
 import {
   ChevronDownIcon
 } from '@chakra-ui/icons';
+import { CustomSetupTOTP } from './TOTP.tsx'
 import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
 import { getKendraQuery, inference, kendraQuery } from '../services/AWS';
@@ -34,9 +35,11 @@ import { SEARCH_MODE_LIST } from '../utils/constant';
 import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '../utils/function';
 import { Conversation, DocumentForInf } from '../utils/interface';
 import { UseAuthenticator } from '@aws-amplify/ui-react-core';
+import { AmplifyUser } from '@aws-amplify/ui';
+
 export type SignOut = UseAuthenticator['signOut'];
 
-export default function TopBar({ logout }: { logout: SignOut | undefined }) {
+export default function TopBar({ logout, user }: { logout: SignOut | undefined, user: AmplifyUser | undefined },) {
   const {
     currentConversation: currentConversation,
     setCurrentConversation: setCurrentConversation,
@@ -403,9 +406,18 @@ export default function TopBar({ logout }: { logout: SignOut | undefined }) {
         </InputGroup>
       </Flex>
       <HStack display={"flex"} justifyContent={"flex-end"} width={"100%"}>
-        <Button backgroundColor={"transparent"} onClick={logout} aria-label="show-pinned-texts" >
-          ログアウト
-        </Button>
+        <Menu>
+          <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+            アカウント
+          </MenuButton>
+          <MenuList>
+            <CustomSetupTOTP user={user} issuer="jp-rag-sample" handleAuthStateChange={() => null}></CustomSetupTOTP>
+            <MenuItem onClick={logout}>ログアウト</MenuItem>
+          </MenuList>
+          {/* <Button backgroundColor={"transparent"}  aria-label="show-pinned-texts" >
+            ログアウト
+          </Button> */}
+        </Menu>
         <IconButton icon={<AiOutlinePushpin />} backgroundColor={"transparent"} onClick={onOpen} aria-label="show-pinned-texts" />
         <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />

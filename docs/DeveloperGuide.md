@@ -60,3 +60,9 @@
 - バックエンド API は Amplify の [Serverless Container](https://docs.amplify.aws/cli/usage/containers/) 機能を利用しています。裏側では CodePipeline + CodeBuild でイメージをビルドし、Fargate にデプロイしており、API Gateway + Service Discovery によりリクエストをルーティングしています。これらは CloduFormation nested stack から確認することが可能です。
 - バックエンドの環境変数は Amplify がデプロイの際に `amplify/backend/api/fargate/src/docker-compose.yml` の内容を読み取り`amplify/backend/api/fargate/fargate-cloudformation-template.json` を書き換えコンテナの環境変数として渡しています。 
 
+## セキュリティ
+
+- このサンプルは MFA を登録することが可能です。
+- 必要に応じて Cognito の高度なセキュリティ機能を有効化することができます
+- 必要に応じて Cognito の Federated Identity Provider 機能を利用して SAML もしくは Open ID Connect 経由でのサインインを設定することができます。
+

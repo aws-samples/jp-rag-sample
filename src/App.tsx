@@ -113,7 +113,7 @@ function App() {
             setCurrentInputText: setCurrentInputText,
           }}>
             {/* API通信用のモック */}
-            <TopBar logout={signOut} />
+            <TopBar logout={signOut} user={user}/>
             <FilterBar>
               <InteractionArea />
             </FilterBar>
