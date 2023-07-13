@@ -1,3 +1,7 @@
+# Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+# Licensed under the Amazon Software License  http://aws.amazon.com/asl/
+
 from kendra import KendraIndexRetriever
 from langchain.chains import RetrievalQA
 from llm import make_sagemaker_backed_llm, rinna_prompt

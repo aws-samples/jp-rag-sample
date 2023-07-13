@@ -1,3 +1,7 @@
+// Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+// Licensed under the Amazon Software License  http://aws.amazon.com/asl/
+
 import { SortingConfiguration, AttributeFilter, QueryCommandOutput } from "@aws-sdk/client-kendra";
 import { DEFAULT_SORT_ATTRIBUTE, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
 import { Filter, selectItemType } from "./interface";
