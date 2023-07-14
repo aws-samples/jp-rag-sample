@@ -4,7 +4,7 @@
 
 ### 1. Kendra のインデックスを作成
 
-1. Kendra のインデックスを作成する。（参考：指定したサイトから自動でデータをクローリングしてインデックスする [CloudFormation Template サンプル](docs/kendra-docs-index.yaml))
+1. Kendra のインデックスを作成する。（参考：指定したサイトから自動でデータをクローリングしてインデックスする [CloudFormation Template サンプル](../kendra/kendra-docs-index.yaml))
 
 ### 2. LLM を SageMaker Endpoint にデプロイ
 
@@ -13,10 +13,17 @@
 ### 3. アプリのデプロイ
 
 1. `npm install -g @aws-amplify/cli@12.1.1` で Amplify CLI のインストール
-2. `amplify init` でプロジェクトを初期化
-3. `cp .env.development-template .env`　で環境変数ファイルの作成
-4. `amplify/backend/api/fargate/src/docker-compose.yml` と `.env` の環境変数を変更する
-5. `amplify publish -y` でデプロイ
+2. `amplify configure` で認証情報を設定。リージョンの設定がアプリケーションのリージョンになるため注意。
+3. `npm i` でライブラリをインストール
+4. `amplify init` でプロジェクトを初期化
+   1. ? Do you want to use an existing environment? No
+   2. ? Enter a name for the environment devthree    # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。ファイルごと削除してしまっても問題ない。
+5. `cp .env.development-template .env`　で環境変数ファイルの作成
+6. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を変更する
+   1. `KENDRA_INDEX_ID` を Kendra の Index ID に指定する。
+7. `.env` の環境変数を変更する
+   1. `VITE_INDEX_ID` を Kendra の Index ID に指定する。
+8. `amplify publish -y` でデプロイ
 
 ## ローカル開発
 
@@ -51,7 +58,7 @@
 |       |-- api/fargate            # バックエンド API
 |       |-- auth                   # Cognito 設定
 |       |-- hosting                # ホスティング 設定
-|-- docs
+|-- kendra
 |   |-- kendra-docs-index.yaml     # Kendra 構築の CloudFormation サンプル
 |-- llm                            # SageMaker エンドポイントをデプロイするサンプルスクリプト
 ```
@@ -65,4 +72,4 @@
 - このサンプルは MFA を登録することが可能です。
 - 必要に応じて Cognito の高度なセキュリティ機能を有効化することができます
 - 必要に応じて Cognito の Federated Identity Provider 機能を利用して SAML もしくは Open ID Connect 経由でのサインインを設定することができます。
-
+- コンテナのロギング有効になっています。追加で API Gateway のロギングを有効にすることも可能です。

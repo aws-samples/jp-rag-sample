@@ -18,11 +18,13 @@ https://xxxx.amplifyapp.com
 
 |               リソース             | 1月あたりのコスト ($USD) |
 | --------------------------------- | ---------------------:|
-| Kendra Index                      |  1008  |
+| Kendra Index                      |  810   |
 | SageMaker Endpoint (g4dn.xlarge)  |  530   |
 | Fargate (0.5 vCPU, 1 GB Memory)   |  18    |
 | Amplify                           |  5     |
-| 合計                               |  1561  |  
+| 合計                               |  1363  |  
+
+* 価格は 開発時点での内容になります。最新情報は AWS 公式ウェブサイト（https://aws.amazon.com/）にてご確認ください。
 
 ## LICENSE
 

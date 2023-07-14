@@ -58,7 +58,7 @@
       "Fn::And": [
         {
           "Fn::Equals": [
-            true,
+            false,
             true
           ]
         },
@@ -2251,7 +2251,7 @@
           "Ref": "Api"
         },
         "IntegrationType": "HTTP_PROXY",
-        "ConnectionId": {
+        "C ZonnectionId": {
           "Ref": "NetworkStackVpcLinkId"
         },
         "ConnectionType": "VPC_LINK",
