@@ -1,9 +1,33 @@
 # JP RAG SAMPLE (Server)
 
+## フォルダ構造
+
+```zsh
+.
+├── Dockerfile  # Dockerコンテナを構築するための設定ファイル
+├── NOTICE
+├── README.md
+├── app  # アプリケーションの主要なコードを格納
+│   ├── chain  # chain を構築する際のコードを格納
+│   │   ├── __init__.py
+│   │   ├── claude.py  # claude を利用した chain の定義
+│   │   └── rinna.py  # rinna を利用した chain の定義
+│   ├── logics  # 各種 API ごとのロジックの詳細を定義したコードを格納
+│   │   ├── __init__.py
+│   │   └── llm_with_doc.py  # POST /llm-with-doc
+│   ├── main.py  # アプリケーションのエントリーポイント
+│   └── schemas.py  # アプリケーションのデータ構造を定義したファイル
+├── build_and_run.sh  # ローカルでコンテナイメージを立ち上げて実行する手順を実行するスクリプト
+├── ecr_push.sh  # Amazon ECR にコンテナイメージをビルドしてプッシュする手順を実行するスクリプト
+├── requirements-dev.txt  # 開発環境で必要なパッケージ
+├── requirements.txt  # 本番環境で必要なパッケージ
+└── source.bat
+```
+
 ## ローカル開発
 
 ```zsh
-export AWS_REGION="us-weest-2"
+export AWS_REGION="us-west-2"
 export ALLOW_ORIGINS="http://localhost:5173"
 export SAGEMAKER_ENDPOINT_NAME="Rinna-Inference"
 export CALM_ENDPOINT_NAME="Open-calm-7b-ft3"
