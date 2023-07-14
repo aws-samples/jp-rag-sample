@@ -11,12 +11,17 @@ services:
       - ALLOW_ORIGINS=*
       - SAGEMAKER_ENDPOINT_NAME=Rinna-Inference
       - CALM_ENDPOINT_NAME=Open-calm-7b-ft3
-      - KENDRA_INDEX_ID=299292dd-9702-4909-ab48-eda8d4049a67
-      - ANTHROPIC_API_KEY=
       - LLM=rinna
+    secrets:
+      - KENDRA_INDEX_ID
+      # - ANTHROPIC_API_KEY
     networks:
-      - public
       - private
 networks:
   public:
   private:
+secrets:
+  KENDRA_INDEX_ID:
+    file: ../secrets/.secret-kendra
+  # ANTHROPIC_API_KEY:
+  #   file: ../secrets/.secret-anthropic

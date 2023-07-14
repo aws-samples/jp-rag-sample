@@ -58,7 +58,7 @@
       "Fn::And": [
         {
           "Fn::Equals": [
-            false,
+            true,
             true
           ]
         },
@@ -150,14 +150,6 @@
                 "Value": "Open-calm-7b-ft3"
               },
               {
-                "Name": "KENDRA_INDEX_ID",
-                "Value": "299292dd-9702-4909-ab48-eda8d4049a67"
-              },
-              {
-                "Name": "ANTHROPIC_API_KEY",
-                "Value": ""
-              },
-              {
                 "Name": "LLM",
                 "Value": "rinna"
               }
@@ -199,6 +191,23 @@
               {
                 "ContainerPort": 8080,
                 "Protocol": "tcp"
+              }
+            ],
+            "Secrets": [
+              {
+                "Name": "KENDRA_INDEX_ID",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:secretsmanager:us-west-2:867115166077:secret:",
+                      {
+                        "Ref": "rootStackName"
+                      },
+                      "-fargate-KENDRA_INDEX_ID"
+                    ]
+                  ]
+                }
               }
             ]
           }
@@ -316,6 +325,25 @@
                       "Ref": "langchainContainerLogGroup3351448A"
                     },
                     ":*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:secretsmanager:us-west-2:867115166077:secret:",
+                    {
+                      "Ref": "rootStackName"
+                    },
+                    "-fargate-KENDRA_INDEX_ID-??????"
                   ]
                 ]
               }
@@ -2251,7 +2279,7 @@
           "Ref": "Api"
         },
         "IntegrationType": "HTTP_PROXY",
-        "C ZonnectionId": {
+        "ConnectionId": {
           "Ref": "NetworkStackVpcLinkId"
         },
         "ConnectionType": "VPC_LINK",
