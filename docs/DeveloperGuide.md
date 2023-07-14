@@ -19,7 +19,7 @@
    1. ? Do you want to use an existing environment? No
    2. ? Enter a name for the environment mydev    # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。先にファイルごと削除してしまっても問題ない。
 5. バックエンドの環境変数を設定する
-   1. `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の　Index を入れる。
+   1. `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を入れる。
    2. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
    3. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する
 6. フロントエンドの環境変数を設定する

@@ -6,10 +6,6 @@
 
 ![](docs/rag-architecture.png)
 
-## デモ
-
-https://xxxx.amplifyapp.com
-
 ## デプロイ/開発
 
 [開発者ガイド](./docs/DeveloperGuide.md) をご参照ください。
@@ -24,7 +20,7 @@ https://xxxx.amplifyapp.com
 | Amplify                           |  5     |
 | 合計                               |  1363  |  
 
-* 価格は 開発時点での内容になります。最新情報は AWS 公式ウェブサイト（https://aws.amazon.com/）にてご確認ください。
+* 価格は 開発時点での内容になります。最新情報は AWS 公式ウェブサイト（https://aws.amazon.com/ ）にてご確認ください。
 
 ## LICENSE
 
