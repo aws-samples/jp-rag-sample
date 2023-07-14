@@ -2398,7 +2398,7 @@
                 "sagemaker:InvokeEndpoint"
               ],
               "Resource": [
-                "*"
+                "arn:aws:sagemaker:*:*:endpoint/*"
               ],
               "Effect": "Allow"
             },
@@ -2407,7 +2407,7 @@
                 "sagemaker:ListEndpoints"
               ],
               "Resource": [
-                "*"
+                "arn:aws:sagemaker:*:*:endpoint/*"
               ],
               "Effect": "Allow"
             },
@@ -2419,7 +2419,7 @@
                 "kendra:GetQuerySuggestions"
               ],
               "Resource": [
-                "*"
+                "arn:aws:kendra:*:*:index/*"
               ],
               "Effect": "Allow"
             }
