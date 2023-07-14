@@ -15,6 +15,7 @@ ANTHROPIC_API_KEY: str = os.environ.get("ANTHROPIC_API_KEY", None)
 
 
 def build_claude_chain():
+    """claude を LLM として利用する場合の Chain の作成"""
     claude = ChatAnthropic(anthropic_api_key=ANTHROPIC_API_KEY)
     prompt = PromptTemplate(
         template="""Human: 資料:
@@ -29,7 +30,7 @@ Assistant:""",
 
 
 def build_claude_chain_without_doc():
-    """context が与えられていない場合、 Contextを含めない Prompt とする Chain"""
+    """context が与えられていない場合のプロンプトを使う Chain の作成"""
     claude = ChatAnthropic(anthropic_api_key=ANTHROPIC_API_KEY)
     prompt = PromptTemplate(
         template="""Human: {question}
@@ -41,6 +42,7 @@ Assistant:""",
 
 
 def run_claude_chain(chain: LLMChain, body: LLMWithDocReqBody):
+    """claude の Chain を実行する"""
     return chain.run(
         context=_make_context_for_claude_from_docs(body.documents),
         question=body.userUtterance,

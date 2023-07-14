@@ -12,7 +12,7 @@ from schemas import KendraDocument, LLMWithDocReqBody
 
 
 class RinnaContentHandler(LLMContentHandler):
-    """SageMaker 上にホストした rinna のモデルに対しての入出力のハンドリング方法を記載"""
+    """SageMaker 上にホストした rinna のモデルに対しての入出力のハンドリング方法を記載したクラス"""
 
     content_type = "application/json"
     accepts = "application/json"
@@ -34,7 +34,7 @@ class RinnaContentHandler(LLMContentHandler):
 
 
 def build_rinna_chain(endpoint_name: str, aws_region: str) -> LLMChain:
-    """rinna を背後に置いた形での chain を"""
+    """rinna を背後に置いた形での Chain を作成する関数"""
     prompt = PromptTemplate(
         input_variables=["context", "question"],
         template="""システム: システムは資料から抜粋して質問に答えます。資料にない内容は答えず「わかりません」と答えます。
@@ -63,6 +63,7 @@ def build_rinna_chain(endpoint_name: str, aws_region: str) -> LLMChain:
 
 
 def run_rinna_chain(chain: LLMChain, body: LLMWithDocReqBody):
+    """rinna を用いた Chain を実行する関数"""
     context = _make_context_for_rinna_from_docs(body.documents)
     return chain.run(context=context, question=body.userUtterance)
 

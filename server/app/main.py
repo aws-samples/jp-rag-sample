@@ -78,7 +78,7 @@ async def kendra_send(body: Dict, _: CognitoToken = Depends(cognito_ja.auth_requ
 async def kendra_describe(
     body: Dict, _: CognitoToken = Depends(cognito_ja.auth_required)
 ):
-    """Kendra の DesribeIndex API を透過的に叩く"""
+    """Kendra の DesribeIndex API をキックする"""
     kendra_request_body = body["input"]
     response = kendra_client.describe_index(**kendra_request_body)
     return response
