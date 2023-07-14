@@ -13,7 +13,7 @@ from langchain.prompts import PromptTemplate
 from schemas import KendraDocument, LLMWithDocReqBody
 from langchain.chat_models import ChatAnthropic
 
-ANTHROPIC_API_KEY: str = os.environ["ANTHROPIC_API_KEY"]
+ANTHROPIC_API_KEY: str = os.environ.get("ANTHROPIC_API_KEY", "")
 LLM: str = os.environ["LLM"]
 if ANTHROPIC_API_KEY and LLM:
     CLAUDE = ChatAnthropic(anthropic_api_key=ANTHROPIC_API_KEY)
