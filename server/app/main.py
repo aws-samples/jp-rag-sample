@@ -1,8 +1,7 @@
 # Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
 # Licensed under the Amazon Software License  http://aws.amazon.com/asl/
-
-"""main logics for FastAPI
+"""FastAPI で用意する各種 API を定義するモジュール
 """
 import os
 from typing import Dict, Literal

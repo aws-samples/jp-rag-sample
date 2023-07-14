@@ -1,7 +1,8 @@
 # Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
 # Licensed under the Amazon Software License  http://aws.amazon.com/asl/
-import os
+"""API /llm_with_doc のロジックを定義するモジュール
+"""
 from typing import Literal
 
 from chain import (
@@ -11,15 +12,8 @@ from chain import (
     run_claude_chain,
     run_rinna_chain,
 )
-from langchain.chat_models import ChatAnthropic
 from langchain.prompts import PromptTemplate
 from schemas import LLMWithDocReqBody
-
-ANTHROPIC_API_KEY: str = os.environ["ANTHROPIC_API_KEY"]
-LLM: str = os.environ["LLM"]
-if ANTHROPIC_API_KEY and LLM:
-    CLAUDE = ChatAnthropic(anthropic_api_key=ANTHROPIC_API_KEY)
-
 
 prompt = PromptTemplate(
     input_variables=["context", "question"],
