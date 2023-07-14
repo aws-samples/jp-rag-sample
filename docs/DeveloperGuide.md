@@ -34,10 +34,9 @@
 ### バックエンド
 
 1. `cd amplify/backend/api/fargate/src/langchain`
-2. `docker build -t langchain:1.0 .`
-3. `cp .env.development-template .env`
-4. `.env` ファイルを編集
-5. `docker run -p 8080:8080 --env-file=.env langchain:1.0`
+2. `cp .env.development-template .env`
+3. `.env` ファイルを編集
+4. `./build_and_run.sh`
 
 ### フロントエンド
 
@@ -48,8 +47,10 @@
 
 ### 変更のデプロイ
 
-バックエンドのみデプロイ：`amplify push -y`
-全てデプロイ：`amplify publish -y`
+1. 忘れずにフロントエンドの `.env` ファイルの `VITE_SERVER_URL` をコメントアウトする
+2. デプロイ
+   1. バックエンドのみデプロイ：`amplify push -y`
+   2. 全てデプロイ：`amplify publish -y`
 
 ## プロジェクト構造についての解説
 
