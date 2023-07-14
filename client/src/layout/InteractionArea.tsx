@@ -1,3 +1,7 @@
+// Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+// Licensed under the Amazon Software License  http://aws.amazon.com/asl/
+
 import { Flex, StackDivider, VStack } from "@chakra-ui/layout"
 import { useGlobalContext } from '../App';
 import Human from './SpeachBalloon/Human';

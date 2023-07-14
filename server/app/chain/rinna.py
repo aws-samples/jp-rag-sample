@@ -1,5 +1,6 @@
-"""LangChain で構成する chain を定義するファイル
-"""
+# Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+# Licensed under the Amazon Software License  http://aws.amazon.com/asl/
 import json
 from typing import List
 

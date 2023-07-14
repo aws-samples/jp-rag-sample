@@ -1,3 +1,6 @@
+# Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+# Licensed under the Amazon Software License  http://aws.amazon.com/asl/
 import os
 from typing import List
 
@@ -24,7 +27,7 @@ Assistant:""",
 
 
 def build_claude_chain_without_doc():
-    """ context が与えられていない場合、 Contextを含めない Prompt とする Chain"""
+    """context が与えられていない場合、 Contextを含めない Prompt とする Chain"""
     claude = ChatAnthropic(anthropic_api_key=ANTHROPIC_API_KEY)
     prompt = PromptTemplate(
         template="""Human: {question}
