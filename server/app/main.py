@@ -20,7 +20,7 @@ origins = os.environ["ALLOW_ORIGINS"].split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    # allow_credentials=True,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -31,7 +31,6 @@ LLM: Literal["rinna", "claude"] = os.environ.get("LLM", "rinna")
 kendra_client = boto3.client("kendra", region_name=REGION)
 
 
-# jwt validation
 class Settings(BaseSettings):
     check_expiration = True
     jwt_header_prefix = "Bearer"
