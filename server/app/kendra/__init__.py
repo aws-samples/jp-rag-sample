@@ -1,1 +1,0 @@
-from kendra.kendra_index_retriever import KendraIndexRetriever
