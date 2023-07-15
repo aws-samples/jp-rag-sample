@@ -5,7 +5,7 @@
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react";
 import TopBar from "./layout/TopBar.tsx"
 import FilterBar from './layout/FilterBar.tsx'
-import { getSortOrderFromIndex, setS3Client, setJwtToken } from "./services/AWS.ts";
+import { getSortOrderFromIndex, setS3Client, setJwtToken } from "./utils/service.ts";
 import { Conversation, Filter } from "./utils/interface.tsx";
 import InteractionArea from "./layout/InteractionArea.tsx";
 import { DEFAULT_LANGUAGE, DEFAULT_SEARCH_MODE } from "./utils/constant.tsx";

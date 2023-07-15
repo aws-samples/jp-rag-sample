@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
 // Licensed under the Amazon Software License  http://aws.amazon.com/asl/
 
-import { SortingConfiguration, AttributeFilter, QueryCommandOutput } from "@aws-sdk/client-kendra";
+import { SortingConfiguration, AttributeFilter, QueryCommandOutput, AdditionalResultAttribute, TextWithHighlights } from "@aws-sdk/client-kendra";
 import { DEFAULT_SORT_ATTRIBUTE, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
 import { Filter, selectItemType } from "./interface";
 
@@ -243,4 +243,31 @@ export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
         }
     }
     return fs
+}
+
+
+export function getFAQWithHighlight(AdditionalAttributes: AdditionalResultAttribute[], targetName: string): TextWithHighlights | undefined {
+    // FAQからQuestion もしくは Answerを取り出す
+
+
+    for (let i = 0; i < AdditionalAttributes.length; i++) {
+        if (AdditionalAttributes[i].Key === targetName) {
+            return AdditionalAttributes[i].Value?.TextWithHighlightsValue
+        }
+    }
+    return { Highlights: [], Text: "該当なし" }
+}
+
+
+export function getNounAnswerFromExcerpt(textWithHighlights: TextWithHighlights | undefined): string {
+    // AnswerText から 名詞を取り出す
+
+    if (textWithHighlights?.Highlights?.length === 1) {
+        const highlight = textWithHighlights.Highlights[0];
+        const begin = highlight.BeginOffset ?? 0;
+        const end = highlight.EndOffset ?? textWithHighlights.Text?.length ?? 0;
+
+        return textWithHighlights.Text?.substring(begin, end) ?? "";
+    }
+    return "";
 }

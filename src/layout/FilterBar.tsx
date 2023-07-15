@@ -28,7 +28,7 @@ import { LANGUAGE_INDEX, LANGUAGES, SORT_ORDER_INDEX, SORT_ATTRIBUTE_INDEX, SORT
 import { Filter, selectItemType } from '../utils/interface';
 import { useGlobalContext } from "../App";
 import { getAttributeFilter, getCurrentSortOrder, isArrayBoolean, isArrayDate, isArrayNumber, isArrayString } from "../utils/function";
-import { kendraQuery, overwriteQuery } from "../services/AWS";
+import { kendraQuery, overwriteQuery } from "../utils/service";
 
 
 const SelectBoxes: React.FC<{

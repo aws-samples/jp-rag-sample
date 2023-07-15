@@ -18,15 +18,18 @@
 |  |  |  |--components  # 吹き出しを構成する部品
 |  |  |  |  |--AICore.tsx  # AIのCore部品。AIとRAGから被参照
 |  |  |  |  |--HighlightedTexts.tsx  # 太文字表示をする部品
+|  |  |  |  |--KendraResultDoc.tsx  # Kendra からのresponseのうち　document list を表示する部品
+|  |  |  |  |--KendraResultExcerpt.tsx  # Kendra からのresponseのうち 抜粋を表示する部品
+|  |  |  |  |--KendraResultFAQ.tsx  # Kendra からのresponseのうち FAQ を表示する部品
+|  |  |  |  |--KendraResultFeatured.tsx  # Kendra からのresponseのうち Featured result を表示する部品
 |  |  |  |  |--QuotedTexts.tsx  # 引用部分(eg.[0])をリンクにする部品
 |  |  |--TOTP.tsx  # 検索バー内のMFAを表示する部品
 |  |  |--TopBar.tsx  # 画面上部にある検索バー (TopBar)
 |  |--main.tsx  # Reactアプリケーションのエントリーポイント
-|  |--services  # ユーティリティ
-|  |  |--AWS.ts  # server との通信をする関数定義 (utils/function.tsx に統合予定)
 |  |--utils  # ユーティリティ
 |  |  |--constant.tsx  # 定数
 |  |  |--function.tsx  # server からの response を client 表示ように format を変更する関数定義
 |  |  |--interface.tsx  # server からの response の型定義
+|  |  |--serivce.tsx  # server との通信をする関数定義
 |  |--vite-env.d.ts  # 環境変数の型定義
 ```

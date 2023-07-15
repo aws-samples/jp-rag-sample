@@ -30,7 +30,7 @@ import {
 import { CustomSetupTOTP } from './TOTP.tsx'
 import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
-import { getKendraQuery, inference, kendraQuery } from '../services/AWS';
+import { getKendraQuery, inference, kendraQuery } from '../utils/service.ts';
 import { SEARCH_MODE_LIST } from '../utils/constant';
 import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '../utils/function';
 import { Conversation, DocumentForInf } from '../utils/interface';

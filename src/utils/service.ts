@@ -5,8 +5,8 @@
 import { AttributeFilter, DescribeIndexCommand, QueryCommand, QueryCommandInput, QueryCommandOutput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { DataForInf, Filter, selectItemType } from "../utils/interface";
-import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "../utils/constant";
+import { DataForInf, Filter, selectItemType } from "./interface";
+import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "./constant";
 import { Amplify } from 'aws-amplify';
 import awsconfig from "../aws-exports";
 
