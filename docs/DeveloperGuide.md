@@ -17,17 +17,20 @@
 3. `npm i` でライブラリをインストール
 4. `amplify init` でプロジェクトを初期化
    1. ? Do you want to use an existing environment? No
-   2. ? Enter a name for the environment mydev    # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。先にファイルごと削除してしまっても問題ない。
+   2. ? Enter a name for the environment dev
 5. バックエンドの環境変数を設定する
-   1. `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を入れる。
-   2. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
+   1. Kendra のインデックスをシークレットに追加する：`echo -n <KENDRA_INDEX> > amplify/backend/api/fargate/secrets/.secret-kendra` 
+   2. (Anthropic を使用する場合) 
+      1. Anthropic の API キーをシークレットに追加する： `echo -n <ANTHROPIC_API_KEY> > amplify/backend/api/fargate/secrets/.secret-anthropic` 
+      2. `amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
    3. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する
 6. フロントエンドの環境変数を設定する
    1. `cp .env.development-template .env`　でフロントエンド用の環境変数ファイルの作成
    2.  `.env` の環境変数を変更する
       1. `VITE_INDEX_ID` を Kendra の Index ID に指定する。
 7.  `amplify publish` でデプロイ
-    1. ? Secret configuration detected. Do you wish to store new values in the cloud? Yes  # <- 初回は Secret Manager に保存する
+    1. Are you sure you want to continue? (Y/n) · yes
+    2. ? Secret configuration detected. Do you wish to store new values in the cloud? Yes  # <- 初回は Secret Manager に保存する
 
 ## ローカル開発
 
@@ -52,20 +55,37 @@
    1. バックエンドのみデプロイ：`amplify push -y`
    2. 全てデプロイ：`amplify publish -y`
 
+## 環境の削除
+
+1. `amplify env remove <env>`
+
 ## プロジェクト構造についての解説
 
 ```
 .
-|-- src                            # フロントエンド
+|-- docs                           # ドキュメント
+|
 |-- amplify
 |   |-- team-provider-info.json    # Amplify の環境設定
 |   |-- backend
 |       |-- api/fargate            # バックエンド API
+|       |   |-- src                # バックエンドのコード
+|       |   |-- secrets            # シークレットを格納するファイル
+|       |
 |       |-- auth                   # Cognito 設定
 |       |-- hosting                # ホスティング 設定
+|
 |-- kendra
 |   |-- kendra-docs-index.yaml     # Kendra 構築の CloudFormation サンプル
-|-- llm                            # SageMaker エンドポイントをデプロイするサンプルスクリプト
+|
+|-- llm
+|   |-- deploy_llm.sh              # SageMaker エンドポイントをデプロイするサンプルスクリプト
+|   |-- delete_llm.sh              # SageMaker エンドポイントを削除するサンプルスクリプト
+|
+|-- amplify.yml                    # Amplify コンソールを使った CICD の際のマニフェスト
+|
+|-- src                            # フロントエンド
+|-- *                              # フロントエンド関連 / その他
 ```
 
 - フロントエンドは Amplify Hosting でデプロイされます。その際、Amplify により生成されるバックエンドの情報（ `src/aws-exports.js`）および ローカルの環境変数（`.env` ファイルの内容）を使用してビルドします。Kendra のインデックス情報は環境変数（`VITE_INDEX_ID`）で反映する必要があります。ローカルのバックエンドでテストする際には `VITE_SERVER_URL` でローカルのエンドポイントを指定することでエンドポイントを上書きすることができます。
