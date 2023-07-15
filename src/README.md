@@ -33,3 +33,8 @@
 |  |  |--serivce.tsx  # server との通信をする関数定義
 |  |--vite-env.d.ts  # 環境変数の型定義
 ```
+
+## ローカル開発
+```
+npm run dev
+```
