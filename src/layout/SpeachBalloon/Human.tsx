@@ -8,6 +8,9 @@ import { Conversation } from "../../utils/interface";
 import { useGlobalContext } from "../../App";
 
 const Human: React.FC<{ data: Conversation }> = ({ data }) => {
+    // 人の入力文字の吹き出し
+
+
     const {
         pinnedTexts: pinnedTexts,
         setPinnedTexts: setPinnedTexts,

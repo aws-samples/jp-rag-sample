@@ -43,7 +43,7 @@ export const LANGUAGES: selectItemType[] = [
   { name: "Turkish", value: "tr" }
 ]
 
-export const DEFAULT_LANGUAGE:string = "ja";
+export const DEFAULT_LANGUAGE: string = "ja";
 
 export const DEFAULT_SORT_ATTRIBUTE = "Relevance";
 

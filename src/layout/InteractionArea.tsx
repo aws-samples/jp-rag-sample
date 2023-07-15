@@ -10,6 +10,9 @@ import AI from './SpeachBalloon/AI';
 import Kendra from './SpeachBalloon/Kendra';
 
 const InteractionArea = () => {
+    // 画面中央の表示
+
+
     const {
         currentConversation: currentConversation,
     } = useGlobalContext();

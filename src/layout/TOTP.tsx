@@ -29,6 +29,9 @@ interface CustomSetupTOTPProps {
 }
 
 export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
+  // MFA 機能
+
+
   const [mfaEnabled, setMfaEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isVerifyingToken, setIsVerifyingToken] = useState(false);
@@ -38,6 +41,8 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const toast = useToast()
 
+
+  // totp(Time-based One-time Password) を生成
   const getTotpCode = (
     issuer: string,
     username: string,
@@ -49,8 +54,12 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
 
   const totpUsername = props.user?.getUsername() || '';
 
+
   const generateQRCode = React.useCallback(
     async (currentUser: AmplifyUser): Promise<void> => {
+      // QRコードを生成
+
+
       try {
         const newSecretKey = await Auth.setupTOTP(currentUser);
         const totpCode = getTotpCode(props.issuer, totpUsername, newSecretKey);
@@ -66,8 +75,10 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
   );
 
   const verifyTotpToken = () => {
-    // After verifying, user will have TOTP account in his TOTP-generating app (like Google Authenticator)
-    // Use the generated one-time password to verify the setup
+    // 確認後、ユーザーは TOTP を生成するアプリ (Google 認証システムなど) に TOTP アカウントを持つ
+    // 生成されたワンタイムパスワードを使用して設定を検証
+
+
     setErrorMessage('');
     setIsVerifyingToken(true);
     Auth.verifyTotpToken(props.user, token)
@@ -120,7 +131,7 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
         <ModalContent>
           <ModalHeader>MFA の設定</ModalHeader>
           <ModalBody>
-            <form onSubmit={(event) => {event.preventDefault()}}>
+            <form onSubmit={(event) => { event.preventDefault() }}>
               {isLoading && <div>{'loading...'}</div>}
               {!isLoading && (
                 <>

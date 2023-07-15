@@ -30,6 +30,7 @@ import { useGlobalContext } from "../App";
 import { getAttributeFilter, getCurrentSortOrder, isArrayBoolean, isArrayDate, isArrayNumber, isArrayString } from "../utils/function";
 import { kendraQuery, overwriteQuery } from "../services/AWS";
 
+
 const SelectBoxes: React.FC<{
   onSelectionChange: (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -38,6 +39,9 @@ const SelectBoxes: React.FC<{
   itemList: selectItemType[]
   currentSelection: string
 }> = ({ onSelectionChange: onSelectionChange, title, itemList, currentSelection }) => {
+  // 選択ボックス
+
+
   return (
     <Box pb="3">
       <Text>{title}</Text>
@@ -54,6 +58,7 @@ const SelectBoxes: React.FC<{
   )
 }
 
+
 const SortOrderBox: React.FC<{
   onSortAttrChange: (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -66,6 +71,8 @@ const SortOrderBox: React.FC<{
   currentSortAttrSelection: string
   currentSortOrderSelection: string
 }> = ({ onSortAttrChange, onSortOrderChange, title, itemList, currentSortAttrSelection, currentSortOrderSelection }) => {
+  // 並び順
+
 
   return (
     <Box pb="3">
@@ -95,7 +102,7 @@ const CheckBoxes: React.FC<{
   itemList: selectItemType[]
   checkedItems: boolean[]
 }> = ({ onSelectionChange: onSelectionChange, title, itemList, checkedItems }) => {
-
+  // チェックボックス
   const allChecked = checkedItems.every(Boolean)
   const isIndeterminate = checkedItems.some(Boolean) && !allChecked
 
@@ -149,6 +156,9 @@ const RangeNumBox: React.FC<{
   itemList: selectItemType[]
   currentRange: number[]
 }> = ({ onValueChange: onValueChange, title, itemList, currentRange }) => {
+  // 数値範囲の選択ボックス
+
+
   return (
     <Box pb="3">
       <Text pb='5'>{title}</Text>
@@ -172,12 +182,16 @@ const RangeNumBox: React.FC<{
   )
 }
 
+
 const RangeDateBox: React.FC<{
   onStartDateChange: ChangeEventHandler<HTMLInputElement>
   onEndDateChange: ChangeEventHandler<HTMLInputElement>
   title: string
   currentTags: Date[]
 }> = ({ onStartDateChange: onStartDateChange, onEndDateChange: onEndDateChange, title, currentTags: currentRange }) => {
+  // 時間の範囲の選択ボックス
+
+
   return (
     <Box pb="3">
       <Text>{title}</Text>
@@ -202,6 +216,7 @@ const RangeDateBox: React.FC<{
   )
 }
 
+
 const ContainStringBox: React.FC<{
   onInsertTag: (
     value: string
@@ -210,7 +225,9 @@ const ContainStringBox: React.FC<{
   title: string
   currentTags: string[]
 }> = ({ onInsertTag, onDeleteTag, title, currentTags }) => {
-  {/* 自由入力 */ }
+  // 文字列
+
+
   const [text, setText] = useState("");
 
   return (
@@ -246,7 +263,11 @@ const ContainStringBox: React.FC<{
   )
 }
 
+
 export default function FilterBar({ children }: { children: ReactNode }) {
+  // 画面左にあるフィルター
+
+
   const {
     currentConversation: currentConversation,
     setCurrentConversation: setCurrentConversation,

@@ -18,7 +18,7 @@ import { useGlobalContext } from '../../App';
 import { Link } from '@chakra-ui/react'
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
-// FeaturedResultを表示する
+
 export const KendraResultFeatured: React.FC<{
     queryId: string | undefined,
     resultItems: FeaturedResultsItem[]
@@ -27,6 +27,9 @@ export const KendraResultFeatured: React.FC<{
     queryId,
     resultItems,
 }) => {
+        // FeaturedResultを表示する
+
+
         const {
             pinnedTexts: pinnedTexts,
             setPinnedTexts: setPinnedTexts,
@@ -83,11 +86,14 @@ export const KendraResultFeatured: React.FC<{
         }
     }
 
-// 抜粋した回答を返す
+
 export const KendraResultExcerpt: React.FC<{
     queryId: string | undefined,
     resultItems: QueryResultItem[]
 }> = ({ queryId, resultItems }) => {
+    // 抜粋した回答を返す
+
+
     const {
         pinnedTexts: pinnedTexts,
         setPinnedTexts: setPinnedTexts,
@@ -174,8 +180,11 @@ export const KendraResultExcerpt: React.FC<{
     }
 }
 
-// FAQからQuestion もしくは Answerを取り出す
+
 function getFAQWithHighlight(AdditionalAttributes: AdditionalResultAttribute[], targetName: string): TextWithHighlights | undefined {
+    // FAQからQuestion もしくは Answerを取り出す
+
+
     for (let i = 0; i < AdditionalAttributes.length; i++) {
         if (AdditionalAttributes[i].Key === targetName) {
             return AdditionalAttributes[i].Value?.TextWithHighlightsValue
@@ -184,8 +193,9 @@ function getFAQWithHighlight(AdditionalAttributes: AdditionalResultAttribute[], 
     return { Highlights: [], Text: "該当なし" }
 }
 
-// AnswerText から 名詞を取り出す
+
 function getNounAnswerFromExcerpt(textWithHighlights: TextWithHighlights | undefined): string {
+    // AnswerText から 名詞を取り出す
 
     if (textWithHighlights?.Highlights?.length === 1) {
         const highlight = textWithHighlights.Highlights[0];
@@ -197,7 +207,7 @@ function getNounAnswerFromExcerpt(textWithHighlights: TextWithHighlights | undef
     return "";
 }
 
-// FAQ を表示
+
 export const KendraResultFAQ: React.FC<{
     queryId: string | undefined,
     resultItems: QueryResultItem[]
@@ -206,6 +216,9 @@ export const KendraResultFAQ: React.FC<{
     queryId,
     resultItems,
 }) => {
+        // FAQ を表示
+
+
         const {
             pinnedTexts: pinnedTexts,
             setPinnedTexts: setPinnedTexts,
@@ -291,7 +304,7 @@ export const KendraResultFAQ: React.FC<{
         }
     }
 
-// 文章のリストを表示する
+
 export const KendraResultDoc: React.FC<{
     queryId: string | undefined,
     resultItems: QueryResultItem[]
@@ -300,6 +313,9 @@ export const KendraResultDoc: React.FC<{
     queryId,
     resultItems,
 }) => {
+        // 文章のリストを表示する
+
+
         const {
             pinnedTexts: pinnedTexts,
             setPinnedTexts: setPinnedTexts,
@@ -383,7 +399,11 @@ export const KendraResultDoc: React.FC<{
         }
     }
 
+    
 const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
+    // Kendraモード, RAGモード時の吹き出し
+
+
     const [featuredItems, setFeaturedItems] = useState<FeaturedResultsItem[]>([]);
     const [faqItems, setFaqItems] = useState<QueryResultItem[]>([]);
     const [excerptItems, setExcerptItems] = useState<QueryResultItem[]>([]);
@@ -395,7 +415,7 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
         const tmpExcerptItems: QueryResultItem[] = [];
         const tmpDocItems: QueryResultItem[] = [];
 
-        // Featured Item
+        // Featured Itemのデータを分離
         if (data && data?.kendraResponse?.FeaturedResultsItems) {
             for (const result of data.kendraResponse.FeaturedResultsItems) {
                 tmpFeaturedItems.push(result)
