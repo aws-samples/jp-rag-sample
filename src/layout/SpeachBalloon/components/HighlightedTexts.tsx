@@ -4,12 +4,15 @@
 
 import React from "react";
 import { Highlight, TextWithHighlights } from "@aws-sdk/client-kendra";
-
+// データの有無を確認
 export const isNullOrEmpty = (it: { readonly length: number }) => isNullOrUndefined(it) || it.length === 0;
 export const isNullOrUndefined = (it: any) => it === null || it === undefined;
 
-// highlightの順序を整理
+
 export function unionSortedHighlights(highlights: any) {
+    // highlightの順序を整理
+
+
     // highlightがなければそのまま返す
     if (isNullOrEmpty(highlights)) {
         return highlights;
@@ -32,7 +35,6 @@ export function unionSortedHighlights(highlights: any) {
 }
 
 
-// 重要な文字を切り取って強調する
 class HighlightedText extends React.Component<
     {
         text: string | undefined
@@ -40,6 +42,8 @@ class HighlightedText extends React.Component<
     },
     {}
 > {
+    // 重要な文字を切り取って強調
+
     render() {
         const { text, highlight } = this.props;
         return (
@@ -56,6 +60,9 @@ export default class HighlightedTexts extends React.Component<
     { textWithHighlights: TextWithHighlights },
     {}
 > {
+    // 重要な単語を太文字にする部品
+
+
     render() {
         const { textWithHighlights } = this.props;
 

@@ -5,29 +5,18 @@
 import { AttributeFilter, DescribeIndexCommand, QueryCommand, QueryCommandInput, QueryCommandOutput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { DataForInf, Filter, selectItemType } from "../utils/interface";
-import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "../utils/constant";
+import { DataForInf, Filter, selectItemType } from "./interface";
+import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "./constant";
 import { Amplify } from 'aws-amplify';
 import awsconfig from "../aws-exports";
 
 const _loadingErrors = [];
 
-// if (!import.meta.env.VITE_REGION) {
-//   _loadingErrors.push(
-//     "環境変数にREGIONがありません"
-//   );
-// }
 if (!import.meta.env.VITE_INDEX_ID) {
   _loadingErrors.push(
     "環境変数にINDEX_IDがありません"
   );
 }
-// if (!import.meta.env.VITE_SERVER_URL) {
-//   _loadingErrors.push(
-//     "環境変数にSERVER_URLがありません"
-//   );
-// }
-
 const hasErrors = _loadingErrors.length > 0;
 if (hasErrors) {
   console.error(JSON.stringify(_loadingErrors));
@@ -37,7 +26,6 @@ export const initAWSError: string[] = _loadingErrors;
 
 const region = awsconfig.aws_project_region ?? ""
 export const indexId: string = import.meta.env.VITE_INDEX_ID ?? ""
-// export const serverUrl: string = import.meta.env.VITE_SERVER_URL ?? ""
 const local_server = import.meta.env.VITE_SERVER_URL ?? ""
 const remote_server = awsconfig.aws_cloud_logic_custom[0].endpoint ?? ""
 export const serverUrl: string = local_server ? local_server : remote_server;
@@ -48,12 +36,6 @@ let jwtToken = ""
 
 Amplify.configure({
   ...awsconfig,
-  // Auth: {
-  //   region: region,
-  //   userPoolId: import.meta.env.VITE_USER_POOL_ID ?? "",
-  //   userPoolWebClientId: import.meta.env.VITE_USER_POOL_CLIENT_ID ?? "",
-  //   identityPoolId: import.meta.env.VITE_IDENTITY_POOL_ID ?? "",
-  // }
 });
 
 export function setJwtToken(token: string) {
@@ -208,17 +190,6 @@ export async function kendraQuery(param: QueryCommandInput) {
 
     }
   }
-
-
-  // if (data && data.ResultItems) {
-  //   for (const result of data.ResultItems) {
-  //     if (s3Client && result.DocumentURI && result.DocumentTitle?.Text) {
-
-  //     }
-  //   }
-  // }
-
-
   return data;
 }
 

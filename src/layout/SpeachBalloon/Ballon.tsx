@@ -7,7 +7,10 @@ import { Box, HStack, IconButton, Text } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useGlobalContext } from '../../App';
 
-const Ballon: React.FC<{  bid: number, text: string, children: ReactNode,}> = ({ bid, text, children }) => {
+const Ballon: React.FC<{ bid: number, text: string, children: ReactNode, }> = ({ bid, text, children }) => {
+    // 入力したクエリ文字と各種吹き出しを表示するコンポーネント
+
+
     const {
         setCurrentConversation: setCurrentConversation,
         history: history,
@@ -16,6 +19,7 @@ const Ballon: React.FC<{  bid: number, text: string, children: ReactNode,}> = ({
 
     return (
         <>
+            {/* 入力したクエリ文字 */}
             <Box>
                 <HStack h='3vh' p='10px'>
                     <IconButton aria-label='Search database' icon={<AiOutlineDelete />} backgroundColor={"transparent"} onClick={() => {
@@ -29,6 +33,8 @@ const Ballon: React.FC<{  bid: number, text: string, children: ReactNode,}> = ({
                     <Text>クエリ: {text}</Text>
                 </HStack>
             </Box>
+
+            {/* 吹き出し */}
             {children}
         </>
     )

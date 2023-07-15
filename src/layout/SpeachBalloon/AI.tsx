@@ -7,6 +7,9 @@ import { Conversation } from '../../utils/interface';
 import AICore from './components/AICore';
 
 const AI: React.FC<{ data: Conversation }> = ({ data }) => {
+    // AI モード時の吹き出し
+
+
     return (
         <>
             {/* aiResult があれば出力 */}

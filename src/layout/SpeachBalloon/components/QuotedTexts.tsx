@@ -6,8 +6,10 @@ import React from "react";
 import { DocumentForInf } from "../../../utils/interface";
 import { Link } from "@chakra-ui/react";
 
-export default class QuotedTexts extends React.Component<{ fulltext: string, contexts: DocumentForInf[]}, {}> {
+export default class QuotedTexts extends React.Component<{ fulltext: string, contexts: DocumentForInf[] }, {}> {
     // 引用にリンクを付与する
+
+
     render() {
         const { fulltext, contexts } = this.props;
 
@@ -24,7 +26,7 @@ export default class QuotedTexts extends React.Component<{ fulltext: string, con
                                 return (component)
                             } else if (t === "]") {
                                 let url = ""
-                                let contextId = Number(fulltext.substring(pivot+1, ti));
+                                let contextId = Number(fulltext.substring(pivot + 1, ti));
                                 if (contexts[contextId]) {
                                     url = contexts[contextId].content
                                 }
@@ -34,7 +36,7 @@ export default class QuotedTexts extends React.Component<{ fulltext: string, con
                             }
                         })()
                     )
-                )
+                    )
                 }
                 <span>{fulltext.substring(pivot, fulltext.length)}</span>
             </span>

@@ -30,16 +30,21 @@ import {
 import { CustomSetupTOTP } from './TOTP.tsx'
 import { AiOutlinePushpin, AiOutlineDelete } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
-import { getKendraQuery, inference, kendraQuery } from '../services/AWS';
+import { getKendraQuery, inference, kendraQuery } from '../utils/service.ts';
 import { SEARCH_MODE_LIST } from '../utils/constant';
 import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '../utils/function';
 import { Conversation, DocumentForInf } from '../utils/interface';
 import { UseAuthenticator } from '@aws-amplify/ui-react-core';
 import { AmplifyUser } from '@aws-amplify/ui';
 
+
 export type SignOut = UseAuthenticator['signOut'];
 
+
 export default function TopBar({ logout, user }: { logout: SignOut | undefined, user: AmplifyUser | undefined },) {
+  // 画面上部の検索バー
+
+
   const {
     currentConversation: currentConversation,
     setCurrentConversation: setCurrentConversation,
@@ -379,11 +384,14 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
       align={'center'}
       zIndex={1}
       top={0}>
+      {/* タイトル */}
       <Flex width={"100%"}>
         <Text fontSize="2xl" fontWeight="bold">
           Amazon Kendra
         </Text>
       </Flex>
+
+      {/* 検索バー */}
       <Flex>
         <InputGroup size='md' w="60vw">
           <InputLeftAddon>
@@ -405,19 +413,22 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
           </datalist>
         </InputGroup>
       </Flex>
+
+      {/* アカウントの設定 */}
       <HStack display={"flex"} justifyContent={"flex-end"} width={"100%"}>
         <Menu>
           <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
             アカウント
           </MenuButton>
           <MenuList>
+            {/* MFAボタン */}
             <CustomSetupTOTP user={user} issuer="jp-rag-sample" handleAuthStateChange={() => null}></CustomSetupTOTP>
+            {/* ログアウトボタン */}
             <MenuItem onClick={logout}>ログアウト</MenuItem>
           </MenuList>
-          {/* <Button backgroundColor={"transparent"}  aria-label="show-pinned-texts" >
-            ログアウト
-          </Button> */}
         </Menu>
+
+        {/* ピン機能 */}
         <IconButton icon={<AiOutlinePushpin />} backgroundColor={"transparent"} onClick={onOpen} aria-label="show-pinned-texts" />
         <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />
