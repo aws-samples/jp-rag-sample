@@ -7,10 +7,9 @@ import os
 from typing import Dict, Literal
 
 import boto3
-from amplify.backend.api.fargate.src.langchain.app.logics.convert_s3url import convert_presigned_url
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from logics import llm_with_doc
+from logics import llm_with_doc, convert_presigned_url
 from schemas import LLMWithDocReqBody
 
 app = FastAPI()
