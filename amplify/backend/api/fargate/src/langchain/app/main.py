@@ -7,6 +7,7 @@ import os
 from typing import Dict, Literal
 
 import boto3
+from amplify.backend.api.fargate.src.langchain.app.logics.convert_s3url import convert_presigned_url
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from logics import llm_with_doc
@@ -44,7 +45,7 @@ async def kendra_query(body: Dict):
     """Kendra の Query API をキックする"""
     request_body = body["input"]
     response = kendra_client.query(**request_body)
-    return response
+    return convert_presigned_url(response)
 
 
 @app.post("/v2/kendra/send")
