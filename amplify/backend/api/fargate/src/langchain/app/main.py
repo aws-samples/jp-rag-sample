@@ -9,7 +9,7 @@ from typing import Dict, Literal
 import boto3
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from logics import llm_with_doc, convert_presigned_url
+from logics import llm_with_doc, convert_s3url
 from schemas import LLMWithDocReqBody
 
 app = FastAPI()
@@ -44,7 +44,7 @@ async def kendra_query(body: Dict):
     """Kendra の Query API をキックする"""
     request_body = body["input"]
     response = kendra_client.query(**request_body)
-    return convert_presigned_url(response)
+    return convert_s3url(response)
 
 
 @app.post("/v2/kendra/send")

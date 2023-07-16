@@ -7,7 +7,7 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 
 
-def convert_presigned_url(data):
+def convert_s3url(data):
     """ S3 url を presigned url に変換する
     """
     s3_client = boto3.client('s3')
@@ -46,4 +46,4 @@ if __name__ == '__main__':
     
     # test
     response = kendra_client.query(**request_body)
-    print(convert_presigned_url(response))
+    print(convert_s3url(response))
