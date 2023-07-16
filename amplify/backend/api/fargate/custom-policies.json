@@ -27,5 +27,9 @@
     "Resource": [
       "arn:aws:kendra:*:*:index/*"
     ]
+  },
+  {
+    "Action": "s3:GetObject",
+    "Resource": "arn:aws:s3:::*/*"
   }
 ]
