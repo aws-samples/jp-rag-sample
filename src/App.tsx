@@ -6,12 +6,10 @@ import { Dispatch, SetStateAction, createContext, useContext, useEffect, useStat
 import TopBar from "./layout/TopBar.tsx"
 import FilterBar from './layout/FilterBar.tsx'
 import { getSortOrderFromIndex, setJwtToken } from "./utils/service.ts";
-// import { getSortOrderFromIndex, setS3Client, setJwtToken } from "./utils/service.ts";
 import { Conversation, Filter } from "./utils/interface.tsx";
 import InteractionArea from "./layout/InteractionArea.tsx";
 import { DEFAULT_LANGUAGE, DEFAULT_SEARCH_MODE } from "./utils/constant.tsx";
 // Amplify
-// import { Auth } from 'aws-amplify';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 
@@ -74,13 +72,6 @@ function App() {
         setFilterOptions(filterOption)
       }
       getSOrtOrderFromIndexAndSetSortOption()
-
-      // // AWS の認証情報を更新
-      // const updateCreds = async () => {
-      //   const awsCreds = await Auth.currentUserCredentials()
-      //   setS3Client(awsCreds.accessKeyId, awsCreds.secretAccessKey, awsCreds.sessionToken)
-      // }
-      // updateCreds()
     }
 
   }, [loginSucceeded])
