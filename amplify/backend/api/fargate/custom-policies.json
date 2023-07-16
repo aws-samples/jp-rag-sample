@@ -1,0 +1,31 @@
+[
+  {
+    "Action": [
+      "sagemaker:InvokeEndpointAsync",
+      "sagemaker:DescribeEndpoint",
+      "sagemaker:InvokeEndpoint"
+    ],
+    "Resource": [
+      "arn:aws:sagemaker:*:*:endpoint/*"
+    ]
+  },
+  {
+    "Action": [
+      "sagemaker:ListEndpoints"
+    ],
+    "Resource": [
+      "arn:aws:sagemaker:*:*:endpoint/*"
+    ]
+  },
+  {
+    "Action": [
+      "kendra:Describe*",
+      "kendra:List*",
+      "kendra:Query",
+      "kendra:GetQuerySuggestions"
+    ],
+    "Resource": [
+      "arn:aws:kendra:*:*:index/*"
+    ]
+  }
+]

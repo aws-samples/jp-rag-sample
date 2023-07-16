@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  langchain:
+    build:
+      context: ./langchain
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - AWS_REGION=us-west-2
+      - ALLOW_ORIGINS=*
+      - SAGEMAKER_ENDPOINT_NAME=Rinna-Inference
+      - CALM_ENDPOINT_NAME=Open-calm-7b-ft3
+      - LLM=rinna
+    secrets:
+      - KENDRA_INDEX_ID
+      # - ANTHROPIC_API_KEY
+    networks:
+      - private
+networks:
+  public:
+  private:
+secrets:
+  KENDRA_INDEX_ID:
+    file: ../secrets/.secret-kendra
+  # ANTHROPIC_API_KEY:
+  #   file: ../secrets/.secret-anthropic
