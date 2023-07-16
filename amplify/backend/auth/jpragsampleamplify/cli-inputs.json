@@ -1,8 +1,6 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "jpragsampleamplify_identitypool_1dc5bd4e",
-    "allowUnauthenticatedIdentities": false,
     "resourceNameTruncated": "jprags1dc5bd4e",
     "userPoolName": "jpragsampleamplify_userpool_1dc5bd4e",
     "autoVerifiedAttributes": [
@@ -38,23 +36,11 @@
     ],
     "userpoolClientLambdaRole": "jprags1dc5bd4e_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "authSelections": "identityPoolAndUserPool",
+    "authSelections": "userPoolOnly",
     "resourceName": "jpragsampleamplify",
     "sharedId": "1dc5bd4e",
     "serviceName": "Cognito",
     "useDefault": "manual",
-    "authRoleArn": {
-      "Fn::GetAtt": [
-        "AuthRole",
-        "Arn"
-      ]
-    },
-    "unauthRoleArn": {
-      "Fn::GetAtt": [
-        "UnauthRole",
-        "Arn"
-      ]
-    },
     "breakCircularDependency": true,
     "useEnabledMfas": true,
     "dependsOn": [],
