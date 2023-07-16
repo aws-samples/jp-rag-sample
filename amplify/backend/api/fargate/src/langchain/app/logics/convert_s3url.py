@@ -7,10 +7,12 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 
 
+s3_client = boto3.client('s3')
+
+
 def convert_s3url(data):
     """ S3 url を presigned url に変換する
     """
-    s3_client = boto3.client('s3')
 
     if s3_client and data and 'ResultItems' in data:
         for result in data['ResultItems']:
