@@ -29,12 +29,14 @@
 3. `.env` ファイルを編集
       - (MUST) `AWS_REGION` は AWS のリージョンを指定(Kendra や SageMaker が動いている)
       - (MUST) `KENDRA_INDEX_ID` を Kendra の Index ID に指定
+      - (MUST) `AWS_ACCESS_KEY_ID` に Amplifyを操作できるユーザ のアクセスキーを設定
+      - (MUST) `AWS_SECRET_ACCESS_KEY` に に Amplifyを操作できるユーザ のシークレットアクセスキーを設定
       - (WANT) `ALLOW_ORIGINS` は Access-Control-Allow-Origin の設定値 を指定
       - (WANT) `SAGEMAKER_ENDPOINT_NAME` は SageMaker エンドポイント名 を指定ください。
       - (WANT) `ANTHROPIC_API_KEY` Anthropicを利用する場合のみご指定ください。
       - (WANT) `LLM` は、rinna か claude を指定可能。 Anthropic を利用する場合は claudeを指定ください。
 4. `./build_and_run.sh`
-5. `http://localhost:8000` でサーバーが起動します。
+5. `http://localhost:8080` でサーバーが起動します。
 
 
 ## ローカル開発　(直接起動するパターン)
