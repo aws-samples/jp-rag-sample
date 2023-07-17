@@ -8,7 +8,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'aws': ['@aws-sdk/client-kendra', '@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
+          'aws': ['@aws-sdk/client-kendra'],
           'chakra-ui': ['@chakra-ui/icons'],
           '@chakra-ui/react': ['@chakra-ui/react']
         },

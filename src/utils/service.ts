@@ -3,8 +3,6 @@
 // Licensed under the Amazon Software License  http://aws.amazon.com/asl/
 
 import { AttributeFilter, DescribeIndexCommand, QueryCommand, QueryCommandInput, QueryCommandOutput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { DataForInf, Filter, selectItemType } from "./interface";
 import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "./constant";
 import { Amplify } from 'aws-amplify';
@@ -24,14 +22,10 @@ if (hasErrors) {
 
 export const initAWSError: string[] = _loadingErrors;
 
-const region = awsconfig.aws_project_region ?? ""
 export const indexId: string = import.meta.env.VITE_INDEX_ID ?? ""
 const local_server = import.meta.env.VITE_SERVER_URL ?? ""
 const remote_server = awsconfig.aws_cloud_logic_custom[0].endpoint ?? ""
 export const serverUrl: string = local_server ? local_server : remote_server;
-let accessKeyId = ""
-let secretAccessKey = ""
-let sessionToken = ""
 let jwtToken = ""
 
 Amplify.configure({
@@ -40,23 +34,6 @@ Amplify.configure({
 
 export function setJwtToken(token: string) {
   jwtToken = token
-}
-
-let s3Client: S3Client;
-
-export function setS3Client(awsAccessKeyId: string, awsSecretAccessKey: string, awsSessionToken: string) {
-  accessKeyId = awsAccessKeyId
-  secretAccessKey = awsSecretAccessKey
-  sessionToken = awsSessionToken
-
-  s3Client = new S3Client({
-    region: region,
-    credentials: {
-      accessKeyId: accessKeyId,
-      secretAccessKey: secretAccessKey,
-      sessionToken: sessionToken
-    }
-  })
 }
 
 export enum Relevance {
@@ -161,35 +138,6 @@ export async function kendraQuery(param: QueryCommandInput) {
     .then(response => response.json())
     .then((r: QueryCommandOutput) => { return r })
 
-
-  // Kendra Response の S3 URL に Presigned URL を付与
-  if (s3Client && data && data.ResultItems) {
-    for await (const result of data.ResultItems) {
-      if (result.DocumentURI) {
-        try {
-          const res = result.DocumentURI.split("/");
-          if (res[2].startsWith("s3")) {
-
-            // bucket名とkeyを取得
-            const bucket = res[3];
-            let key = res[4];
-            for (let i = 5; i < res.length; i++) {
-              key = key + "/" + res[i];
-            }
-            // s3 の presigned url に置き換え
-            const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-
-            const uri = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
-
-            result.DocumentURI = uri;
-          }
-        } catch {
-          // S3 以外はなにもしない (Just do nothing, so the documentURI are still as before)
-        }
-      }
-
-    }
-  }
   return data;
 }
 

@@ -12,8 +12,6 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^5.0.1",
     "@aws-sdk/client-kendra": "^3.334.0",
-    "@aws-sdk/client-s3": "^3.332.0",
-    "@aws-sdk/s3-request-presigner": "^3.335.0",
     "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.6.1",
     "@emotion/react": "^11.11.0",
