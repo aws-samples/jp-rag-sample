@@ -10,7 +10,6 @@ services:
       - AWS_REGION=us-west-2
       - ALLOW_ORIGINS=*
       - SAGEMAKER_ENDPOINT_NAME=Rinna-Inference
-      - CALM_ENDPOINT_NAME=Open-calm-7b-ft3
       - LLM=rinna
     secrets:
       - KENDRA_INDEX_ID
