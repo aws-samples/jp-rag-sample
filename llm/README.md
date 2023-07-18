@@ -20,6 +20,6 @@
 
 ローカルもしくは [CloudShell](https://us-west-2.console.aws.amazon.com/cloudshell) で `deploy_llm.sh` を実行するとエンドポイントがデプロイされる。
 
-## エンドポイントのの削除
+## エンドポイントの削除
 
 デプロイと同様にローカルもしくは [CloudShell](https://us-west-2.console.aws.amazon.com/cloudshell) で `delete_llm.sh` を実行するとエンドポイントが削除される。
