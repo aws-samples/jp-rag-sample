@@ -27,7 +27,7 @@ Retrieval Augmented Generation(RAG)とは、ユーザーのリクエストに最
 本ソリューションは日本語を利用するお客様を想定し、日本語に対応しているLLMの利用を前提としています。デフォルトでは、Rinna 社が開発したモデル [rinna/japanese-gpt-neox-3.6b-instruction-ppo](https://huggingface.co/rinna/japanese-gpt-neox-3.6b-instruction-ppo) か、 Anthropic 社の claude をご利用いただくことが可能です。
 
 なお、ご利用の仕方として、rinnaについては Amazon Sagemaker で エンドポイントを立ててご利用いただくことを想定しております。Endrpointを立ち上げるための [script](llm/deploy_llm.sh) もご用意あります。
-一方、claude については、Anthropic社が提供するAPI経由での利用を想定しております。そのため、claude をご希望の場合、事前に (API KEYの取得)[https://www.anthropic.com/]をお願い致します
+一方、claude については、Anthropic社が提供するAPI経由での利用を想定しております。そのため、claude をご希望の場合、事前に (API KEYの取得)[https://www.anthropic.com/] をお願い致します
 
 ### ３つの検索モードを提供
 
@@ -118,6 +118,8 @@ AIモードの場合、ピン留めしたテキストをコンテキストとし
 
 ## LICENSE
 
-MIT-0
+Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+Licensed under the Amazon Software License  http://aws.amazon.com/asl/
 
- 
+

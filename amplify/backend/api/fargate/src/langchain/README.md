@@ -38,23 +38,37 @@
 4. `./build_and_run.sh`
 5. `http://localhost:8080` でサーバーが起動します。
 
+> 補足
+> `amplify/backend/api/fargate/src/docker-compose.yml` はローカル開発には利用できないのでご注意ください。理由は本ドキュメント後方に記載した「補足 docker-compose.ymlの用途について」を参照ください
 
 ## ローカル開発　(直接起動するパターン)
 
-```zsh
-# AWS_REGION は AWS のリージョンを指定 (Kendra や SageMaker が動いている)
-export AWS_REGION="us-west-2"
-# ALLOW_ORIGINS は Access-Control-Allow-Origin の設定値 を指定
-export ALLOW_ORIGINS="*"
-# SAGEMAKER_ENDPOINT_NAME  は SageMaker エンドポイント名 を指定
-export SAGEMAKER_ENDPOINT_NAME="Rinna-Inference"
-# KENDRA_INDEX_ID  を Kendra の Index ID に指定
-export KENDRA_INDEX_ID=*********
-# export ANTHROPIC_API_KEY="xxxxxx"  # Claude を利用するための API Key がセットされていればこちらに値をセットする
-export LLM="rinna" # rinna か claude を指定可能ください。Anthropic を利用する場合は claudeを指定ください。
-cd ./server/app
-uvicorn main:app --reload --port 8080
-```
+環境設定について
+1. 前提、python 3.10 以上の環境を準備お願いします。
+2. `cd amplify/backend/api/fargate/src/langchain/app`
+3. `pip install -r requirements.txt` で依存パッケージのインストールお願いします
+
+実行する
+1. 環境変数を出力ください
+    ```zsh
+    # AWS_REGION は AWS のリージョンを指定 (Kendra や SageMaker が動いている)
+    export AWS_REGION="us-west-2"
+    # ALLOW_ORIGINS は Access-Control-Allow-Origin の設定値 を指定
+    export ALLOW_ORIGINS="*"
+    # SAGEMAKER_ENDPOINT_NAME  は SageMaker エンドポイント名 を指定
+    export SAGEMAKER_ENDPOINT_NAME="Rinna-Inference"
+    # KENDRA_INDEX_ID  を Kendra の Index ID に指定
+    export KENDRA_INDEX_ID=*********
+    # export ANTHROPIC_API_KEY="xxxxxx"  # Claude を利用するための API Key がセットされていればこちらに値をセットする
+    export LLM="rinna" # rinna か claude を指定可能ください。Anthropic を利用する場合は claudeを指定ください。
+    ```
+    
+2. プログラムを実行する (FASTAPI)
+    ```
+    cd ./server/app
+    uvicorn main:app --reload --port 8080
+    ```
+
 
 ## ローカル開発　（VSCODE利用パターン)
 
@@ -93,13 +107,16 @@ VSCODEからデバッグ実行するには、
 }
 ```
 
-## 補足 docker-compose.yml の用途について
 
-docker-compose.yml はローカル開発ではご利用頂けないのでご注意ください。
+## 補足 docker-compose.ymlの用途について
 
-docker-compose.yml の中で、secret として宣言されている `KENDRA_INDEX_ID` は、
-アプリ内では、`環境変数` として読み込む設計になっているため、docker-compose up を行なっても、`KENDRA_INDEX_ID` を発見できないエラーが発生して正しく動きません。
-(docker-compose の secret は、本来、コンテナの /run/secret/配下にファイルをバインドする機能)
+`amplify/backend/api/fargate/src/docker-compose.yml` はローカル開発ではご利用頂けないのでご注意ください。
 
-なぜ、このようになっているか？というと、Amplifyは docker-compose.yml を解析して、自動でデプロイ用の CloudFormation を作成するのですが、docker-compose で secret に設定すると、CloudFormation上は、SecretManager に格納する記述に変換される挙動をするため、セキュリティ的に高くなるのが理由です。
-つまり、docker-compose.yml は デプロイ用の Amplify が CloudFormation を作成するための設定ファイルだとご認識ください。
+docker-compose.yml の中で、secret として宣言されている `KENDRA_INDEX_ID` は、コンテナの /run/secret/配下にファイルをバインドする機能なのですが、
+アプリ内では、`KENDRA_INDEX_ID` は、`環境変数` として読み込む設計になっているため、docker-compose up を行なっても、`KENDRA_INDEX_ID` を発見できないエラーが発生して正しく動きません。
+
+理由は次の通りです。
+Amplifyは Custom の　Dockerイメージを利用してバックエンドを構築する場合、 docker-compose.yml を解析して、自動でデプロイ用の CloudFormation を作成して、バックエンドを構築する仕組みとなっています。
+つまり、docker-compose.yml は AWS 上でのセットアップのために利用されます。
+なお、本ソリューションのセキュリティ要件として、`KENDRA_INDEX_ID` は SecretManager で管理し、コンテナ起動時に環境変数に読み込む挙動になっているのですが、それを実現するために、docker-compose.yml で `KENDRA_INDEX_ID` を secret で管理する指定にしています。
+

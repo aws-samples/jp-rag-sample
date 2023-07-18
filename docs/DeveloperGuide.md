@@ -48,42 +48,25 @@ SageMaker エンドポイントを作成する。
    2. `? Secret configuration detected. Do you wish to store new values in the cloud?` Yes  # <- 初回は Secret Manager に保存する
 
 
+## 変更のデプロイ
+
+1. フロントエンドの `.env` ファイルの `VITE_SERVER_URL` をコメントアウトする 
+2. デプロイ
+   - 以下、状況に応じて使い分けてください。
+      - バックエンドのみデプロイ：`amplify push -y`
+      - 全てデプロイ：`amplify publish -y`
+
+
 ## ローカル開発
 
 ### バックエンド
 
-1. `cd amplify/backend/api/fargate/src/langchain`
-2. `cp .env.development-template .env`
-3. `.env` ファイルを編集
-      - (MUST) `AWS_REGION` は AWS のリージョンを指定ください (Kendra や SageMaker が動いている)
-      - (MUST) `KENDRA_INDEX_ID` を Kendra の Index ID に指定ください
-      - (MUST) `AWS_ACCESS_KEY_ID` に Amplifyを操作できるユーザ のアクセスキーを設定
-      - (MUST) `AWS_SECRET_ACCESS_KEY` に に Amplifyを操作できるユーザ のシークレットアクセスキーを設定
-      - (WANT) `ALLOW_ORIGINS` は Access-Control-Allow-Origin の設定値 を指定ください
-      - (WANT) `SAGEMAKER_ENDPOINT_NAME` は SageMaker エンドポイント名 を指定ください。
-      - (WANT) `ANTHROPIC_API_KEY` Anthropicを利用する場合のみご指定ください。
-      - (WANT) `LLM` は、rinna か claude を指定可能ください。 Anthropic を利用する場合は claudeを指定ください。
-4. `./build_and_run.sh`
-5. `http://localhost:8080` でサーバーが起動します。
-
-詳細は、[こちら](../amplify/backend/api/fargate/src/langchain/README.md)
+[バックエンドのローカル開発の方法はこちら](../amplify/backend/api/fargate/src/langchain/README.md)
 
 ### フロントエンド
 
-1. `cp .env.development-template .env` (「3. アプリのデプロイ」で未実施の場合)
-2. `.env` ファイルを編集
-   - `VITE_INDEX_ID` を Kendra の Index ID に指定する。(「3. アプリのデプロイ」で未実施の場合)
-   - `VITE_SERVER_URL=http://localhost:8080` のコメントアウトを解除。
-3. `npm run dev`
+[フロントエンドのローカル開発の方法はこちら](../src/README.mdd)
 
-詳細は、[こちら](../src/README.md)
-
-### 変更のデプロイ
-
-1. 忘れずにフロントエンドの `.env` ファイルの `VITE_SERVER_URL` をコメントアウトする
-2. デプロイ
-   1. バックエンドのみデプロイ：`amplify push -y`
-   2. 全てデプロイ：`amplify publish -y`
 
 ## プロジェクト構造についての解説
 

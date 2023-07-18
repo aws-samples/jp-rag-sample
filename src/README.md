@@ -36,16 +36,19 @@
 
 ## ローカル開発
 
-1. `cp .env.development-template .env` (「3. アプリのデプロイ」で未実施の場合)
-2. `.env` ファイルを編集
+環境設定について
+1. 前提、node v16.16 以上の環境を準備お願いします。
+2. `npm install` で依存パッケージ(package.json) のインストールお願いします。
+3. `cp .env.development-template .env` (「3. アプリのデプロイ」で未実施の場合)
+4. `.env` ファイルを編集
    - `VITE_INDEX_ID` を Kendra の Index ID に指定する。(「3. アプリのデプロイ」で未実施の場合)
    - `VITE_SERVER_URL=http://localhost:8080` のコメントアウトを解除。
-3. `npm run dev`
 
+プログラム実行
+1. `npm run dev`
 
 
 ## ローカル開発（VSCODE)
-
 
 `npm run dev` を実行していることが前提となりますが、以下の `.vscode/launch.json` を作成して「Launch Chrome For Debug」を実行すると、
 Chrome起動後、コードのステップ実行が可能となります。
