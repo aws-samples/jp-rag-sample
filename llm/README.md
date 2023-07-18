@@ -4,9 +4,9 @@
 
 その他のモデルのデプロイやモデルのファインチューニングについては[こちら](https://github.com/aws-samples/aws-ml-jp/tree/main/tasks/generative-ai/text-to-text/fine-tuning/instruction-tuning)のレポジトリを参照してください。
 
-## デプロイ
+## エンドポイントのデプロイ
 
-前提条件：信頼関係に SageMaker の AssumeRole を許可する以下のポリシーがある IAM Role を使用する。
+前提条件：deploy_llm.sh を実行する IAM User または IAM Role の「信頼関係」に SageMaker の AssumeRole を許可する以下のポリシーを設定する。
 
 ```
         {
