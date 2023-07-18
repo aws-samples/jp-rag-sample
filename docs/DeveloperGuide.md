@@ -4,12 +4,13 @@
 
 ### 1. Kendra のインデックスを作成
 
-1. Kendra のインデックスを作成する。（参考：指定したサイトから自動でデータをクローリングしてインデックスする [CloudFormation Template サンプル](../kendra/kendra-docs-index.yaml)
+Kendra のインデックスを作成する。
+- 参考：指定したサイトから自動でデータをクローリングしてインデックスする [CloudFormation Template サンプル](../kendra/kendra-docs-index.yaml)
 
 ### 2. LLM を SageMaker Endpoint にデプロイ
 
-1. SageMaker エンドポイントを作成する。
-   - エンドポイントの作成方法は、[スクリプト](../llm/README.md)）を参照ください。Rinna の推論エンドポイントを CloudShel からデプロイする方法が記載されています。
+SageMaker エンドポイントを作成する。
+- 参考: エンドポイントの作成方法は、([スクリプト](../llm/README.md)）を参照ください。Rinna の推論エンドポイントを CloudShel からデプロイする方法が記載されています。
 
 ### 3. アプリのデプロイ
 
@@ -45,6 +46,7 @@
    1. `? Are you sure you want to continue? (Y/n) ` は Y と入力
       - もし `You are not authorized to perform this operation` というエラーが発生した場合、ユーザー に `AdministratorAccess` ポリシー を付与して再試行お願いします。
    2. `? Secret configuration detected. Do you wish to store new values in the cloud?` Yes  # <- 初回は Secret Manager に保存する
+
 
 ## ローカル開発
 
@@ -109,3 +111,4 @@
 - 必要に応じて Cognito の高度なセキュリティ機能を有効化することができます
 - 必要に応じて Cognito の Federated Identity Provider 機能を利用して SAML もしくは Open ID Connect 経由でのサインインを設定することができます。
 - コンテナのロギング有効になっています。追加で API Gateway のロギングを有効にすることも可能です。
+
