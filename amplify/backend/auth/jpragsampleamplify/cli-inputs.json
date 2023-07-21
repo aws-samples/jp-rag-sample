@@ -44,7 +44,6 @@
     "breakCircularDependency": true,
     "useEnabledMfas": true,
     "dependsOn": [],
-    "thirdPartyAuth": false,
     "userPoolGroups": false,
     "adminQueries": false,
     "triggers": {},
