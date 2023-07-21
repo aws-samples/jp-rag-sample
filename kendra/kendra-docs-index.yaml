@@ -146,7 +146,7 @@ Resources:
                     account: !Ref 'AWS::AccountId'
                     index: !GetAtt DocsKendraIndex.Id
                 Action:
-                  - 'kendra:*'
+                  - 'kendra:StartDataSourceSyncJob'
           PolicyName: DataSourceSyncLambdaPolicy
           
   DataSourceSyncLambda:
