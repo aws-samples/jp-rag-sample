@@ -97,4 +97,4 @@ SageMaker エンドポイントを作成する。
 - デフォルトでは API Gateway のロギングが有効化されていませんが有効化することを推奨します。
   - CloudWatch コンソールから新たに CloudWatch Log Group を作成します。（例：`/aws/apigateway/amplify-jpragsampleamplif-API-Gateway`）
   - API Gateway > Logging > $default から LogGroup の ARN およびログ形式を指定し設定します。
-
+- Fargate のビルドを行う CodeBuild のイメージは 2023/03/31 に Deprecated になった `aws/codebuild/standard:4.0`を使用しています。現状はまだ利用できますがご注意ください。([Amplify Issue](https://github.com/aws-amplify/amplify-category-api/issues/1715))
