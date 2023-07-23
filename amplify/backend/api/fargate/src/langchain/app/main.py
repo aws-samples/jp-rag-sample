@@ -11,10 +11,6 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from logics import llm_with_doc, convert_s3url
 from schemas import LLMWithDocReqBody
-# jwt validation
-from pydantic import BaseSettings
-from fastapi_cognito import CognitoAuth, CognitoSettings
-from fastapi_cognito import CognitoToken
 
 app = FastAPI()
 
@@ -32,26 +28,10 @@ SAGEMAKER_ENDPOINT_NAME: str = os.environ.get("SAGEMAKER_ENDPOINT_NAME", None)
 LLM: Literal["rinna", "claude"] = os.environ.get("LLM", "rinna")
 kendra_client = boto3.client("kendra", region_name=REGION)
 
-# jwt validation
-class Settings(BaseSettings):
-    check_expiration = True
-    jwt_header_prefix = "Bearer"
-    jwt_header_name = "Authorization"
-    userpools = {
-        "ja": {
-            "region": REGION,
-            "userpool_id": os.environ["USERPOOL_ID"],
-            "app_client_id": os.environ["APP_CLIENT_ID"]
-        },
-    }
-settings = Settings()
-cognito_ja = CognitoAuth(settings=CognitoSettings.from_global_settings(settings))
-
 
 @app.post("/v2/llm-with-doc")
 async def llm_with_doc_handler(
-    body: LLMWithDocReqBody,
-    _: CognitoToken = Depends(cognito_ja.auth_required)
+    body: LLMWithDocReqBody
 ):
     """LLM に対してドキュメントとチャット履歴を直接渡す"""
     return llm_with_doc(
@@ -60,7 +40,7 @@ async def llm_with_doc_handler(
 
 
 @app.post("/v2/kendra/query")
-async def kendra_query(body: Dict, _: CognitoToken = Depends(cognito_ja.auth_required)):
+async def kendra_query(body: Dict):
     """Kendra の Query API をキックする"""
     request_body = body["input"]
     response = kendra_client.query(**request_body)
@@ -68,7 +48,7 @@ async def kendra_query(body: Dict, _: CognitoToken = Depends(cognito_ja.auth_req
 
 
 @app.post("/v2/kendra/send")
-async def kendra_send(body: Dict, _: CognitoToken = Depends(cognito_ja.auth_required)):
+async def kendra_send(body: Dict):
     """Kendra の SubmitFeedback API をキックする"""
     kendra_request_body = body["input"]
     response = kendra_client.submit_feedback(**kendra_request_body)
