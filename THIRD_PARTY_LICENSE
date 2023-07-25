@@ -1,8 +1,6 @@
 
 ## Javascript/TypeScript App Third Party License List
 
- ----------------------------------------------------
-
 department  related to  name                              license period  material / not material  license type  link                                                                remote version  installed version  defined version  author
 ----------  ----------  ----                              --------------  -----------------------  ------------  ----                                                                --------------  -----------------  ---------------  ------
 kessler     stuff       @aws-amplify/ui-react             perpetual       material                 Apache-2.0    git+https://github.com/aws-amplify/amplify-ui.git                   5.0.4           5.0.4              ^5.0.1           n/a
@@ -35,9 +33,8 @@ kessler     stuff       vite                              perpetual       materi
 
 path : amplify/backend/api/fargate/src/langchain
 
- ----------------------------------------------------
- 
- Name                     Version   License                              
+ Name                     Version   License    
+ ----                     -------   -------                         
  PyYAML                   6.0       MIT License                          
  SQLAlchemy               2.0.18    MIT License                          
  aiohttp                  3.8.4     Apache Software License              
