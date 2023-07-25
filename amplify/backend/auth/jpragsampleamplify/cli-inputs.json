@@ -1,6 +1,8 @@
 {
   "version": "1",
   "cognitoConfig": {
+    "identityPoolName": "jpragsampleamplify_identitypool_84d14fcf",
+    "allowUnauthenticatedIdentities": false,
     "resourceNameTruncated": "jprags1dc5bd4e",
     "userPoolName": "jpragsampleamplify_userpool_1dc5bd4e",
     "autoVerifiedAttributes": [
@@ -36,7 +38,7 @@
     ],
     "userpoolClientLambdaRole": "jprags1dc5bd4e_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "authSelections": "userPoolOnly",
+    "authSelections": "identityPoolAndUserPool",
     "resourceName": "jpragsampleamplify",
     "sharedId": "1dc5bd4e",
     "serviceName": "Cognito",
@@ -53,6 +55,18 @@
     "parentStack": {
       "Ref": "AWS::StackId"
     },
-    "permissions": []
+    "permissions": [],
+    "authRoleArn": {
+      "Fn::GetAtt": [
+        "AuthRole",
+        "Arn"
+      ]
+    },
+    "unauthRoleArn": {
+      "Fn::GetAtt": [
+        "UnauthRole",
+        "Arn"
+      ]
+    }
   }
 }
