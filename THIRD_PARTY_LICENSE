@@ -1,6 +1,8 @@
 
 ## Javascript/TypeScript App Third Party License List
 
+ ----------------------------------------------------
+
 department  related to  name                              license period  material / not material  license type  link                                                                remote version  installed version  defined version  author
 ----------  ----------  ----                              --------------  -----------------------  ------------  ----                                                                --------------  -----------------  ---------------  ------
 kessler     stuff       @aws-amplify/ui-react             perpetual       material                 Apache-2.0    git+https://github.com/aws-amplify/amplify-ui.git                   5.0.4           5.0.4              ^5.0.1           n/a
