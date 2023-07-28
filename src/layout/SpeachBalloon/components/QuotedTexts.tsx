@@ -1,7 +1,5 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
-// Licensed under the Amazon Software License  http://aws.amazon.com/asl/
-
+// Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 import React from "react";
 import { DocumentForInf } from "../../../utils/interface";
 import { Link } from "@chakra-ui/react";
