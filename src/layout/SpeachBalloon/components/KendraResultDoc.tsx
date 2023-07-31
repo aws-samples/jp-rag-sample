@@ -1,3 +1,5 @@
+// Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 import { Box, HStack, Heading, VStack } from "@chakra-ui/layout";
 import { Text, useToast } from "@chakra-ui/react";
 import { IconButton } from "@chakra-ui/button";
