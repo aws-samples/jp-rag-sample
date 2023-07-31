@@ -1,3 +1,5 @@
+// Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 import { Box, Heading, VStack } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/react";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
