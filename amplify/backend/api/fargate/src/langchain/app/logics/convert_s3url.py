@@ -1,5 +1,7 @@
 # Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# Licensed under the MIT-0 License (https://github.com/aws/mit-0)""" S3 url を presigned url に変換するモジュール
+# Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
+""" S3 url を presigned url に変換するモジュール
 """
 import boto3
 from botocore.exceptions import NoCredentialsError

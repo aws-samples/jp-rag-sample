@@ -2,6 +2,7 @@
 
 # Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
 pip3 install sagemaker
 python3 <<EOF
 import sagemaker

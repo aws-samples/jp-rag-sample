@@ -1,5 +1,6 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
 import { SortingConfiguration, AttributeFilter, QueryCommandOutput, AdditionalResultAttribute, TextWithHighlights } from "@aws-sdk/client-kendra";
 import { DEFAULT_SORT_ATTRIBUTE, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
 import { Filter, selectItemType } from "./interface";

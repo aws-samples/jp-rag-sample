@@ -2,6 +2,7 @@
 
 # Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
 git clone https://github.com/aws-samples/aws-ml-jp.git /tmp/aws-ml-jp
 cd /tmp/aws-ml-jp/tasks/generative-ai/text-to-text/fine-tuning/instruction-tuning/Transformers/scripts
 tar -czvf ../package.tar.gz *

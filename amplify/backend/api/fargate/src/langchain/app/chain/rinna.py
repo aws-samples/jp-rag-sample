@@ -1,5 +1,7 @@
 # Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# Licensed under the MIT-0 License (https://github.com/aws/mit-0)import json
+# Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
+import json
 from typing import List
 
 from langchain import SagemakerEndpoint

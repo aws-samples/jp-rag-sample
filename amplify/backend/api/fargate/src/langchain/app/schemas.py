@@ -1,5 +1,7 @@
 # Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# Licensed under the MIT-0 License (https://github.com/aws/mit-0)"""API でのスキーマを定義するモジュール
+# Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
+"""API でのスキーマを定義するモジュール
 """
 from typing import List, Literal
 

@@ -1,5 +1,6 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
 import { QueryRequest, QueryResult } from "@aws-sdk/client-kendra";
 
 export interface Dic {

@@ -1,5 +1,6 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
 import { Avatar, Box, HStack, Heading, VStack } from "@chakra-ui/react";
 import { AiFillRobot } from "react-icons/ai";
 import { AiResponse } from "../../../utils/interface";

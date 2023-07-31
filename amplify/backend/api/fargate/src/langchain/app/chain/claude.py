@@ -1,5 +1,7 @@
 # Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# Licensed under the MIT-0 License (https://github.com/aws/mit-0)"""claude を使った chain を定義するモジュール
+# Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
+"""claude を使った chain を定義するモジュール
 """
 import os
 from typing import List

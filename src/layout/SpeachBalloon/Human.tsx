@@ -1,5 +1,6 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
 import { Avatar, Box, HStack, Heading, VStack, useToast } from "@chakra-ui/react";
 import { AiOutlineUser } from "react-icons/ai";
 import { Conversation } from "../../utils/interface";
