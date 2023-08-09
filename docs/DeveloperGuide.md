@@ -35,8 +35,7 @@ SageMaker エンドポイントを作成する。
       - `amplify/backend/api/fargate/src/docker-compose-template.yml` を同一フォルダ内に docker-compose.yml としてコピー
       - `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を挿入
       - `.env` ファイルを作成し、VITE_INDEX_ID に Kendra の Index ID を設定
-   2. `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を入れる。
-   3. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
+   2. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
    4. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する。
       - (MUST) `AWS_REGION` を amplify を立ち上げるリージョンにする。
       - (WANT) `ALLOW_ORIGINS` は Access-Control-Allow-Origin の設定値です。
