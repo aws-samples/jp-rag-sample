@@ -6,6 +6,7 @@
 
 Kendra のインデックスを作成する。
 - 参考：指定したサイトから自動でデータをクローリングしてインデックスする [CloudFormation Template サンプル](../kendra/kendra-docs-index.yaml)
+- __このCloudFormationテンプレートで作成するスタックの名前は必ず控えておいてください。後で使います__
 
 ### 2. LLM を SageMaker Endpoint にデプロイ
 
@@ -29,20 +30,18 @@ SageMaker エンドポイントを作成する。
    2. `? Enter a name for the environment:` mydev (好きな名前)  # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。先にファイルごと削除してしまっても問題ない。
    3. `? Select the authentication method you want to use:` AWS profile
    4. `? Please choose the profile you want to use:` は `amplify configure` の時に作成したプロファイルを選択
-5. バックエンドの環境変数を設定する
-   1. `cp amplify/backend/api/fargate/src/docker-compose-template.yml amplify/backend/api/fargate/src/docker-compose.yml`　で docker-compose.ymlファイルを作成する。
-   2. `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を入れる。
-   3. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
+5. バックエンド・フロントエンドの環境変数を設定する
+   1. `bash setenv.sh　_CloudFormationStackの名前+_Index`を実行する（スタック名がKendraRAGなら`bash setenv.sh KendraRAG-Index`となる）。このスクリプトで以下の処理が行われる。
+      - `amplify/backend/api/fargate/src/docker-compose-template.yml` を同一フォルダ内に docker-compose.yml としてコピー
+      - `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を挿入
+      - `.env` ファイルを作成し、VITE_INDEX_ID に Kendra の Index ID を設定
+   2. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
    4. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する。
       - (MUST) `AWS_REGION` を amplify を立ち上げるリージョンにする。
       - (WANT) `ALLOW_ORIGINS` は Access-Control-Allow-Origin の設定値です。
       - (WANT) `SAGEMAKER_ENDPOINT_NAME` は立ち上げた SageMaker エンドポイント名です。deploy_llm.sh で立ち上げた場合、変更の必要はありません。
       - (WANT) `LLM` は、rinna か claude を指定可能。 Anthropicを利用する場合は claudeを指定する。
-6. フロントエンドの環境変数を設定する
-   1. `cp .env.development-template .env`　でフロントエンド用の環境変数ファイルの作成
-   2.  `.env` の環境変数を変更する
-      -  `VITE_INDEX_ID` を Kendra の Index ID に指定する。
-7.  `amplify publish` でデプロイ
+6.  `amplify publish` でデプロイ
    1. `? Are you sure you want to continue? (Y/n) ` は Y と入力
       - もし `You are not authorized to perform this operation` というエラーが発生した場合、ユーザー に `AdministratorAccess` ポリシー を付与して再試行お願いします。
    2. `? Secret configuration detected. Do you wish to store new values in the cloud?` Yes  # <- 初回は Secret Manager に保存する
