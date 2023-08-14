@@ -31,7 +31,7 @@ SageMaker エンドポイントを作成する。
    3. `? Select the authentication method you want to use:` AWS profile
    4. `? Please choose the profile you want to use:` は `amplify configure` の時に作成したプロファイルを選択
 5. バックエンド・フロントエンドの環境変数を設定する
-   1. `bash setenv.sh　_CloudFormationStackの名前+_Index`を実行する（スタック名がKendraRAGなら`bash setenv.sh KendraRAG-Index`となる）。このスクリプトで以下の処理が行われる。
+   1. `bash setenv.sh　CloudFormationStackの名前＋-Index`を実行する（スタック名がKendraRAGなら`bash setenv.sh KendraRAG-Index`となる）。このスクリプトで以下の処理が行われる。
       - `amplify/backend/api/fargate/src/docker-compose-template.yml` を同一フォルダ内に docker-compose.yml としてコピー
       - `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を挿入
       - `.env` ファイルを作成し、VITE_INDEX_ID に Kendra の Index ID を設定
