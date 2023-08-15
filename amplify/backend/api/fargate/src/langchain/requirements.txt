@@ -1,4 +1,4 @@
-langchain==0.0.223
+langchain==0.0.236
 boto3>=1.26.137
 fastapi>=0.95.2
 uvicorn>=0.22.0
