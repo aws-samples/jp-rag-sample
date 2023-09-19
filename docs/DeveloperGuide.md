@@ -27,7 +27,7 @@ SageMaker エンドポイントを作成する。
 3. `npm i` でライブラリをインストール
 4. `amplify init` でプロジェクトを初期化
    1. `? Do you want to use an existing environment?:` n 
-   2. `? Enter a name for the environment:` mydev (好きな名前)  # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。先にファイルごと削除してしまっても問題ない。
+   2. `? Enter a name for the environment:` mydev (好きな名前：プロンプトでは2〜10文字と表示されているが長い文字数ではこの後のプロセスでエラーが発生することがあるので、5文字以内に収めることを推奨)  # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。先にファイルごと削除してしまっても問題ない。
    3. `? Select the authentication method you want to use:` AWS profile
    4. `? Please choose the profile you want to use:` は `amplify configure` の時に作成したプロファイルを選択
 5. バックエンド・フロントエンドの環境変数を設定する
