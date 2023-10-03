@@ -122,6 +122,7 @@ Resources:
       Name: 'KendraDocsDS'
       RoleArn: !GetAtt KendraDSRole.Arn
       Type: 'WEBCRAWLER'
+      LanguageCode: ja
     
   DataSourceSyncLambdaRole:
     Type: AWS::IAM::Role
