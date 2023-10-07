@@ -27,11 +27,11 @@ SageMaker エンドポイントを作成する。
 3. `npm i` でライブラリをインストール
 4. `amplify init` でプロジェクトを初期化
    1. `? Do you want to use an existing environment?:` n 
-   2. `? Enter a name for the environment:` mydev (好きな名前)  # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。先にファイルごと削除してしまっても問題ない。
+   2. `? Enter a name for the environment:` mydev (好きな名前：プロンプトでは2〜10文字と表示されているが長い文字数ではこの後のプロセスでエラーが発生することがあるので、5文字以内に収めることを推奨)  # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。先にファイルごと削除してしまっても問題ない。
    3. `? Select the authentication method you want to use:` AWS profile
    4. `? Please choose the profile you want to use:` は `amplify configure` の時に作成したプロファイルを選択
 5. バックエンド・フロントエンドの環境変数を設定する
-   1. `bash setenv.sh　_CloudFormationStackの名前+_Index`を実行する（スタック名がKendraRAGなら`bash setenv.sh KendraRAG-Index`となる）。このスクリプトで以下の処理が行われる。
+   1. `bash setenv.sh　CloudFormationStackの名前＋-Index`を実行する（スタック名がKendraRAGなら`bash setenv.sh KendraRAG-Index`となる）。このスクリプトで以下の処理が行われる。
       - `amplify/backend/api/fargate/src/docker-compose-template.yml` を同一フォルダ内に docker-compose.yml としてコピー
       - `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を挿入
       - `.env` ファイルを作成し、VITE_INDEX_ID に Kendra の Index ID を設定
