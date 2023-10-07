@@ -20,9 +20,8 @@ class RinnaContentHandler(LLMContentHandler):
     def transform_input(self, prompt: str, model_kwargs: dict) -> bytes:
         input_str = json.dumps(
             {
-                "instruction": "",
-                "input": prompt.replace("\n", "<NL>"),
-                **model_kwargs,
+                "inputs": prompt.replace("\n", "<NL>"),
+                "parameters": model_kwargs
             }
         )
         print("prompt: ", prompt)
@@ -30,7 +29,8 @@ class RinnaContentHandler(LLMContentHandler):
 
     def transform_output(self, output: bytes) -> str:
         response_json = json.loads(output.read().decode("utf-8"))
-        return response_json.replace("<NL>", "\n")
+        response = response_json[0]['generated_text']
+        return response.replace("<NL>", "\n")
 
 
 def build_rinna_chain(endpoint_name: str, aws_region: str) -> LLMChain:
@@ -52,9 +52,6 @@ def build_rinna_chain(endpoint_name: str, aws_region: str) -> LLMChain:
             "max_new_tokens": 256,
             "temperature": 0.3,
             "do_sample": True,
-            "pad_token_id": 0,
-            "bos_token_id": 2,
-            "eos_token_id": 3,
         },
         content_handler=content_handler,
     )
