@@ -10,7 +10,7 @@ from langchain.llms.bedrock import Bedrock
 from langchain.prompts import PromptTemplate
 from schemas import KendraDocument, LLMWithDocReqBody
 
-model_id = "anthropic.claude-v2"
+model_id = "anthropic.claude-v1"
 bedrock_region = os.environ.get("AWS_BEDROCK_REGION", "us-east-1")
 
 
@@ -18,7 +18,7 @@ def build_claude_bedrock_chain():
     """claude を LLM として利用する場合の Chain の作成"""
 
     inference_modifier = {
-            "max_tokens_to_sample": 2048,
+            "max_tokens_to_sample": 500,
             "temperature": 0.85, 
             "top_k": 10, 
             "top_p": 0.85, 
@@ -44,9 +44,19 @@ Assistant:""",
 
 def build_claude_bedrock_chain_without_doc():
     """context が与えられていない場合のプロンプトを使う Chain の作成"""
+
+    inference_modifier = {
+            "max_tokens_to_sample": 200,
+            "temperature": 0.85, 
+            "top_k": 10, 
+            "top_p": 0.85, 
+            "stop_sequences": ["\n\nHuman:"] 
+           }
+    
     claude = Bedrock(
         model_id=model_id,
-        region_name=bedrock_region
+        region_name=bedrock_region,
+        model_kwargs=inference_modifier
     )
     prompt = PromptTemplate(
         template="""Human: {question}
