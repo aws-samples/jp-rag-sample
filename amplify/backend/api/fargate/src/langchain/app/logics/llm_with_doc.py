@@ -9,8 +9,11 @@ from chain import (
     build_claude_chain,
     build_claude_chain_without_doc,
     build_rinna_chain,
+    build_claude_bedrock_chain,
+    build_claude_bedrock_chain_without_doc,
     run_claude_chain,
     run_rinna_chain,
+    run_claude_bedrock_chain
 )
 from langchain.prompts import PromptTemplate
 from schemas import LLMWithDocReqBody
@@ -31,7 +34,7 @@ def llm_with_doc(
     body: LLMWithDocReqBody,
     endpoint_name: str,
     aws_region: str,
-    llm_type: Literal["rinna", "claude"] = "rinna",
+    llm_type: Literal["rinna", "claude", "claude_bedrock"] = "claude_bedrock",
 ):
     """chain を使わずに与えられた情報をもとにプロンプトを作成して LLM に投げる"""
     if llm_type == "rinna":
@@ -43,4 +46,10 @@ def llm_with_doc(
         else:
             chain = build_claude_chain_without_doc()
         return run_claude_chain(chain, body)
+    elif llm_type == "claude_bedrock":
+        if body.documents:
+            chain = build_claude_bedrock_chain()
+        else:
+            chain = build_claude_bedrock_chain_without_doc()
+        return run_claude_bedrock_chain(chain, body)
     raise ValueError(f"unsupported LLM")

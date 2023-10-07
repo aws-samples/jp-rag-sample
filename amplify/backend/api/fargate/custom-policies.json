@@ -35,5 +35,14 @@
     "Resource": [
       "arn:aws:s3:::*/*"
     ]
+  },
+  {
+    "Effect": "Allow",
+    "Action": [
+      "bedrock:InvokeModel"
+    ],
+    "Resource": [
+      "arn:aws:bedrock:*::foundation-model/*"
+    ]
   }
 ]
