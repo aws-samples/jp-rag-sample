@@ -38,9 +38,10 @@ SageMaker エンドポイントを作成する。
    2. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
    4. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する。
       - (MUST) `AWS_REGION` を amplify を立ち上げるリージョンにする。
+      - (MUST) `AWS_BEDROCK_REGION` には bedrock の利用リージョンを指定
       - (WANT) `ALLOW_ORIGINS` は Access-Control-Allow-Origin の設定値です。
       - (WANT) `SAGEMAKER_ENDPOINT_NAME` は立ち上げた SageMaker エンドポイント名です。deploy_llm.sh で立ち上げた場合、変更の必要はありません。
-      - (WANT) `LLM` は、rinna か claude を指定可能。 Anthropicを利用する場合は claudeを指定する。
+      - (WANT) `LLM` は、rinna, claude, claude_bedrock を指定可能。 Anthropicを利用する場合は claudeを指定する。
 6.  `amplify publish` でデプロイ
    1. `? Are you sure you want to continue? (Y/n) ` は Y と入力
       - もし `You are not authorized to perform this operation` というエラーが発生した場合、ユーザー に `AdministratorAccess` ポリシー を付与して再試行お願いします。
