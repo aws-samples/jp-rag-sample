@@ -100,7 +100,6 @@ VSCODEからデバッグ実行するには、
                 "SAGEMAKER_ENDPOINT_NAME": "Rinna-Inference",
                 "KENDRA_INDEX_ID": "************",
                 "LLM": "rinna",
-                "AWS_REGION": "us-east-1"
                 // "ANTHROPIC_API_KEY" : "",
             },
             "jinja": true,
