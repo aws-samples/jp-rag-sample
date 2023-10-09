@@ -10,7 +10,8 @@ import { Relevance, submitFeedback } from "../../../utils/service";
 import { useGlobalContext } from '../../../App';
 import { Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-
+// i18
+import { useTranslation } from "react-i18next";
 
 
 export const KendraResultDoc: React.FC<{
@@ -20,6 +21,9 @@ export const KendraResultDoc: React.FC<{
 }> = ({
     queryId, resultItems,
 }) => {
+        // 言語設定
+        const { t } = useTranslation();
+
         // 文章のリストを表示する
         const {
             pinnedTexts: pinnedTexts, setPinnedTexts: setPinnedTexts,
@@ -32,7 +36,7 @@ export const KendraResultDoc: React.FC<{
                 <>
                     <Box borderColor="green.500">
                         <HStack p='30px'>
-                            <Text>関連する文章</Text>
+                            <Text>{t("body.related_sentence")}</Text>
                         </HStack>
                     </Box>
                     {resultItems.map((resultItem, idx: number) => (
@@ -49,7 +53,7 @@ export const KendraResultDoc: React.FC<{
                                 <Box onClick={() => {
                                     setPinnedTexts([...pinnedTexts, resultItem.DocumentExcerpt?.Text ?? "読み込みエラー"]);
                                     toast({
-                                        title: 'テキストがピン止めされました',
+                                        title: t("toast.pinned"),
                                         description: "",
                                         status: 'success',
                                         duration: 1000,
@@ -61,7 +65,7 @@ export const KendraResultDoc: React.FC<{
                                 <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>
                                     <IconButton aria-label='Search database' icon={<AiOutlineLike />} backgroundColor={"transparent"} onClick={() => {
                                         toast({
-                                            title: 'フィードバックありがとうございます',
+                                            title: t("toast.thanks_feedback"),
                                             description: "",
                                             status: 'success',
                                             duration: 1000,
@@ -71,7 +75,7 @@ export const KendraResultDoc: React.FC<{
                                     }} />
                                     <IconButton aria-label='Search database' icon={<AiOutlineDislike />} backgroundColor={"transparent"} onClick={() => {
                                         toast({
-                                            title: 'フィードバックありがとうございます',
+                                            title: t("toast.thanks_feedback"),
                                             description: "",
                                             status: 'success',
                                             duration: 1000,
@@ -89,12 +93,12 @@ export const KendraResultDoc: React.FC<{
             return (<>
                 <Box borderColor="green.500">
                     <HStack p='30px'>
-                        <Text>関連する文章</Text>
+                        <Text>{t("body.related_sentence")}</Text>
                     </HStack>
                 </Box>
                 <Box borderColor="green.500">
                     <HStack p='30px'>
-                        <Text>該当なし</Text>
+                        <Text>{t("body.no_result")}</Text>
                     </HStack>
                 </Box>
             </>);

@@ -11,7 +11,8 @@ import { DEFAULT_LANGUAGE, DEFAULT_SEARCH_MODE } from "./utils/constant.tsx";
 // Amplify
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
-
+// i18
+import "./i18n/configs.ts"
 
 // Global変数
 interface GlobalContextInterface {

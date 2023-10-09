@@ -20,6 +20,8 @@ import {
   useDisclosure,
   useToast
 } from '@chakra-ui/react';
+// i18
+import { useTranslation } from "react-i18next";
 
 interface CustomSetupTOTPProps {
   user: AmplifyUser | undefined;
@@ -53,6 +55,9 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
 
   const totpUsername = props.user?.getUsername() || '';
 
+  // 言語設定
+  const { t } = useTranslation();
+
 
   const generateQRCode = React.useCallback(
     async (currentUser: AmplifyUser): Promise<void> => {
@@ -77,7 +82,6 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
     // 確認後、ユーザーは TOTP を生成するアプリ (Google 認証システムなど) に TOTP アカウントを持つ
     // 生成されたワンタイムパスワードを使用して設定を検証
 
-
     setErrorMessage('');
     setIsVerifyingToken(true);
     Auth.verifyTotpToken(props.user, token)
@@ -96,7 +100,7 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
         setIsVerifyingToken(false)
         onClose()
         toast({
-          title: 'MFA が設定されました',
+          title: t("toast.mfa_success"),
           status: 'success',
           duration: 9000,
           isClosable: true,
@@ -124,11 +128,11 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
 
   return (
     <>
-      <MenuItem onClick={onOpen}>MFA の設定</MenuItem>
+      <MenuItem onClick={onOpen}>{t("top_bar.set_mfa")}</MenuItem>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>MFA の設定</ModalHeader>
+          <ModalHeader>{t("top_bar.set_mfa")}</ModalHeader>
           <ModalBody>
             <form onSubmit={(event) => { event.preventDefault() }}>
               {isLoading && <div>{'loading...'}</div>}

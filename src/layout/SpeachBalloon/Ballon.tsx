@@ -5,11 +5,14 @@ import { ReactNode } from 'react';
 import { Box, HStack, IconButton, Text } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useGlobalContext } from '../../App';
+// i18
+import { useTranslation } from "react-i18next";
 
 const Ballon: React.FC<{ bid: number, text: string, children: ReactNode, }> = ({ bid, text, children }) => {
+    // 言語設定
+    const { t } = useTranslation();
+
     // 入力したクエリ文字と各種吹き出しを表示するコンポーネント
-
-
     const {
         setCurrentConversation: setCurrentConversation,
         history: history,
@@ -29,7 +32,7 @@ const Ballon: React.FC<{ bid: number, text: string, children: ReactNode, }> = ({
                             setHistory([...history])
                         }
                     }} />
-                    <Text>クエリ: {text}</Text>
+                    <Text>{t("body.query")}: {text}</Text>
                 </HStack>
             </Box>
 

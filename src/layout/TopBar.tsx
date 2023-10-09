@@ -35,15 +35,17 @@ import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '..
 import { Conversation, DocumentForInf } from '../utils/interface';
 import { UseAuthenticator } from '@aws-amplify/ui-react-core';
 import { AmplifyUser } from '@aws-amplify/ui';
-
+// i18
+import { useTranslation } from "react-i18next";
 
 export type SignOut = UseAuthenticator['signOut'];
 
 
 export default function TopBar({ logout, user }: { logout: SignOut | undefined, user: AmplifyUser | undefined },) {
+  // 言語設定
+  const { t } = useTranslation();
+
   // 画面上部の検索バー
-
-
   const {
     currentConversation: currentConversation,
     setCurrentConversation: setCurrentConversation,
@@ -129,7 +131,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
         }).catch(err => {
           console.log(err)
           toast({
-            title: 'エラー (kendraへの問い合わせに失敗しました)',
+            title: t("toast.fail_kendra"),
             description: "",
             status: 'error',
             duration: 1000,
@@ -214,7 +216,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
         }).catch(err => {
           console.log(err)
           toast({
-            title: 'エラー (kendraへの問い合わせに失敗しました)',
+            title: t("toast.fail_kendra"),
             description: "",
             status: 'error',
             duration: 1000,
@@ -274,7 +276,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
         }).catch(err => {
           console.log(err)
           toast({
-            title: 'エラー (LLM への問い合わせに失敗しました)',
+            title: t("toast.fail_kendra"),
             description: "",
             status: 'error',
             duration: 1000,
@@ -357,7 +359,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
         }).catch(err => {
           console.log(err)
           toast({
-            title: 'エラー (LLM への問い合わせに失敗しました)',
+            title: t("toast.fail_kendra"),
             description: "",
             status: 'error',
             duration: 1000,
@@ -408,7 +410,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
               </MenuList>
             </Menu>
           </InputLeftAddon>
-          <Input placeholder='検索' value={currentInputText} onChange={(e) => setCurrentInputText(e.target.value)} onKeyDown={handleKeyDown} autoComplete='on' list='mylist' />
+          <Input placeholder={t("top_bar.search")} value={currentInputText} onChange={(e) => setCurrentInputText(e.target.value)} onKeyDown={handleKeyDown} autoComplete='on' list='mylist' />
           <datalist id="mylist">
           </datalist>
         </InputGroup>
@@ -418,13 +420,13 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
       <HStack display={"flex"} justifyContent={"flex-end"} width={"100%"}>
         <Menu>
           <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-            アカウント
+            {t("top_bar.account")}
           </MenuButton>
           <MenuList>
             {/* MFAボタン */}
             <CustomSetupTOTP user={user} issuer="jp-rag-sample" handleAuthStateChange={() => null}></CustomSetupTOTP>
             {/* ログアウトボタン */}
-            <MenuItem onClick={logout}>ログアウト</MenuItem>
+            <MenuItem onClick={logout}>{t("top_bar.logout")}</MenuItem>
           </MenuList>
         </Menu>
 
@@ -433,7 +435,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
         <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />
           <DrawerContent>
-            <DrawerHeader borderBottomWidth='1px'>ピン止めされたテキスト</DrawerHeader>
+            <DrawerHeader borderBottomWidth='1px'>{t("right_side_bar.pinned_text")}</DrawerHeader>
             <DrawerBody>
               {
                 pinnedTexts.map((item: string, idx: number) => (
