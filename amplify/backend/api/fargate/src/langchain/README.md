@@ -54,7 +54,7 @@
     ```zsh
     # AWS_REGION は AWS のリージョンを指定 (Kendra や SageMaker が動いている)
     export AWS_REGION="us-west-2"
-    export AWS_BEDROCK_REGION="us-east-1"
+    export AWS_BEDROCK_REGION="us-west-2"
     # ALLOW_ORIGINS は Access-Control-Allow-Origin の設定値 を指定
     export ALLOW_ORIGINS="*"
     # SAGEMAKER_ENDPOINT_NAME  は SageMaker エンドポイント名 を指定
@@ -95,7 +95,7 @@ VSCODEからデバッグ実行するには、
             ],
             "env": {
                 "AWS_REGION": "us-west-2",
-                "AWS_BEDROCK_REGION": "us-east-1",
+                "AWS_BEDROCK_REGION": "us-west-2",
                 "ALLOW_ORIGINS": "*",
                 "SAGEMAKER_ENDPOINT_NAME": "Rinna-Inference",
                 "KENDRA_INDEX_ID": "************",
