@@ -72,3 +72,11 @@ async def kendra_describe(
     kendra_request_body = body["input"]
     response = kendra_client.describe_index(**kendra_request_body)
     return response
+
+@app.post("/v2/kendra/listDataSources")
+async def kendra_list_data_sources(body: Dict):
+    """Kendra の ListDataSources API をキックする
+    
+    Request Syntax は公式ドキュメントを参照 : https://docs.aws.amazon.com/ja_jp/kendra/latest/APIReference/API_ListDataSources.html"""
+    request_body = body["input"]
+    return kendra_client.list_data_sources(**request_body)

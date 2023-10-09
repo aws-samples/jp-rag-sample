@@ -3,7 +3,7 @@
 
 import { SortingConfiguration, AttributeFilter, QueryCommandOutput, AdditionalResultAttribute, TextWithHighlights } from "@aws-sdk/client-kendra";
 import { DEFAULT_SORT_ATTRIBUTE, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
-import { Filter, selectItemType } from "./interface";
+import { Dic, Filter, selectItemType } from "./interface";
 
 export function isArrayBoolean(arr: any[]): arr is boolean[] {
     return arr.every((item) => typeof item === 'boolean');
@@ -161,7 +161,7 @@ export function getAttributeFilter(filterOptions: Filter[]): AttributeFilter {
     }
 }
 
-export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
+export function getFiltersFromQuery(query: QueryCommandOutput, datasourceInfo: Dic): Filter[] {
     /*
      * Query結果からフィルタ可能なファセットを取得
      */
@@ -173,10 +173,19 @@ export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
                 const os: selectItemType[] = []
                 for (const valuePair of fr.DocumentAttributeValueCountPairs ?? []) {
                     if (valuePair.DocumentAttributeValue?.StringValue !== undefined) {
-                        os.push({
-                            name: valuePair.DocumentAttributeValue?.StringValue,
-                            value: ""
-                        })
+
+                        // Datasource であれば、Datasource id から Datasource name に変換
+                        if (valuePair.DocumentAttributeValue.StringValue in datasourceInfo) {
+                            os.push({
+                                name: datasourceInfo[valuePair.DocumentAttributeValue?.StringValue],
+                                value: ""
+                            })
+                        } else {
+                            os.push({
+                                name: valuePair.DocumentAttributeValue?.StringValue,
+                                value: ""
+                            })
+                        }
                     }
                 }
                 fs.push({

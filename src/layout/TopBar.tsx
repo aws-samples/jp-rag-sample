@@ -51,6 +51,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
     setHistory: setHistory,
     filterOptions: filterOptions,
     setFilterOptions: setFilterOptions,
+    datasourceInfo: datasourceInfo,
     pinnedTexts: pinnedTexts,
     currentSearchMode: currentSearchMode,
     setCurrentSearchMode: setCurrentSearchMode,
@@ -123,7 +124,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
             setFilterOptions([
               filterOptions[0], // 言語設定
               filterOptions[1], // ソート順序
-              ...getFiltersFromQuery(data)]) // クエリから受け取ったフィルタ候補
+              ...getFiltersFromQuery(data, datasourceInfo)]) // クエリから受け取ったフィルタ候補
           }
         }).catch(err => {
           console.log(err)
@@ -207,7 +208,7 @@ export default function TopBar({ logout, user }: { logout: SignOut | undefined, 
             setFilterOptions([
               filterOptions[0], // 言語設定
               filterOptions[1], // ソート順序
-              ...getFiltersFromQuery(data)]) // クエリから受け取ったフィルタ候補
+              ...getFiltersFromQuery(data, datasourceInfo)]) // クエリから受け取ったフィルタ候補
           }
           return data
         }).catch(err => {

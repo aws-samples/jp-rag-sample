@@ -1,8 +1,18 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 
-import { AttributeFilter, DescribeIndexCommand, QueryCommand, QueryCommandInput, QueryCommandOutput, SortingConfiguration, SubmitFeedbackCommand } from "@aws-sdk/client-kendra";
-import { DataForInf, Filter, selectItemType } from "./interface";
+import { 
+  AttributeFilter,
+  DescribeIndexCommand,
+  ListDataSourcesCommand,
+  QueryCommand,
+  QueryCommandInput,
+  QueryCommandOutput,
+  SortingConfiguration,
+  SubmitFeedbackCommand,
+  ListDataSourcesCommandOutput
+} from "@aws-sdk/client-kendra";
+import { DataForInf, Dic, Filter, selectItemType } from "./interface";
 import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "./constant";
 import { Amplify } from 'aws-amplify';
 import awsconfig from "../aws-exports";
@@ -138,6 +148,39 @@ export async function kendraQuery(param: QueryCommandInput) {
     .then((r: QueryCommandOutput) => { return r })
 
   return data;
+}
+
+
+export async function getDatasourceInfo(): Promise<Dic> {
+  /*
+   * DataSource の情報を取得
+   */
+
+  const command = new ListDataSourcesCommand({
+    IndexId: indexId
+  });
+  const url = `${serverUrl}/v2/kendra/listDataSources`
+
+  const data = await fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`,
+    },
+    body: JSON.stringify(command)
+  })
+  .then(response => response.json())
+  .then((r: ListDataSourcesCommandOutput) => {
+    // Datasource list を {id:name} の dict に変換
+    const datasourceDic: Dic = {}
+    for (const datasourceItem of r.SummaryItems ?? []) {
+      datasourceDic[datasourceItem.Id ?? ""] = datasourceItem.Name ?? "";
+    }
+    return datasourceDic
+  })
+
+  return data
 }
 
 
