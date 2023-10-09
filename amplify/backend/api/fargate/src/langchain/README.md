@@ -54,6 +54,7 @@
     ```zsh
     # AWS_REGION は AWS のリージョンを指定 (Kendra や SageMaker が動いている)
     export AWS_REGION="us-west-2"
+    export AWS_BEDROCK_REGION="us-east-1"
     # ALLOW_ORIGINS は Access-Control-Allow-Origin の設定値 を指定
     export ALLOW_ORIGINS="*"
     # SAGEMAKER_ENDPOINT_NAME  は SageMaker エンドポイント名 を指定
@@ -61,7 +62,7 @@
     # KENDRA_INDEX_ID  を Kendra の Index ID に指定
     export KENDRA_INDEX_ID=*********
     # export ANTHROPIC_API_KEY="xxxxxx"  # Claude を利用するための API Key がセットされていればこちらに値をセットする
-    export LLM="rinna" # rinna か claude を指定可能ください。Anthropic を利用する場合は claudeを指定ください。
+    export LLM="rinna" # rinna, claude, claude_bedrock から指定可能ください。Anthropic を利用する場合は claudeを指定ください。
     ```
     
 2. プログラムを実行する (FASTAPI)
@@ -94,6 +95,7 @@ VSCODEからデバッグ実行するには、
             ],
             "env": {
                 "AWS_REGION": "us-west-2",
+                "AWS_BEDROCK_REGION": "us-east-1",
                 "ALLOW_ORIGINS": "*",
                 "SAGEMAKER_ENDPOINT_NAME": "Rinna-Inference",
                 "KENDRA_INDEX_ID": "************",
