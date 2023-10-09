@@ -18,14 +18,12 @@ def convert_s3url(data):
         for result in data['ResultItems']:
             if 'DocumentURI' in result:
                 try:
-                    res = result['DocumentURI'].split("/")
-                    if res[2].startswith("s3"):
+                    if result['DocumentId'].startswith("s3"):  # DocumentId が s3から始まる場合
+                        res = result['DocumentId'].split("/")  # DocumentId をスラッシュで分割
                         # バケット名と key 名 を分離
-                        bucket = res[3]
-                        key = res[4]
-                        for i in range(5, len(res)):
-                            key = key + "/" + res[i]
-                        # s3 presigned url に置き換え
+                        bucket = res[2]
+                        key = "/".join(map(str, res[3:]))
+                        # DocumentURI を S3 presigned url に置き換え
                         try:
                             uri = s3_client.generate_presigned_url(
                                 'get_object', Params={'Bucket': bucket, 'Key': key}, ExpiresIn=3600)
