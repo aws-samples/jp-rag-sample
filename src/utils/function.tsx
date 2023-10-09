@@ -186,7 +186,6 @@ export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
                     selected: new Array(os.length).fill(null).map(() => true)
                 })
 
-                // DEBUG
             } else if (fr.DocumentAttributeValueType === "STRING_LIST_VALUE") {
                 // STRING_LIST_VALUE 型のファセットがあれば自由記述で選択可能に
                 fs.push({
@@ -217,26 +216,26 @@ export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
                 })
             } else if (fr.DocumentAttributeValueType === "DATE_VALUE") {
                 // DATE_VALUE 型のファセットがあれば時間範囲を指定するフィルタを作成
-                const osDate: Date[] = [];
-                const osNum: number[] = [];
 
+                // 時間候補の array を作成
+                const osDate: Date[] = [];
                 for (const valuePair of fr.DocumentAttributeValueCountPairs ?? []) {
                     if (valuePair.DocumentAttributeValue?.DateValue !== undefined) {
-                        osDate.push(valuePair.DocumentAttributeValue?.DateValue)
-                        osNum.push(valuePair.DocumentAttributeValue?.DateValue.getTime())
+                        osDate.push(new Date(valuePair.DocumentAttributeValue.DateValue))
                     }
                 }
-                const osPast: Date = osDate[osNum.indexOf(Math.min(...osNum))]
-                const osRecent: Date = osDate[osNum.indexOf(Math.max(...osNum))]
+
+                const oldestTime: Date = new Date(Math.min(...osDate.map(date => date.getTime())));  // 最も古い時間
+                const newestTime: Date = new Date(Math.max(...osDate.map(date => date.getTime())));  // 最も新しい時間
 
                 fs.push({
                     filterType: "RANGE_DATE",
                     title: fr.DocumentAttributeKey,
                     options: [
-                        { "name": "past", value: osPast.toString() },
-                        { "name": "recent", value: osRecent.toString() }
+                        { "name": "past", value: oldestTime.toString() },
+                        { "name": "recent", value: newestTime.toString() }
                     ],
-                    selected: [osPast, osRecent]
+                    selected: [oldestTime, newestTime]
                 })
             }
         }
