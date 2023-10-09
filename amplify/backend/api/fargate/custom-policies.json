@@ -22,7 +22,8 @@
       "kendra:Describe*",
       "kendra:List*",
       "kendra:Query",
-      "kendra:GetQuerySuggestions"
+      "kendra:GetQuerySuggestions",
+      "kendra:SubmitFeedback"
     ],
     "Resource": [
       "arn:aws:kendra:*:*:index/*"
