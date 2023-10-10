@@ -190,13 +190,15 @@ const RangeDateBox: React.FC<{
   title: string
   currentTags: Date[]
 }> = ({ onStartDateChange: onStartDateChange, onEndDateChange: onEndDateChange, title, currentTags: currentRange }) => {
+  //言語設定
+  const { t } = useTranslation();
+
+
   // 時間の範囲の選択ボックス
-
-
   return (
     <Box pb="3">
       <Text>{title}</Text>
-      <Text>開始 - 終了</Text>
+      <Text>{t("left_side_bar.parts.start_date")} - {t("left_side_bar.parts.end_date")}</Text>
       <HStack>
         <Input
           placeholder="Select Date and Time"
@@ -226,15 +228,17 @@ const ContainStringBox: React.FC<{
   title: string
   currentTags: string[]
 }> = ({ onInsertTag, onDeleteTag, title, currentTags }) => {
+  //言語設定
+  const { t } = useTranslation();
+
+
   // 文字列
-
-
   const [text, setText] = useState("");
 
   return (
     <Box pb="3">
       <Text>{title}</Text>
-      <Input list='mylist' size="sm" placeholder='の文字列を含む' onChange={
+      <Input list='mylist' size="sm" placeholder={t("left_side_bar.parts.included_string")} onChange={
         (e) => {
           setText(e.currentTarget.value)
         }}
