@@ -1,0 +1,53 @@
+{
+    "top_bar" : {
+        "account": "アカウント",
+        "set_mfa": "MFA の設定",
+        "logout": "ログアウト",
+        "search": "検索"
+    },
+    "left_side_bar" : {
+        "filter_option_name": {
+            "lang_setting": "言語設定",
+            "sort_order": "並び順",
+            "authors": "著者",
+            "data_source_id": "データソース",
+            "document_body": "ドキュメント本文",
+            "document_id": "ドキュメント ID",
+            "category": "カテゴリ",
+            "view_count": "ビュー数",
+            "created_at": "作成日",
+            "document_title": "ドキュメントタイトル",
+            "excerpt_page_number": "抜粋ページ番号",
+            "faq_id": "FAQ ID",
+            "file_type": "ファイルタイプ",
+            "language_code": "言語",
+            "last_updated_at": "最終更新日",
+            "source_uri": "ソース URL",
+            "tenant_id": "テナント ID",
+            "version": "バージョン"
+        },
+        "parts" : {
+            "included_string": "の文字列を含む",
+            "start_date": "開始",
+            "end_date": "終了",
+            "apply": "適用"
+        }
+    },
+    "body" : {
+        "query": "クエリ",
+        "related_sentence": "関連する文章",
+        "no_result": "該当なし",
+        "you": "あなた",
+        "ai_response": "AI の回答"
+    },
+    "toast" : {
+        "mfa_success": "MFA が設定されました",
+        "invalid_filter": "エラー (不正なフィルタ)",
+        "fail_kendra": "エラー (kendraへの問い合わせに失敗しました)",
+        "pinned": "テキストがピン止めされました",
+        "thanks_feedback": "フィードバックありがとうございます"
+    },
+    "right_side_bar": {
+        "pinned_text": "ピン止めされた文章"
+    }
+}

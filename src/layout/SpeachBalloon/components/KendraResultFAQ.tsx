@@ -12,7 +12,8 @@ import { useGlobalContext } from '../../../App';
 import { Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { getFAQWithHighlight } from "../../../utils/function";
-
+// i18
+import { useTranslation } from "react-i18next";
 
 
 export const KendraResultFAQ: React.FC<{
@@ -22,6 +23,8 @@ export const KendraResultFAQ: React.FC<{
 }> = ({
     queryId, resultItems,
 }) => {
+        // 言語設定
+        const { t } = useTranslation();
         // FAQ を表示
         const {
             pinnedTexts: pinnedTexts, setPinnedTexts: setPinnedTexts,
@@ -60,7 +63,7 @@ export const KendraResultFAQ: React.FC<{
                                                 <Box onClick={() => {
                                                     setPinnedTexts([...pinnedTexts, resultItem.DocumentExcerpt?.Text ?? "読み込みエラー"]);
                                                     toast({
-                                                        title: 'テキストがピン止めされました',
+                                                        title: t("toast.pinned"),
                                                         description: "",
                                                         status: 'success',
                                                         duration: 1000,
@@ -72,7 +75,7 @@ export const KendraResultFAQ: React.FC<{
                                                 <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>
                                                     <IconButton aria-label='Search database' icon={<AiOutlineLike />} backgroundColor={"transparent"} onClick={() => {
                                                         toast({
-                                                            title: 'フィードバックありがとうございます',
+                                                            title: t("toast.thanks_feedback"),
                                                             description: "",
                                                             status: 'success',
                                                             duration: 1000,
@@ -82,7 +85,7 @@ export const KendraResultFAQ: React.FC<{
                                                     }} />
                                                     <IconButton aria-label='Search database' icon={<AiOutlineDislike />} backgroundColor={"transparent"} onClick={() => {
                                                         toast({
-                                                            title: 'フィードバックありがとうございます',
+                                                            title: t("toast.thanks_feedback"),
                                                             description: "",
                                                             status: 'success',
                                                             duration: 1000,

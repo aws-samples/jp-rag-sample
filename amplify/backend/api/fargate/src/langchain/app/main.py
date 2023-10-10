@@ -41,7 +41,10 @@ async def llm_with_doc_handler(
 
 @app.post("/v2/kendra/query")
 async def kendra_query(body: Dict):
-    """Kendra の Query API をキックする"""
+    """Kendra の Query API をキックする
+    
+    Request Syntax は公式ドキュメントを参照 : https://docs.aws.amazon.com/kendra/latest/APIReference/API_Query.html
+    """
     request_body = body["input"]
     response = kendra_client.query(**request_body)
     return convert_s3url(response)
@@ -49,7 +52,10 @@ async def kendra_query(body: Dict):
 
 @app.post("/v2/kendra/send")
 async def kendra_send(body: Dict):
-    """Kendra の SubmitFeedback API をキックする"""
+    """Kendra の SubmitFeedback API をキックする
+    
+    Request Syntax は公式ドキュメントを参照 : https://docs.aws.amazon.com/kendra/latest/APIReference/API_SubmitFeedback.html
+    """
     kendra_request_body = body["input"]
     response = kendra_client.submit_feedback(**kendra_request_body)
     return response
@@ -59,7 +65,18 @@ async def kendra_send(body: Dict):
 async def kendra_describe(
     body: Dict
 ):
-    """Kendra の DesribeIndex API をキックする"""
+    """Kendra の DesribeIndex API をキックする
+    
+    Request Syntax は公式ドキュメントを参照 : https://docs.aws.amazon.com/kendra/latest/APIReference/API_DescribeIndex.html
+    """
     kendra_request_body = body["input"]
     response = kendra_client.describe_index(**kendra_request_body)
     return response
+
+@app.post("/v2/kendra/listDataSources")
+async def kendra_list_data_sources(body: Dict):
+    """Kendra の ListDataSources API をキックする
+    
+    Request Syntax は公式ドキュメントを参照 : https://docs.aws.amazon.com/ja_jp/kendra/latest/APIReference/API_ListDataSources.html"""
+    request_body = body["input"]
+    return kendra_client.list_data_sources(**request_body)

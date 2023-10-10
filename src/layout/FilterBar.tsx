@@ -28,7 +28,9 @@ import { Filter, selectItemType } from '../utils/interface';
 import { useGlobalContext } from "../App";
 import { getAttributeFilter, getCurrentSortOrder, isArrayBoolean, isArrayDate, isArrayNumber, isArrayString } from "../utils/function";
 import { kendraQuery, overwriteQuery } from "../utils/service";
-
+// i18n
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 
 const SelectBoxes: React.FC<{
   onSelectionChange: (
@@ -188,13 +190,15 @@ const RangeDateBox: React.FC<{
   title: string
   currentTags: Date[]
 }> = ({ onStartDateChange: onStartDateChange, onEndDateChange: onEndDateChange, title, currentTags: currentRange }) => {
+  //言語設定
+  const { t } = useTranslation();
+
+
   // 時間の範囲の選択ボックス
-
-
   return (
     <Box pb="3">
       <Text>{title}</Text>
-      <Text>開始 - 終了</Text>
+      <Text>{t("left_side_bar.parts.start_date")} - {t("left_side_bar.parts.end_date")}</Text>
       <HStack>
         <Input
           placeholder="Select Date and Time"
@@ -224,15 +228,17 @@ const ContainStringBox: React.FC<{
   title: string
   currentTags: string[]
 }> = ({ onInsertTag, onDeleteTag, title, currentTags }) => {
+  //言語設定
+  const { t } = useTranslation();
+
+
   // 文字列
-
-
   const [text, setText] = useState("");
 
   return (
     <Box pb="3">
       <Text>{title}</Text>
-      <Input list='mylist' size="sm" placeholder='の文字列を含む' onChange={
+      <Input list='mylist' size="sm" placeholder={t("left_side_bar.parts.included_string")} onChange={
         (e) => {
           setText(e.currentTarget.value)
         }}
@@ -264,9 +270,9 @@ const ContainStringBox: React.FC<{
 
 
 export default function FilterBar({ children }: { children: ReactNode }) {
+  //言語設定
+  const { t } = useTranslation();
   // 画面左にあるフィルター
-
-
   const {
     currentConversation: currentConversation,
     setCurrentConversation: setCurrentConversation,
@@ -275,6 +281,49 @@ export default function FilterBar({ children }: { children: ReactNode }) {
   } = useGlobalContext();
 
   const toast = useToast()
+
+  function filter_name_converter(filter_id: string): string {
+    // ファセット ID を 読みやすい名前(フィルタの種類名)に変換
+
+
+    switch (filter_id) {
+      case "_authors":
+        return t("left_side_bar.filter_option_name.authors");
+      case "_category":
+        return t("left_side_bar.filter_option_name.category");
+      case "_created_at":
+        return t("left_side_bar.filter_option_name.created_at");
+      case "_data_source_id":
+        return t("left_side_bar.filter_option_name.data_source_id");
+      case "_document_body":
+        return t("left_side_bar.filter_option_name.document_body");
+      case "_document_id":
+        return t("left_side_bar.filter_option_name.document_id");
+      case "_document_title":
+        return t("left_side_bar.filter_option_name.document_title");
+      case "_excerpt_page_number":
+        return t("left_side_bar.filter_option_name.excerpt_page_number");
+      case "_faq_id":
+        return t("left_side_bar.filter_option_name.faq_id");
+      case "_file_type":
+        return t("left_side_bar.filter_option_name.file_type");
+      case "_language_code":
+        return t("left_side_bar.filter_option_name.language_code");
+      case "_last_updated_at":
+        return t("left_side_bar.filter_option_name.last_updated_at");
+      case "_source_uri":
+        return t("left_side_bar.filter_option_name.source_uri");
+      case "_tenant_id":
+        return t("left_side_bar.filter_option_name.tenant_id");
+      case "_version":
+        return t("left_side_bar.filter_option_name.version");
+      case "_view_count":
+        return t("left_side_bar.filter_option_name.view_count")
+      defalut:
+        break;
+    }
+    return filter_id
+  }
 
   return (
     <Box h="92vh"
@@ -297,9 +346,12 @@ export default function FilterBar({ children }: { children: ReactNode }) {
                       <SelectBoxes
                         onSelectionChange={(event) => {
                           filterOptions[tmpCheckBoxItemId].selected = [event.target.value]
+                          // 表示言語を変更
+                          i18n.changeLanguage(event.target.value);
+
                           setFilterOptions([...filterOptions])
                         }}
-                        title={tmpCheckBoxItem.title}
+                        title={t("left_side_bar.filter_option_name.lang_setting")}
                         itemList={LANGUAGES}
                         currentSelection={tmpCheckBoxItem.selected[LANGUAGE_INDEX]}
                         key={tmpCheckBoxItemId}
@@ -316,7 +368,7 @@ export default function FilterBar({ children }: { children: ReactNode }) {
                           filterOptions[tmpCheckBoxItemId].selected[SORT_ORDER_INDEX] = e.currentTarget.value
                         }
                         }
-                        title={tmpCheckBoxItem.title}
+                        title={t("left_side_bar.filter_option_name.sort_order")}
                         itemList={tmpCheckBoxItem.options}
                         currentSortAttrSelection={tmpCheckBoxItem.selected[SORT_ATTRIBUTE_INDEX]}
                         currentSortOrderSelection={tmpCheckBoxItem.selected[SORT_ORDER_INDEX]}
@@ -334,7 +386,7 @@ export default function FilterBar({ children }: { children: ReactNode }) {
                           }
                           setFilterOptions([...filterOptions])
                         }}
-                        title={tmpCheckBoxItem.title}
+                        title={filter_name_converter(tmpCheckBoxItem.title)}
                         itemList={tmpCheckBoxItem.options}
                         checkedItems={tmpCheckBoxItem.selected}
                         key={tmpCheckBoxItemId} />
@@ -347,7 +399,7 @@ export default function FilterBar({ children }: { children: ReactNode }) {
                           filterOptions[tmpCheckBoxItemId].selected = e
                           setFilterOptions([...filterOptions])
                         }}
-                        title={tmpCheckBoxItem.title}
+                        title={filter_name_converter(tmpCheckBoxItem.title)}
                         itemList={tmpCheckBoxItem.options}
                         currentRange={tmpCheckBoxItem.selected}
                         key={tmpCheckBoxItemId} />
@@ -365,7 +417,7 @@ export default function FilterBar({ children }: { children: ReactNode }) {
                           filterOptions[tmpCheckBoxItemId].selected[1] = new Date(v.currentTarget.value)
                           setFilterOptions([...filterOptions])
                         }}
-                        title={tmpCheckBoxItem.title}
+                        title={filter_name_converter(tmpCheckBoxItem.title)}
                         currentTags={tmpCheckBoxItem.selected}
                         key={tmpCheckBoxItemId} />
                     )
@@ -387,7 +439,7 @@ export default function FilterBar({ children }: { children: ReactNode }) {
                           filterOptions[tmpCheckBoxItemId].selected = tmpSelected
                           setFilterOptions([...filterOptions])
                         }}
-                        title={tmpCheckBoxItem.title}
+                        title={filter_name_converter(tmpCheckBoxItem.title)}
                         currentTags={tmpCheckBoxItem.selected}
                         key={tmpCheckBoxItemId} />
                     )
@@ -432,7 +484,7 @@ export default function FilterBar({ children }: { children: ReactNode }) {
                 }).catch(err => {
                   console.log(err)
                   toast({
-                    title: 'エラー (不正なフィルタ)',
+                    title: t("toast.invalid_filter"),
                     description: "",
                     status: 'error',
                     duration: 1000,
@@ -443,7 +495,7 @@ export default function FilterBar({ children }: { children: ReactNode }) {
             }
             run()
 
-          }}>適用</Button>
+          }}>{t("left_side_bar.parts.apply")}</Button>
         </VStack>
       </Box>
       {/* 本体 */}

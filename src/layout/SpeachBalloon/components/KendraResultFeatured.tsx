@@ -9,7 +9,8 @@ import { Relevance, submitFeedback } from "../../../utils/service";
 import { useGlobalContext } from '../../../App';
 import { Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-
+// i18
+import { useTranslation } from "react-i18next";
 
 
 export const KendraResultFeatured: React.FC<{
@@ -19,6 +20,8 @@ export const KendraResultFeatured: React.FC<{
 }> = ({
     queryId, resultItems,
 }) => {
+        // 言語設定
+        const { t } = useTranslation();
         // FeaturedResultを表示する
         const {
             pinnedTexts: pinnedTexts, setPinnedTexts: setPinnedTexts,
@@ -54,7 +57,7 @@ export const KendraResultFeatured: React.FC<{
                                         <Box onClick={() => {
                                             setPinnedTexts([...pinnedTexts, resultItem.DocumentExcerpt?.Text ?? "読み込みエラー"]);
                                             toast({
-                                                title: 'テキストがピン止めされました',
+                                                title: t("toast.pinned"),
                                                 description: "",
                                                 status: 'success',
                                                 duration: 1000,

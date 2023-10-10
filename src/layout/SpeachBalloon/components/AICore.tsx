@@ -5,8 +5,13 @@ import { Avatar, Box, HStack, Heading, VStack } from "@chakra-ui/react";
 import { AiFillRobot } from "react-icons/ai";
 import { AiResponse } from "../../../utils/interface";
 import QuotedTexts from "./QuotedTexts";
+// i18
+import { useTranslation } from "react-i18next";
 
 const AICore: React.FC<{ data: AiResponse }> = ({ data }) => {
+  // 言語設定
+  const { t } = useTranslation();
+
   // AIのCore部品
   // AIモードとRAGモードの際に表示
   // AI.tsxとKendra.tsxから参照
@@ -17,7 +22,7 @@ const AICore: React.FC<{ data: AiResponse }> = ({ data }) => {
         <Avatar bg='yellow.500' icon={<AiFillRobot fontSize='1.5rem' />} />
         <VStack align="start" w="85vw">
           <Heading size="sm">
-            AI の回答
+            {t("body.ai_response")}
           </Heading>
           {/* AIからの出力結果を表示 */}
           <Box>

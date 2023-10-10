@@ -1,0 +1,53 @@
+{
+    "top_bar" : {
+        "account": "account",
+        "set_mfa": "MFA setting",
+        "logout": "logout",
+        "search": "Search"
+    },
+    "left_side_bar" : {
+        "filter_option_name": {
+            "lang_setting": "lauguage setting",
+            "sort_order": "sort order",
+            "authors": "authors",
+            "data_source_id": "datasource",
+            "document_body": "document body",
+            "document_id": "document id",
+            "category": "category",
+            "view_count": "view count",
+            "created_at": "created at",
+            "document_title": "document_title",
+            "excerpt_page_number": "excerpt page number",
+            "faq_id": "FAQ ID",
+            "file_type": "File type",
+            "language_code": "Lauguage",
+            "last_updated_at": "last updated",
+            "source_uri": "source URL",
+            "tenant_id": "tenant ID",
+            "version": "version"
+        },
+        "parts" : {
+            "included_string": "include following string",
+            "start_date": "start",
+            "end_date": "end",
+            "apply": "apply"
+        }
+    },
+    "body" : {
+        "query": "query",
+        "related_sentence": "related sentence",
+        "no_result": "no result",
+        "you": "YOU",
+        "ai_response": "AI RESPONSE"
+    },
+    "toast" : {
+        "mfa_success": "MFA was set",
+        "invalid_filter": "Error (invalid filter)",
+        "fail_kendra": "Error (fail to call kendra)",
+        "pinned": "clicked text was pinned",
+        "thanks_feedback": "Thank you for your feedback"
+    },
+    "right_side_bar": {
+        "pinned_text": "PINNED TEXT"
+    }
+}

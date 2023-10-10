@@ -10,7 +10,7 @@ from langchain.llms.bedrock import Bedrock
 from langchain.prompts import PromptTemplate
 from schemas import KendraDocument, LLMWithDocReqBody
 
-model_id = "anthropic.claude-v1"
+model_id = "anthropic.claude-instant-v1"
 bedrock_region = os.environ.get("AWS_BEDROCK_REGION", "us-east-1")
 
 

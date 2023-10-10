@@ -3,7 +3,7 @@
 
 import { SortingConfiguration, AttributeFilter, QueryCommandOutput, AdditionalResultAttribute, TextWithHighlights } from "@aws-sdk/client-kendra";
 import { DEFAULT_SORT_ATTRIBUTE, SORT_ATTRIBUTE_INDEX, SORT_ORDER_INDEX, DEFAULT_LANGUAGE, MAX_INDEX, MIN_INDEX } from "./constant";
-import { Filter, selectItemType } from "./interface";
+import { Dic, Filter, selectItemType } from "./interface";
 
 export function isArrayBoolean(arr: any[]): arr is boolean[] {
     return arr.every((item) => typeof item === 'boolean');
@@ -161,7 +161,7 @@ export function getAttributeFilter(filterOptions: Filter[]): AttributeFilter {
     }
 }
 
-export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
+export function getFiltersFromQuery(query: QueryCommandOutput, datasourceInfo: Dic): Filter[] {
     /*
      * Query結果からフィルタ可能なファセットを取得
      */
@@ -173,10 +173,19 @@ export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
                 const os: selectItemType[] = []
                 for (const valuePair of fr.DocumentAttributeValueCountPairs ?? []) {
                     if (valuePair.DocumentAttributeValue?.StringValue !== undefined) {
-                        os.push({
-                            name: valuePair.DocumentAttributeValue?.StringValue,
-                            value: ""
-                        })
+
+                        // Datasource であれば、Datasource id から Datasource name に変換
+                        if (valuePair.DocumentAttributeValue.StringValue in datasourceInfo) {
+                            os.push({
+                                name: datasourceInfo[valuePair.DocumentAttributeValue?.StringValue],
+                                value: ""
+                            })
+                        } else {
+                            os.push({
+                                name: valuePair.DocumentAttributeValue?.StringValue,
+                                value: ""
+                            })
+                        }
                     }
                 }
                 fs.push({
@@ -186,7 +195,6 @@ export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
                     selected: new Array(os.length).fill(null).map(() => true)
                 })
 
-                // DEBUG
             } else if (fr.DocumentAttributeValueType === "STRING_LIST_VALUE") {
                 // STRING_LIST_VALUE 型のファセットがあれば自由記述で選択可能に
                 fs.push({
@@ -217,26 +225,26 @@ export function getFiltersFromQuery(query: QueryCommandOutput): Filter[] {
                 })
             } else if (fr.DocumentAttributeValueType === "DATE_VALUE") {
                 // DATE_VALUE 型のファセットがあれば時間範囲を指定するフィルタを作成
-                const osDate: Date[] = [];
-                const osNum: number[] = [];
 
+                // 時間候補の array を作成
+                const osDate: Date[] = [];
                 for (const valuePair of fr.DocumentAttributeValueCountPairs ?? []) {
                     if (valuePair.DocumentAttributeValue?.DateValue !== undefined) {
-                        osDate.push(valuePair.DocumentAttributeValue?.DateValue)
-                        osNum.push(valuePair.DocumentAttributeValue?.DateValue.getTime())
+                        osDate.push(new Date(valuePair.DocumentAttributeValue.DateValue))
                     }
                 }
-                const osPast: Date = osDate[osNum.indexOf(Math.min(...osNum))]
-                const osRecent: Date = osDate[osNum.indexOf(Math.max(...osNum))]
+
+                const oldestTime: Date = new Date(Math.min(...osDate.map(date => date.getTime())));  // 最も古い時間
+                const newestTime: Date = new Date(Math.max(...osDate.map(date => date.getTime())));  // 最も新しい時間
 
                 fs.push({
                     filterType: "RANGE_DATE",
                     title: fr.DocumentAttributeKey,
                     options: [
-                        { "name": "past", value: osPast.toString() },
-                        { "name": "recent", value: osRecent.toString() }
+                        { "name": "past", value: oldestTime.toString() },
+                        { "name": "recent", value: newestTime.toString() }
                     ],
-                    selected: [osPast, osRecent]
+                    selected: [oldestTime, newestTime]
                 })
             }
         }
