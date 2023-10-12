@@ -38,7 +38,8 @@
         "related_sentence": "related sentence",
         "no_result": "no result",
         "you": "YOU",
-        "ai_response": "AI RESPONSE"
+        "ai_response": "AI RESPONSE",
+        "thinking": "thinking..."
     },
     "toast" : {
         "mfa_success": "MFA was set",

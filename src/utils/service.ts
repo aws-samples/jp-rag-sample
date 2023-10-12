@@ -251,7 +251,7 @@ export async function inference(data: DataForInf) {
 
   // ノイズを除去
   const last_id = respondedText.lastIndexOf('。');
-  if (last_id !== 0) {
+  if (last_id > 0) {
     respondedText = respondedText.substring(0, last_id + 1);
   }
   return respondedText

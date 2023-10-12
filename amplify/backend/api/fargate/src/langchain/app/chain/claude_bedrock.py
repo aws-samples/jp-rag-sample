@@ -6,7 +6,7 @@ import os
 from typing import List
 
 from langchain.chains import LLMChain
-from langchain.llms.bedrock import Bedrock
+from langchain.llms import Bedrock
 from langchain.prompts import PromptTemplate
 from schemas import KendraDocument, LLMWithDocReqBody
 

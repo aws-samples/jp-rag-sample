@@ -38,7 +38,8 @@
         "related_sentence": "関連する文章",
         "no_result": "該当なし",
         "you": "あなた",
-        "ai_response": "AI の回答"
+        "ai_response": "AI の回答",
+        "thinking": "考え中..."
     },
     "toast" : {
         "mfa_success": "MFA が設定されました",
