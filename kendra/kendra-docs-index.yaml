@@ -203,7 +203,33 @@ Resources:
       - KendraDocsDS
     Properties:
       ServiceToken: !GetAtt DataSourceSyncLambda.Arn
-    
+
+# Create IAM Role and Instance Profile
+  RagRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+                - cloud9.amazonaws.com
+                - sagemaker.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  InstanceProfile1:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Ref RagRole
+      Path: /
+      Roles:
+        - !Ref RagRole
+
 Outputs:
   KendraIndexID:
     Value: !GetAtt DocsKendraIndex.Id
