@@ -37,7 +37,13 @@ export default class QuotedTexts extends React.Component<{ fulltext: string, con
                     )
                     )
                 }
-                <span>{fulltext.substring(pivot, fulltext.length)}</span>
+                <span>{
+                    fulltext?.substring(pivot, fulltext.length)?.split("\n").map((item) => {
+                        return (
+                          <>{item}<br /></>
+                        );
+                      })
+                }</span>
             </span>
         )
     }
