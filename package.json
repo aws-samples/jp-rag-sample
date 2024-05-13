@@ -17,7 +17,7 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@types/node": "^20.1.7",
-    "aws-amplify": "^5.2.5",
+    "aws-amplify": "^5.3.12",
     "framer-motion": "^10.12.11",
     "i18next": "^23.5.1",
     "qrcode": "^1.5.3",
