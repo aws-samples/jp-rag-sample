@@ -15,7 +15,7 @@ SageMaker エンドポイントを作成する。
 
 ### 3. アプリのデプロイ
 
-1. `npm install -g @aws-amplify/cli@12.1.1` で Amplify CLI のインストール
+1. `npm install -g @aws-amplify/cli@12.12.0` で Amplify CLI のインストール
 2. `amplify configure` で認証情報を設定。リージョンの設定がアプリケーションのリージョンになるため注意。
    1. `? region:  (Use arrow keys) ` は、最重要です。amplifyを立ち上げるリージョンを選択ください。ここで指定したリージョンを以降の設定でもご利用いただきます。
    2. `to complete the user creation in the AWS console` が表示されたら、自動で表示される以下のURLの指示に従って amplify を作成するユーザを作成ください 例: amplify-dev ユーザー
