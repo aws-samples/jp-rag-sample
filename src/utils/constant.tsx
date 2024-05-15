@@ -1,7 +1,7 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 
-import { selectItemType } from "./interface";
+import { selectItemType, SnapshotData } from "./interface";
 
 // language setting
 export const LANGUAGES: selectItemType[] = [
@@ -62,3 +62,12 @@ export const SORT_ORDER_INDEX = 1;
 export const SORT_ORDER = ["ASC", "DESC"];
 export const MIN_INDEX = 0;
 export const MAX_INDEX = 1;
+export const RECENT_QUERY_CAPACITY = 3;
+export const MAX_QUERY_SUGGESTION = 3;
+
+// `aws kendra get-snapshots --index-id <indexid> --interval THIS_WEEK  --metric-type QUERIES_BY_COUNT` の結果を模したトップクエリのモックデータを読み込む
+import topQueriesData from './top_queries.json';
+
+// CTR をベースに降順でソートし クエリだけを取り出して string[] 型に変換
+const sortedData = topQueriesData.SnapshotsData.sort((a: (string | number)[], b: (string | number)[]) => (b[2] as number) - (a[2] as number));
+export const TOP_QUERIES: string[] = sortedData.map((data: (string | number)[]) => data[0].toString());

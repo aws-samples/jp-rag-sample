@@ -37,6 +37,9 @@ interface GlobalContextInterface {
   // 入力中の文字列
   currentInputText: string
   setCurrentInputText: Dispatch<SetStateAction<string>>;
+  // 直近のクエリ
+  recentQueryList: (string)[];
+  setRecentQueryList: Dispatch<SetStateAction<(string)[]>>;
 }
 const GlobalContext = createContext<GlobalContextInterface | undefined>(undefined);
 export const useGlobalContext = () => {
@@ -57,6 +60,7 @@ function App() {
   const [currentSearchMode, setCurrentSearchMode] = useState<string>(DEFAULT_SEARCH_MODE); // 検索モード
   const [currentInputText, setCurrentInputText] = useState<string>(""); // 入力中の文字列
   const [loginSucceeded, setLoginSucceeded] = useState<boolean>(false); // ログイン完了フラグ
+  const [recentQueryList, setRecentQueryList] = useState<(string)[]>([]);  // 直近のクエリ
 
   useEffect(() => {
     // Stateの初期設定
@@ -115,6 +119,8 @@ function App() {
             setCurrentSearchMode: setCurrentSearchMode,
             currentInputText: currentInputText,
             setCurrentInputText: setCurrentInputText,
+            recentQueryList: recentQueryList,
+            setRecentQueryList: setRecentQueryList
           }}>
             {/* API通信用のモック */}
             <TopBar logout={signOut} user={user} />
