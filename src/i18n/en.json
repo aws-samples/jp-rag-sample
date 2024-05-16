@@ -35,7 +35,9 @@
     },
     "body" : {
         "query": "query",
-        "related_sentence": "related sentence",
+        "related_sentence": "Related sentence",
+        "faq": "FAQ",
+        "featured_result": "Featured Result",
         "no_result": "no result",
         "you": "YOU",
         "ai_response": "AI RESPONSE",

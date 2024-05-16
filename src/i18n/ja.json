@@ -36,6 +36,8 @@
     "body" : {
         "query": "クエリ",
         "related_sentence": "関連する文章",
+        "faq": "FAQ",
+        "featured_result": "管理者によって強調された文章",
         "no_result": "該当なし",
         "you": "あなた",
         "ai_response": "AI の回答",
