@@ -35,7 +35,7 @@ export const KendraResultDoc: React.FC<{
             return (
                 <>
                     <Box borderColor="green.500">
-                        <HStack p='30px'>
+                        <HStack p='2'>
                             <Text>{t("body.related_sentence")}</Text>
                         </HStack>
                     </Box>

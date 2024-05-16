@@ -4,7 +4,6 @@
 import { Conversation } from "../../utils/interface";
 import AICore from "./components/AICore";
 import { FeaturedResultsItem, QueryResultItem } from "@aws-sdk/client-kendra";
-import Human from "./Human";
 import { useEffect, useState } from "react";
 import { KendraResultFeatured } from "./components/KendraResultFeatured";
 import { KendraResultExcerpt } from "./components/KendraResultExcerpt";

@@ -1,8 +1,7 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
-import { Box, HStack, Heading, VStack } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/react";
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
+import { Box, HStack, Text } from "@chakra-ui/layout";
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, useToast } from "@chakra-ui/react";
 import { IconButton } from "@chakra-ui/button";
 import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import HighlightedTexts from "./HighlightedTexts";
@@ -34,73 +33,61 @@ export const KendraResultFAQ: React.FC<{
 
         if (queryId !== undefined && resultItems.length > 0) {
             return (
-                <Box borderColor="green.500">
-                    <HStack minH='10vh' p='10px' bg={true ? "white" : "yellow.100"}>
+                <Box borderColor="green.500" pb='5'>
+                    <Text p={2}>{t("body.faq")}</Text>
 
-                        <VStack align="start" w="85vw">
-                            <Tabs variant={"enclosed"} colorScheme='green'>
-                                <TabList>
-                                    {resultItems.map((_resultItem: QueryResultItem, idx: number) => (
-                                        <Tab key={idx}>
-                                            よくある質問 {idx}
-                                        </Tab>
-                                    ))}
-                                </TabList>
+                    <Accordion allowMultiple>
+                        {resultItems.map((resultItem: QueryResultItem, idx: number) => (
+                            <AccordionItem key={idx}>
+                                <AccordionButton>
+                                    <Link color="green.500" href={resultItem.DocumentURI} onClick={() => {
+                                        submitFeedback(Relevance['Click'], resultItem.Id ?? "", queryId);
+                                    }} isExternal>
+                                        <HighlightedTexts textWithHighlights={getFAQWithHighlight(resultItem.AdditionalAttributes ?? [], "QuestionText") ?? { Highlights: [], Text: "読み込みエラー" }} />
+                                        <ExternalLinkIcon mx='2px' />
+                                    </Link>
+                                    <AccordionIcon />
+                                </AccordionButton>
 
-                                <TabPanels>
-                                    {resultItems.map((resultItem: QueryResultItem, idx: number) => (
-
-                                        <TabPanel key={idx}>
-                                            <VStack align={"left"}>
-                                                <Heading size="sm">
-                                                    <Link color="green.500" href={resultItem.DocumentURI} onClick={() => {
-                                                        submitFeedback(Relevance['Click'], resultItem.Id ?? "", queryId);
-                                                    }} isExternal>
-                                                        <HighlightedTexts textWithHighlights={getFAQWithHighlight(resultItem.AdditionalAttributes ?? [], "QuestionText") ?? { Highlights: [], Text: "読み込みエラー" }} />
-                                                        <ExternalLinkIcon mx='2px' />
-                                                    </Link>
-                                                </Heading>
-                                                <Box onClick={() => {
-                                                    setPinnedTexts([...pinnedTexts, resultItem.DocumentExcerpt?.Text ?? "読み込みエラー"]);
-                                                    toast({
-                                                        title: t("toast.pinned"),
-                                                        description: "",
-                                                        status: 'success',
-                                                        duration: 1000,
-                                                        isClosable: true,
-                                                    });
-                                                }}>
-                                                    <HighlightedTexts textWithHighlights={getFAQWithHighlight(resultItem.AdditionalAttributes ?? [], "AnswerText") ?? { Highlights: [], Text: "読み込みエラー" }} />
-                                                </Box>
-                                                <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>
-                                                    <IconButton aria-label='Search database' icon={<AiOutlineLike />} backgroundColor={"transparent"} onClick={() => {
-                                                        toast({
-                                                            title: t("toast.thanks_feedback"),
-                                                            description: "",
-                                                            status: 'success',
-                                                            duration: 1000,
-                                                            isClosable: true,
-                                                        });
-                                                        submitFeedback(Relevance['Relevant'], resultItem.Id ?? "", queryId);
-                                                    }} />
-                                                    <IconButton aria-label='Search database' icon={<AiOutlineDislike />} backgroundColor={"transparent"} onClick={() => {
-                                                        toast({
-                                                            title: t("toast.thanks_feedback"),
-                                                            description: "",
-                                                            status: 'success',
-                                                            duration: 1000,
-                                                            isClosable: true,
-                                                        });
-                                                        submitFeedback(Relevance['NotRelevant'], resultItem.Id ?? "", queryId);
-                                                    }} />
-                                                </HStack>
-                                            </VStack>
-                                        </TabPanel>
-                                    ))}
-                                </TabPanels>
-                            </Tabs>
-                        </VStack>
-                    </HStack>
+                                <AccordionPanel>
+                                    <Box onClick={() => {
+                                        setPinnedTexts([...pinnedTexts, resultItem.DocumentExcerpt?.Text ?? "読み込みエラー"]);
+                                        toast({
+                                            title: t("toast.pinned"),
+                                            description: "",
+                                            status: 'success',
+                                            duration: 1000,
+                                            isClosable: true,
+                                        });
+                                    }}>
+                                        <HighlightedTexts textWithHighlights={getFAQWithHighlight(resultItem.AdditionalAttributes ?? [], "AnswerText") ?? { Highlights: [], Text: "読み込みエラー" }} />
+                                    </Box>
+                                    <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>
+                                        <IconButton aria-label='Search database' icon={<AiOutlineLike />} backgroundColor={"transparent"} onClick={() => {
+                                            toast({
+                                                title: t("toast.thanks_feedback"),
+                                                description: "",
+                                                status: 'success',
+                                                duration: 1000,
+                                                isClosable: true,
+                                            });
+                                            submitFeedback(Relevance['Relevant'], resultItem.Id ?? "", queryId);
+                                        }} />
+                                        <IconButton aria-label='Search database' icon={<AiOutlineDislike />} backgroundColor={"transparent"} onClick={() => {
+                                            toast({
+                                                title: t("toast.thanks_feedback"),
+                                                description: "",
+                                                status: 'success',
+                                                duration: 1000,
+                                                isClosable: true,
+                                            });
+                                            submitFeedback(Relevance['NotRelevant'], resultItem.Id ?? "", queryId);
+                                        }} />
+                                    </HStack>
+                                </AccordionPanel>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
                 </Box>
             );
         } else {
