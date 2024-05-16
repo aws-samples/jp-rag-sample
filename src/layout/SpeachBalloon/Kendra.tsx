@@ -73,8 +73,6 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
             <KendraResultExcerpt queryId={data.kendraResponse?.QueryId} resultItems={excerptItems} />
             {/* 文章のリストを表示 */}
             <KendraResultDoc queryId={data.kendraResponse?.QueryId} resultItems={docItems} />
-            {/* 人の入力を表示 */}
-            <Human data={data} />
         </>
     )
 
