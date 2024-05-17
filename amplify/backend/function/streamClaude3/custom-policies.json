@@ -1,0 +1,10 @@
+[
+  {
+    "Action": [
+      "bedrock:InvokeModelWithResponseStream"
+      ],
+    "Resource": [
+				"arn:aws:bedrock:*::foundation-model/*"
+      ]
+  }
+]
