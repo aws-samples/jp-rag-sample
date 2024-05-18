@@ -62,13 +62,3 @@ export interface DocumentForInf {
     content: string,
     type: DocTypeForInf
 }
-type SpeakerTypeForInf = "AI" | "Human";
-interface UtteranceForInf {
-    utterance: string,
-    type: SpeakerTypeForInf
-}
-export interface DataForInf {
-    userUtterance: string,
-    history: UtteranceForInf[],
-    documents: DocumentForInf[],
-}

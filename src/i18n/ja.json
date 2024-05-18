@@ -47,10 +47,9 @@
         "mfa_success": "MFA が設定されました",
         "invalid_filter": "エラー (不正なフィルタ)",
         "fail_kendra": "エラー (kendraへの問い合わせに失敗しました)",
-        "pinned": "テキストがピン止めされました",
         "thanks_feedback": "フィードバックありがとうございます"
     },
     "right_side_bar": {
-        "pinned_text": "ピン止めされた文章"
+        "ai_agent": "AI エージェント"
     }
 }

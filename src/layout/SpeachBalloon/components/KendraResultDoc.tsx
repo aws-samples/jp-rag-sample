@@ -7,7 +7,6 @@ import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import HighlightedTexts from "./HighlightedTexts";
 import { QueryResultItem } from "@aws-sdk/client-kendra";
 import { Relevance, submitFeedback } from "../../../utils/service";
-import { useGlobalContext } from '../../../App';
 import { Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 // i18
@@ -24,24 +23,19 @@ export const KendraResultDoc: React.FC<{
         // 言語設定
         const { t } = useTranslation();
 
-        // 文章のリストを表示する
-        const {
-            pinnedTexts: pinnedTexts, setPinnedTexts: setPinnedTexts,
-        } = useGlobalContext();
-
         const toast = useToast();
 
         if (queryId !== undefined && resultItems.length > 0) {
             return (
                 <>
                     <Box borderColor="green.500">
-                        <HStack p='2'>
+                        <HStack p='2' pb='5'>
                             <Text>{t("body.related_sentence")}</Text>
                         </HStack>
                     </Box>
                     {resultItems.map((resultItem, idx: number) => (
                         <Box key={idx} borderColor="green.500">
-                            <VStack minH='10vh' pl='30px' pr='30px' align="start" w="85vw" bg={true ? "white" : "yellow.100"}>
+                            <VStack minH='10vh' pl='30px' pr='30px' align="start" bg={true ? "white" : "yellow.100"}>
                                 <Heading size="sm">
                                     <Link color="green.500" href={resultItem.DocumentURI ?? "#"} onClick={() => {
                                         submitFeedback(Relevance['Click'], resultItem.Id ?? "", queryId);
@@ -50,16 +44,7 @@ export const KendraResultDoc: React.FC<{
                                         <ExternalLinkIcon mx='2px' />
                                     </Link>
                                 </Heading>
-                                <Box onClick={() => {
-                                    setPinnedTexts([...pinnedTexts, resultItem.DocumentExcerpt?.Text ?? "読み込みエラー"]);
-                                    toast({
-                                        title: t("toast.pinned"),
-                                        description: "",
-                                        status: 'success',
-                                        duration: 1000,
-                                        isClosable: true,
-                                    });
-                                }}>
+                                <Box>
                                     <HighlightedTexts textWithHighlights={resultItem.DocumentExcerpt ?? { Highlights: [], Text: "読み込みエラー" }} />
                                 </Box>
                                 <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>

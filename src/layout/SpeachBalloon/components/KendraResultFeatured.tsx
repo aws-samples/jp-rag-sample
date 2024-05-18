@@ -1,11 +1,10 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 import { Box } from "@chakra-ui/layout";
-import { useToast, Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel } from "@chakra-ui/react";
+import { Text, Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel } from "@chakra-ui/react";
 import HighlightedTexts from "./HighlightedTexts";
 import { FeaturedResultsItem } from "@aws-sdk/client-kendra";
 import { Relevance, submitFeedback } from "../../../utils/service";
-import { useGlobalContext } from '../../../App';
 import { Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 // i18
@@ -21,12 +20,6 @@ export const KendraResultFeatured: React.FC<{
 }) => {
         // 言語設定
         const { t } = useTranslation();
-        // FeaturedResultを表示する
-        const {
-            pinnedTexts: pinnedTexts, setPinnedTexts: setPinnedTexts,
-        } = useGlobalContext();
-
-        const toast = useToast();
 
         if (queryId !== undefined && resultItems.length > 0) {
             return (
@@ -49,16 +42,7 @@ export const KendraResultFeatured: React.FC<{
                                     </AccordionButton>
                                 </h2>
                                 <AccordionPanel pb={4}>
-                                    <Box onClick={() => {
-                                        setPinnedTexts([...pinnedTexts, resultItem.DocumentExcerpt?.Text ?? "読み込みエラー"]);
-                                        toast({
-                                            title: t("toast.pinned"),
-                                            description: "",
-                                            status: 'success',
-                                            duration: 1000,
-                                            isClosable: true,
-                                        });
-                                    }}>
+                                    <Box>
                                         <HighlightedTexts textWithHighlights={resultItem.DocumentExcerpt ?? { Highlights: [], Text: "読み込みエラー" }} />
                                     </Box>
                                 </AccordionPanel>

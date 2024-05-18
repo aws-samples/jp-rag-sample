@@ -1,3 +1,6 @@
+// Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Licensed under the MIT-0 License (https://github.com/aws/mit-0)
+
 import { AmplifyProjectInfo, AmplifyRootStackTemplate } from '@aws-amplify/cli-extensibility-helper';
 
 export function override(resources: AmplifyRootStackTemplate, amplifyProjectInfo: AmplifyProjectInfo) {
@@ -19,8 +22,8 @@ export function override(resources: AmplifyRootStackTemplate, amplifyProjectInfo
     const authRoleArn = amplify_meta_json[envName].awscloudformation.AuthRoleArn;
     const account_id = authRoleArn.split(':')[4];
 
-    const functionArn = "arn:aws:lambda:"+region_name+":"+account_id+":function:streamClaude3-" + envName
-    
+    const functionArn = "arn:aws:lambda:" + region_name + ":" + account_id + ":function:streamClaude3-" + envName
+
     // claude stream func　Lambda の Invoke権限を追加
     authRole.policies = [
         ...basePolicies,
@@ -40,4 +43,18 @@ export function override(resources: AmplifyRootStackTemplate, amplifyProjectInfo
             },
         },
     ];
+
+  // .env ファイルを読み込む
+  let envContent = fs.readFileSync('.env', 'utf-8');
+
+  // STREAM_FUNC_ARN の値を更新または追加
+  const streamFuncArnPattern = /^VITE_STREAM_FUNC_NAME=.*/gm;
+  if (streamFuncArnPattern.test(envContent)) {
+    envContent = envContent.replace(streamFuncArnPattern, `VITE_STREAM_FUNC_NAME=streamClaude3-${envName}`);
+  } else {
+    envContent += `\nVITE_STREAM_FUNC_NAME=streamClaude3-${envName}`;
+  }
+
+  // .env ファイルに書き込む
+  fs.writeFileSync('.env', envContent);
 }

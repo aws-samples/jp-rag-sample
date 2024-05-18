@@ -8,7 +8,6 @@ import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import HighlightedTexts from "./HighlightedTexts";
 import { QueryResultItem } from "@aws-sdk/client-kendra";
 import { Relevance, submitFeedback } from "../../../utils/service";
-import { useGlobalContext } from '../../../App';
 import { Link } from '@chakra-ui/react';
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { getFAQWithHighlight, getNounAnswerFromExcerpt } from "../../../utils/function";
@@ -22,11 +21,6 @@ export const KendraResultExcerpt: React.FC<{
 }> = ({ queryId, resultItems }) => {
     // 言語設定
     const { t } = useTranslation();
-
-    // 抜粋した回答を返す
-    const {
-        pinnedTexts: pinnedTexts, setPinnedTexts: setPinnedTexts,
-    } = useGlobalContext();
 
     const toast = useToast();
 
@@ -59,16 +53,7 @@ export const KendraResultExcerpt: React.FC<{
                                                     <ExternalLinkIcon mx='2px' />
                                                 </Link>
                                             </Heading>
-                                            <Box onClick={() => {
-                                                setPinnedTexts([...pinnedTexts, resultItem.DocumentExcerpt?.Text ?? "読み込みエラー"]);
-                                                toast({
-                                                    title: t("toast.pinned"),
-                                                    description: "",
-                                                    status: 'success',
-                                                    duration: 1000,
-                                                    isClosable: true,
-                                                });
-                                            }}>
+                                            <Box>
                                                 <HighlightedTexts textWithHighlights={getFAQWithHighlight(resultItem.AdditionalAttributes ?? [], "AnswerText") ?? { Highlights: [], Text: "読み込みエラー" }} />
                                             </Box>
                                             <HStack mt="5" display={"flex"} justifyContent={"flex-end"} width={"100%"}>

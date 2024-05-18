@@ -47,10 +47,9 @@
         "mfa_success": "MFA was set",
         "invalid_filter": "Error (invalid filter)",
         "fail_kendra": "Error (fail to call kendra)",
-        "pinned": "clicked text was pinned",
         "thanks_feedback": "Thank you for your feedback"
     },
     "right_side_bar": {
-        "pinned_text": "PINNED TEXT"
+        "ai_agent": "AI Agent"
     }
 }

@@ -5,7 +5,7 @@ import { HStack, Input, InputGroup, Text, useToast } from '@chakra-ui/react';
 import React, { useState, useRef } from 'react';
 import { AiOutlineBulb, AiOutlineFieldTime } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
-import { getKendraQuery, kendraQuery } from '../utils/service.ts';
+import { getKendraQuery, infStreamClaude, kendraQuery } from '../utils/service.ts';
 import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '../utils/function';
 import { Conversation } from '../utils/interface';
 import { MAX_QUERY_SUGGESTION, RECENT_QUERY_CAPACITY, TOP_QUERIES } from '../utils/constant';
@@ -22,16 +22,14 @@ const InputWithSuggest: React.FC = () => {
     const {
         currentConversation: currentConversation,
         setCurrentConversation: setCurrentConversation,
-        history: history,
-        setHistory: setHistory,
         filterOptions: filterOptions,
         setFilterOptions: setFilterOptions,
         datasourceInfo: datasourceInfo,
         currentInputText: currentInputText,
         setCurrentInputText: setCurrentInputText,
         recentQueryList: recentQueryList,
-        setRecentQueryList: setRecentQueryList
-
+        setRecentQueryList: setRecentQueryList,
+        setAiResponse: setAiResponse
     } = useGlobalContext();
 
     // local 変数
@@ -61,7 +59,6 @@ const InputWithSuggest: React.FC = () => {
 
         // K-1. 今 Interaction Areaに何かが表示されている場合は、historyに退避
         if (currentConversation !== undefined) {
-            setHistory([currentConversation, ...history])
             setCurrentConversation(undefined)
         }
         // K-2. フィルタをリセット
@@ -169,7 +166,7 @@ const InputWithSuggest: React.FC = () => {
         }, 200);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         // キーストロークがあった場合はサジェストを表示
         setShowOptions(true);
 
@@ -231,6 +228,19 @@ const InputWithSuggest: React.FC = () => {
 
         // 検索後 サジェストを再表示
         setShowOptions(false);
+
+        // 文字列をリセット
+        setAiResponse("")
+
+
+        // infStreamClaude を呼び出す
+        const stream = await infStreamClaude("検索クエリ: " + currentInputText + "\n検索結果:" + JSON.stringify(currentConversation?.kendraResponse ?? []) ?? "");
+        for await (const chunk of stream) {
+            setAiResponse(prev => {
+                return prev + chunk
+            })
+        }
+        console.log("[DEBUG] called")
     }
 
     return (
@@ -259,7 +269,7 @@ const InputWithSuggest: React.FC = () => {
                             onMouseEnter={() => setCurrentFocus(index)}  // マウスカーソルが乗ったものを記録
                             onMouseLeave={() => setCurrentFocus(-1)}  // マウスカーソルが外れたことを記録
                             style={{
-                                backgroundColor: currentFocus === index ? '#68D391' : 'white',  // マウスカーソルが乗ったものの色を変える
+                                backgroundColor: currentFocus === index ? 'var(--chakra-colors-green-100)' : 'white',  // マウスカーソルが乗ったものの色を変える
                                 cursor: 'pointer',
                                 padding: '5px',
                                 border: '1px solid lightgray'
@@ -278,7 +288,7 @@ const InputWithSuggest: React.FC = () => {
                             onMouseEnter={() => setCurrentFocus(index + recentQueryList.length)}  // マウスカーソルが乗ったものを記録
                             onMouseLeave={() => setCurrentFocus(-1)}  // マウスカーソルが外れたことを記録
                             style={{
-                                backgroundColor: currentFocus === index + recentQueryList.length ? '#68D391' : 'white',  // マウスカーソルが乗ったものの色を変える
+                                backgroundColor: currentFocus === index + recentQueryList.length ? 'var(--chakra-colors-green-100)' : 'white',  // マウスカーソルが乗ったものの色を変える
                                 cursor: 'pointer',
                                 padding: '5px',
                                 border: '1px solid lightgray'
