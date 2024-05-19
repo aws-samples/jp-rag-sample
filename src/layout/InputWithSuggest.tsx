@@ -5,10 +5,11 @@ import { HStack, Input, InputGroup, Text, useToast } from '@chakra-ui/react';
 import React, { useState, useRef } from 'react';
 import { AiOutlineBulb, AiOutlineFieldTime } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
-import { getKendraQuery, infStreamClaude, kendraQuery } from '../utils/service.ts';
+import { createFinalAnswerPrompt, createNextQeuryPrompt, createQuotePrompt, getKendraQuery, infStreamClaude, kendraQuery, kendraResultToAiSelectedInfo, parseAnswerFromGeneratedQuotes, parseNextQueryFromSuggestion } from '../utils/service.ts';
 import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '../utils/function';
-import { Conversation } from '../utils/interface';
+import { AiAgentStatus, AiSelectedInfo, Conversation } from '../utils/interface';
 import { MAX_QUERY_SUGGESTION, RECENT_QUERY_CAPACITY, TOP_QUERIES } from '../utils/constant';
+import { QueryResult } from "@aws-sdk/client-kendra";
 
 // i18
 import { useTranslation } from "react-i18next";
@@ -29,7 +30,10 @@ const InputWithSuggest: React.FC = () => {
         setCurrentInputText: setCurrentInputText,
         recentQueryList: recentQueryList,
         setRecentQueryList: setRecentQueryList,
-        setAiResponse: setAiResponse
+        currentQueryId: currentQueryId,
+        setCurrentQueryId: setCurrentQueryId,
+        aiAgent: aiAgent,
+        setAiAgent: setAiAgent
     } = useGlobalContext();
 
     // local 変数
@@ -40,7 +44,7 @@ const InputWithSuggest: React.FC = () => {
     const timeoutId = useRef<NodeJS.Timeout | null>(null);  // サジェストの非表示を制御するためのtimeout
     const toast = useToast();  // トースト表示
 
-    const search = (queryText: string) => {
+    const kendraSearch = async (queryText: string): Promise<QueryResult> => {
         // currentInputTextだと、useStateフックが更新される前に search 処理が走ることになるため、引数にqueryTextを取る
 
         /*
@@ -67,41 +71,209 @@ const InputWithSuggest: React.FC = () => {
             filterOptions[1], // ソート順序
         ])
         // K-3. 現在設定中のfilterは見ずに、言語設定とソート順序だけを反映させてKendraへQuery
-        const run = async () => {
-            const q = getKendraQuery(
-                queryText,
-                getAttributeFilter(filterOptions),
-                getCurrentSortOrder(filterOptions))
-            await kendraQuery(q).then(data => {
-                const a: Conversation = {
-                    conversationType: "HUMAN_KENDRA",
-                    userInput: { word: queryText },
-                    userQuery: q,
-                    kendraResponse: data,
-                    aiResponse: undefined
-                }
-                // K-4. 受け取ったレスポンスを元にInteractionAreaを描画
-                setCurrentConversation(a)
-                // K-5. Query結果からフィルタ候補を取得
-                // K-6. FilterBarの設定とソート順序以外を更新
-                if (data) {
-                    setFilterOptions([
-                        filterOptions[0], // 言語設定
-                        filterOptions[1], // ソート順序
-                        ...getFiltersFromQuery(data, datasourceInfo)]) // クエリから受け取ったフィルタ候補
-                }
-            }).catch(err => {
-                console.log(err)
-                toast({
-                    title: t("toast.fail_kendra"),
-                    description: "",
-                    status: 'error',
-                    duration: 1000,
-                    isClosable: true,
-                })
+        const q = getKendraQuery(
+            queryText,
+            getAttributeFilter(filterOptions),
+            getCurrentSortOrder(filterOptions)
+        )
+
+        try {
+            const data = await kendraQuery(q);
+            const a: Conversation = {
+                conversationType: "HUMAN_KENDRA",
+                userInput: { word: queryText },
+                userQuery: q,
+                kendraResponse: data,
+                aiResponse: undefined
+            }
+            // K-4. 受け取ったレスポンスを元にInteractionAreaを描画
+            setCurrentConversation(a)
+            // K-5. Query結果からフィルタ候補を取得
+            // K-6. FilterBarの設定とソート順序以外を更新
+            if (data) {
+                setFilterOptions([
+                    filterOptions[0], // 言語設定
+                    filterOptions[1], // ソート順序
+                    ...getFiltersFromQuery(data, datasourceInfo)]) // クエリから受け取ったフィルタ候補
+            }
+            return data;
+        } catch (err) {
+            console.log(err)
+            toast({
+                title: t("toast.fail_kendra"),
+                description: "",
+                status: 'error',
+                duration: 1000,
+                isClosable: true,
+            })
+            throw err;
+        }
+    }
+
+    const research = async (queryText: string) => {
+        /**
+         * Kendra と genAI で調査
+         */
+
+        // 現在時刻を取得
+        const currentTime = new Date().getTime();
+        const queryId = `${currentTime}-${queryText}`;
+
+        // aiAgentに新しいモックデータを入れる
+        const mockAiAgentStatus: AiAgentStatus = {
+            aiAgentResponse: '',
+            aiSelectedInfoList: [],
+            suggestedQuery: [],
+            systemLog: [],
+        };
+        setAiAgent(prev => ({
+            ...prev,
+            [queryId]: mockAiAgentStatus,
+        }));
+
+        // currentQueryIdを設定
+        setCurrentQueryId(queryId);
+
+        // 検索履歴として追加
+        setRecentQueryList(prevList => {
+            // prevListの0番目の要素がvalueと同じなら変更しない
+            if (prevList[0] === queryText) {
+                return prevList;
+            }
+            // RECENT_QUERY_CAPACITY より大きい場合、prevListの最後の要素を削除
+            if (prevList.length >= RECENT_QUERY_CAPACITY) {
+                prevList.pop();
+            }
+            return [queryText, ...prevList];
+        });
+
+        // 検索
+        const kendraResult = await kendraSearch(queryText);
+
+        console.log("kendraResult");
+        console.log(kendraResult);
+        const parsedResult = kendraResultToAiSelectedInfo(kendraResult);
+        console.log("parsedResult");
+        console.log(parsedResult);
+
+        // 検索後 サジェストを再表示
+        setShowOptions(false);
+
+        // 引用候補を生成
+        const streamQuote = await infStreamClaude(createQuotePrompt(parsedResult, queryText));
+        let tmpResultQuote = "";
+        for await (const chunk of streamQuote) {
+            tmpResultQuote += chunk;
+            setAiAgent(prev => {
+                return {
+                    ...prev,
+                    [queryId]: {
+                        ...prev[queryId],
+                        aiAgentResponse: prev[queryId].aiAgentResponse + chunk
+                    }
+                };
             })
         }
-        run()
+
+        // 生成した引用を構造化
+        console.log("tmpResultQuote")
+        console.log(tmpResultQuote)
+
+        const parsedAnswer = parseAnswerFromGeneratedQuotes("<Answer>" + tmpResultQuote)
+        const relevantSelectedInfoMap = new Map<number, AiSelectedInfo>();
+        parsedAnswer.quotes.forEach(quote => {
+            const info = parsedResult.find((_, index) => index === quote.documentIndex);
+            if (info !== undefined) {
+                relevantSelectedInfoMap.set(quote.documentIndex, info);
+            }
+        });
+        const relevantSelectedInfo: AiSelectedInfo[] = Array.from(relevantSelectedInfoMap.values());
+
+
+        // 引用を画面描画
+        console.log("relevantSelectedInfo");
+        console.log(relevantSelectedInfo);
+        setAiAgent(prev => {
+            return {
+                ...prev,
+                [queryId]: {
+                    ...prev[queryId],
+                    aiSelectedInfoList: relevantSelectedInfo
+                }
+            };
+        })
+
+        // AI エージェントの吹き出しの内容をリセット
+        if (relevantSelectedInfo.length <= 0) {
+            setAiAgent(prev => {
+                return {
+                    ...prev,
+                    [queryId]: {
+                        ...prev[queryId],
+                        aiAgentResponse: "関連する文章はみつかりませんでした。"
+                    }
+                };
+            })
+        } else {
+            setAiAgent(prev => {
+                return {
+                    ...prev,
+                    [queryId]: {
+                        ...prev[queryId],
+                        aiAgentResponse: ""
+                    }
+                };
+            })
+
+            // 最終回等を生成
+            console.log("createFinalAnswerPrompt(relevantSelectedInfo, queryText)")
+            console.log(createFinalAnswerPrompt(relevantSelectedInfo, queryText))
+
+            const streamFinalAnswer = await infStreamClaude(createFinalAnswerPrompt(relevantSelectedInfo, queryText));
+            let tmpResultAnswer = "";
+            for await (const chunk of streamFinalAnswer) {
+                tmpResultAnswer += chunk;
+                setAiAgent(prev => {
+                    return {
+                        ...prev,
+                        [queryId]: {
+                            ...prev[queryId],
+                            aiAgentResponse: prev[queryId].aiAgentResponse + chunk
+                        }
+                    };
+                })
+            }
+        }
+
+        // 次のクエリ候補を作成
+        console.log("createNextQeuryPrompt(tmpResultQuote, queryText)")
+        console.log(createNextQeuryPrompt(tmpResultQuote, queryText))
+
+        const streamNextQuery = await infStreamClaude(createNextQeuryPrompt(tmpResultQuote, queryText));
+        let tmpNextQuery = "";
+        for await (const chunk of streamNextQuery) {
+            tmpNextQuery += chunk;
+        }
+
+        // 生成されたクエリ候補を構造化
+        console.log("tmpNextQuery")
+        console.log(tmpNextQuery)
+
+        const nextquery = parseNextQueryFromSuggestion(tmpNextQuery);
+
+        // クエリ候補を描画
+        console.log("nextquery");
+        console.log(nextquery);
+
+        setAiAgent(prev => {
+            return {
+                ...prev,
+                [queryId]: {
+                    ...prev[queryId],
+                    suggestedQuery: nextquery
+                }
+            };
+        })
     }
 
 
@@ -139,8 +311,8 @@ const InputWithSuggest: React.FC = () => {
             }
             return [value, ...prevList];
         });
-        // 検索
-        search(value);
+        // 調査
+        research(value)
 
         // サジェストを再表示
         setShowOptions(false);
@@ -210,39 +382,10 @@ const InputWithSuggest: React.FC = () => {
         // なにか入力があるときのみ実行
         if (tmpInputText === "") { return }
 
-        // 検索履歴として追加
-        setRecentQueryList(prevList => {
-            // prevListの0番目の要素がvalueと同じなら変更しない
-            if (prevList[0] === tmpInputText) {
-                return prevList;
-            }
-            // RECENT_QUERY_CAPACITY より大きい場合、prevListの最後の要素を削除
-            if (prevList.length >= RECENT_QUERY_CAPACITY) {
-                prevList.pop();
-            }
-            return [tmpInputText, ...prevList];
-        });
-
-        // 検索
-        search(tmpInputText);
-
-        // 検索後 サジェストを再表示
-        setShowOptions(false);
-
-        // 文字列をリセット
-        setAiResponse("")
-
-
-        // infStreamClaude を呼び出す
-        const stream = await infStreamClaude("検索クエリ: " + currentInputText + "\n検索結果:" + JSON.stringify(currentConversation?.kendraResponse ?? []) ?? "");
-        for await (const chunk of stream) {
-            setAiResponse(prev => {
-                return prev + chunk
-            })
-        }
-        console.log("[DEBUG] called")
+        // 調査
+        research(tmpInputText)
     }
-
+    
     return (
         <InputGroup size='md' w="60vw">
             {/* 入力フィールド */}

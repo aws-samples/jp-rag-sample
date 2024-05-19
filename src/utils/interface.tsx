@@ -62,3 +62,34 @@ export interface DocumentForInf {
     content: string,
     type: DocTypeForInf
 }
+
+// AIに選択された情報
+export interface AiSelectedInfo {
+    title: string,
+    chank: string,
+    url: string,
+    lastUpdate: string,
+    feadbackToken: string
+}
+
+// AI Agentのステータス
+export interface AiAgentStatus {
+    aiAgentResponse: string,
+    aiSelectedInfoList: AiSelectedInfo[],
+    suggestedQuery: string[],
+    systemLog: string[]
+}
+
+// AI Agentの利用履歴
+export interface AiAgentHistory {
+    [queryId: string]: AiAgentStatus
+}
+
+export interface Quote {
+    documentIndex: number;
+    text: string;
+}
+
+export interface Answer {
+    quotes: Quote[];
+}

@@ -324,7 +324,7 @@ export default function FilterArea({}: {}) {
         <VStack p={"5"} align={"left"}>
           <div>
             {
-              filterOptions.map((tmpCheckBoxItem: Filter, tmpCheckBoxItemId: number) => (
+              filterOptions.filter(option => option !== undefined).map((tmpCheckBoxItem: Filter, tmpCheckBoxItemId: number) => (
                 (() => {
                   // 言語設定
                   if (tmpCheckBoxItem.filterType === "LAUNGUAGE_SETTING" && isArrayString(tmpCheckBoxItem.selected)) {

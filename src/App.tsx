@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, createContext, useContext, useEffect, useStat
 import TopBar from "./layout/TopBar.tsx"
 import MainArea from './layout/MainArea.tsx'
 import { getSortOrderFromIndex, getDatasourceInfo, setJwtToken } from "./utils/service.ts";
-import { Conversation, Dic, Filter } from "./utils/interface.tsx";
+import { AiAgentHistory, Conversation, Dic, Filter } from "./utils/interface.tsx";
 import { DEFAULT_LANGUAGE } from "./utils/constant.tsx";
 // Amplify
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -31,9 +31,13 @@ interface GlobalContextInterface {
   recentQueryList: (string)[];
   setRecentQueryList: Dispatch<SetStateAction<(string)[]>>;
 
-  // debug
-  aiResponse: string
-  setAiResponse: Dispatch<SetStateAction<string>>;
+  // 検索履歴ID
+  currentQueryId: string
+  setCurrentQueryId: Dispatch<SetStateAction<string>>;
+
+  // AI Agent の利用履歴
+  aiAgent: AiAgentHistory
+  setAiAgent: Dispatch<SetStateAction<AiAgentHistory>>;
 }
 const GlobalContext = createContext<GlobalContextInterface | undefined>(undefined);
 export const useGlobalContext = () => {
@@ -52,9 +56,17 @@ function App() {
   const [currentInputText, setCurrentInputText] = useState<string>(""); // 入力中の文字列
   const [loginSucceeded, setLoginSucceeded] = useState<boolean>(false); // ログイン完了フラグ
   const [recentQueryList, setRecentQueryList] = useState<(string)[]>([]);  // 直近のクエリ
-
-  // debug
-  const [aiResponse, setAiResponse] = useState<string>("");
+  // 検索履歴ID
+  const [currentQueryId, setCurrentQueryId] = useState<string>("initialState");
+  // AI Agent の利用履歴
+  const [aiAgent, setAiAgent] = useState<AiAgentHistory>({
+    'initialState': {
+      aiAgentResponse: '',
+      aiSelectedInfoList: [],
+      suggestedQuery: [],
+      systemLog: [],
+    },
+  });
 
   useEffect(() => {
     // Stateの初期設定
@@ -109,13 +121,14 @@ function App() {
             setCurrentInputText: setCurrentInputText,
             recentQueryList: recentQueryList,
             setRecentQueryList: setRecentQueryList,
-
-            aiResponse: aiResponse,
-            setAiResponse: setAiResponse
+            currentQueryId: currentQueryId,
+            setCurrentQueryId: setCurrentQueryId,
+            aiAgent: aiAgent,
+            setAiAgent: setAiAgent
           }}>
             {/* API通信用のモック */}
             <TopBar logout={signOut} user={user} />
-            <MainArea/>
+            <MainArea />
           </GlobalContext.Provider>
         </>
       )}

@@ -71,3 +71,6 @@ import topQueriesData from './top_queries.json';
 // CTR をベースに降順でソートし クエリだけを取り出して string[] 型に変換
 const sortedData = topQueriesData.SnapshotsData.sort((a: (string | number)[], b: (string | number)[]) => (b[2] as number) - (a[2] as number));
 export const TOP_QUERIES: string[] = sortedData.map((data: (string | number)[]) => data[0].toString());
+
+// 生成AIで生み出すクエリ候補の数
+export const MAX_QUERY_SUGGESTIONS = 3;
