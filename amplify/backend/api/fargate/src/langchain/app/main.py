@@ -23,7 +23,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 REGION = os.environ["AWS_REGION"]
-KENDRA_INDEX_ID: str = os.environ["KENDRA_INDEX_ID"]
 SAGEMAKER_ENDPOINT_NAME: str = os.environ.get("SAGEMAKER_ENDPOINT_NAME", None)
 LLM: Literal["rinna", "claude", "claude_bedrock"] = os.environ.get("LLM", "claude_bedrock")
 kendra_client = boto3.client("kendra", region_name=REGION)

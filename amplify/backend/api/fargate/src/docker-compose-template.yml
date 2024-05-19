@@ -13,7 +13,6 @@ services:
       - SAGEMAKER_ENDPOINT_NAME=Rinna-Inference
       - LLM=claude_bedrock
     secrets:
-      - KENDRA_INDEX_ID
       # - ANTHROPIC_API_KEY
     networks:
       - private
@@ -21,7 +20,5 @@ networks:
   public:
   private:
 secrets:
-  KENDRA_INDEX_ID:
-    file: ../secrets/.secret-kendra
   # ANTHROPIC_API_KEY:
   #   file: ../secrets/.secret-anthropic

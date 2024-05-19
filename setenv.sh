@@ -4,8 +4,7 @@ if [ $# -ne 1 ]; then
 fi
 
 index_name="$1"
-KendraIndexID=$(aws kendra list-indices --no-paginate | jq -r --arg name "$index_name" '.IndexConfigurationSummaryItems[] | select(.Name == $name) | .Id') 
-echo $KendraIndexID >>amplify/backend/api/fargate/secrets/.secret-kendra
+KendraIndexID=$(aws kendra list-indices --no-paginate | jq -r --arg name "$index_name" '.IndexConfigurationSummaryItems[] | select(.Name == $name) | .Id')
 cp amplify/backend/api/fargate/src/docker-compose-template.yml amplify/backend/api/fargate/src/docker-compose.yml
 VITE="VITE_INDEX_ID=${KendraIndexID}\n# VITE_SERVER_URL=http://localhost:8080"
 echo -e $VITE >>.env

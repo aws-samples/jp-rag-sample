@@ -33,7 +33,6 @@ SageMaker エンドポイントを作成する。
 5. バックエンド・フロントエンドの環境変数を設定する
    1. `bash setenv.sh　CloudFormationStackの名前＋-Index`を実行する（スタック名がKendraRAGなら`bash setenv.sh KendraRAG-Index`となる）。このスクリプトで以下の処理が行われる。
       - `amplify/backend/api/fargate/src/docker-compose-template.yml` を同一フォルダ内に docker-compose.yml としてコピー
-      - `amplify/backend/api/fargate/secrets/.secret-kendra` ファイルを作成し、Kendra の Index ID を挿入
       - `.env` ファイルを作成し、VITE_INDEX_ID に Kendra の Index ID を設定
    2. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
    4. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する。
