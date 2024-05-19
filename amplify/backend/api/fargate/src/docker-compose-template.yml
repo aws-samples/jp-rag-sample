@@ -12,13 +12,8 @@ services:
       - ALLOW_ORIGINS=*
       - SAGEMAKER_ENDPOINT_NAME=Rinna-Inference
       - LLM=claude_bedrock
-    secrets:
-      # - ANTHROPIC_API_KEY
     networks:
       - private
 networks:
   public:
   private:
-secrets:
-  # ANTHROPIC_API_KEY:
-  #   file: ../secrets/.secret-anthropic
