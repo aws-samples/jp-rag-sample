@@ -5,8 +5,8 @@ import { HStack, Input, InputGroup, Text, useToast } from '@chakra-ui/react';
 import React, { useState, useRef } from 'react';
 import { AiOutlineBulb, AiOutlineFieldTime } from 'react-icons/ai';
 import { useGlobalContext } from '../App';
-import { createFinalAnswerPrompt, createNextQeuryPrompt, createQuotePrompt, getKendraQuery, infStreamClaude, kendraQuery, kendraResultToAiSelectedInfo, parseAnswerFromGeneratedQuotes, parseNextQueryFromSuggestion } from '../utils/service.ts';
-import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery } from '../utils/function';
+import {  getKendraQuery, infStreamClaude, kendraQuery } from '../utils/service.ts';
+import { getAttributeFilter, getCurrentSortOrder, getFiltersFromQuery, createFinalAnswerPrompt, createNextQeuryPrompt, createQuotePrompt, kendraResultToAiSelectedInfo, parseAnswerFromGeneratedQuotes, parseNextQueryFromSuggestion } from '../utils/function';
 import { AiAgentStatus, AiSelectedInfo, Conversation } from '../utils/interface';
 import { MAX_QUERY_SUGGESTION, RECENT_QUERY_CAPACITY, TOP_QUERIES } from '../utils/constant';
 import { QueryResult } from "@aws-sdk/client-kendra";
@@ -269,7 +269,8 @@ const InputWithSuggest: React.FC = () => {
                 ...prev,
                 [queryId]: {
                     ...prev[queryId],
-                    suggestedQuery: nextquery
+                    suggestedQuery: nextquery,
+                    diveDeepIsEnabled: true
                 }
             };
         })
