@@ -2,7 +2,6 @@
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 
 import { Conversation } from "../../utils/interface";
-import AICore from "./components/AICore";
 import { FeaturedResultsItem, QueryResultItem } from "@aws-sdk/client-kendra";
 import { useEffect, useState } from "react";
 import { KendraResultFeatured } from "./components/KendraResultFeatured";
@@ -62,8 +61,6 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
 
     return (
         <>
-            {/* aiResult があれば出力 */}
-            {data.aiResponse && <AICore data={data.aiResponse} />}
             {/* FeaturedResultを表示 */}
             <KendraResultFeatured queryId={data.kendraResponse?.QueryId} resultItems={featuredItems} />
             {/* FAQを表示 */}

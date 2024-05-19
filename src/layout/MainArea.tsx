@@ -7,7 +7,7 @@ import {
 import FilterArea from "./FilterArea";
 import { VStack } from "@chakra-ui/layout"
 import { useGlobalContext } from '../App';
-import Kendra from './SpeachBalloon/Kendra';
+import Kendra from './KendraAreaAssets/KendraAreaMain';
 import { HStack } from "@chakra-ui/react";
 // i18
 import AiArea from './AiArea';

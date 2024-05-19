@@ -30,9 +30,7 @@ const InputWithSuggest: React.FC = () => {
         setCurrentInputText: setCurrentInputText,
         recentQueryList: recentQueryList,
         setRecentQueryList: setRecentQueryList,
-        currentQueryId: currentQueryId,
         setCurrentQueryId: setCurrentQueryId,
-        aiAgent: aiAgent,
         setAiAgent: setAiAgent
     } = useGlobalContext();
 
