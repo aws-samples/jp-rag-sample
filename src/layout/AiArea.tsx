@@ -56,7 +56,7 @@ export default function AiArea({ }: {}) {
                             <AccordionItem>
                                 <Box p='3'>
                                     <HStack>
-                                        <Text>引用元</Text>
+                                        <Text>{t("right_side_bar.quote")}</Text>
                                     </HStack>
                                     <HStack>
                                         <VStack p="3" align="left">
@@ -77,7 +77,7 @@ export default function AiArea({ }: {}) {
                                 <Box p='3'>
                                     <HStack>
                                         <SearchIcon />
-                                        <Text>検索サジェスト</Text>
+                                        <Text>{t("right_side_bar.suggest_query")}</Text>
                                     </HStack>
                                     <HStack>
                                         <VStack p="3" align="left">

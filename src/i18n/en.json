@@ -51,6 +51,8 @@
         "thanks_feedback": "Thank you for your feedback"
     },
     "right_side_bar": {
-        "ai_agent": "AI Agent"
+        "ai_agent": "AI Agent",
+        "quote": "Quote",
+        "suggest_query": "Suggested Next Query"
     }
 }

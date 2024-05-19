@@ -51,6 +51,8 @@
         "thanks_feedback": "フィードバックありがとうございます"
     },
     "right_side_bar": {
-        "ai_agent": "AI エージェント"
+        "ai_agent": "AI エージェント",
+        "quote": "引用元",
+        "suggest_query": "検索サジェスト"
     }
 }
