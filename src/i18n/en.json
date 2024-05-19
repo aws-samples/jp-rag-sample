@@ -53,6 +53,7 @@
     "right_side_bar": {
         "ai_agent": "AI Agent",
         "quote": "Quote",
-        "suggest_query": "Suggested Next Query"
+        "suggest_query": "Suggested Next Query",
+        "dive_deep_button": "Dive Deep"
     }
 }

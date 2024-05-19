@@ -2,6 +2,7 @@
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 
 import {
+    Button,
     Flex,
 } from '@chakra-ui/react';
 import { VStack } from "@chakra-ui/layout"
@@ -91,6 +92,11 @@ export default function AiArea({ }: {}) {
                                         </VStack>
                                     </HStack>
                                 </Box>
+                            </AccordionItem>
+
+                            {/* 深堀り */}
+                            <AccordionItem textAlign={'right'}>
+                                <Button colorScheme='green' isDisabled={!aiAgent[currentQueryId].diveDeepIsEnabled}>{t("right_side_bar.dive_deep_button")}</Button>
                             </AccordionItem>
                         </Accordion>
                     </VStack>

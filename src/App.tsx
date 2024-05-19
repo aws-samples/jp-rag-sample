@@ -65,6 +65,7 @@ function App() {
       aiSelectedInfoList: [],
       suggestedQuery: [],
       systemLog: [],
+      diveDeepIsEnabled: false
     },
   });
 

@@ -53,6 +53,7 @@
     "right_side_bar": {
         "ai_agent": "AI エージェント",
         "quote": "引用元",
-        "suggest_query": "検索サジェスト"
+        "suggest_query": "検索サジェスト",
+        "dive_deep_button": "さらに深堀り"
     }
 }

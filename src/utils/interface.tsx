@@ -77,7 +77,8 @@ export interface AiAgentStatus {
     aiAgentResponse: string,
     aiSelectedInfoList: AiSelectedInfo[],
     suggestedQuery: string[],
-    systemLog: string[]
+    systemLog: string[],
+    diveDeepIsEnabled: boolean
 }
 
 // AI Agentの利用履歴
