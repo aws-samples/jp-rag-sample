@@ -8,12 +8,7 @@ Kendra のインデックスを作成する。
 - 参考：指定したサイトから自動でデータをクローリングしてインデックスする [CloudFormation Template サンプル](../kendra/kendra-docs-index.yaml)
 - __このCloudFormationテンプレートで作成するスタックの名前は必ず控えておいてください。後で使います__
 
-### 2. LLM を SageMaker Endpoint にデプロイ
-
-SageMaker エンドポイントを作成する。
-- 参考: エンドポイントの作成方法は、([スクリプト](../llm/README.md)）を参照ください。Rinna の推論エンドポイントを CloudShel からデプロイする方法が記載されています。
-
-### 3. アプリのデプロイ
+### 2. アプリのデプロイ
 
 1. `npm install -g @aws-amplify/cli@12.12.0` で Amplify CLI のインストール
 2. `amplify configure` で認証情報を設定。リージョンの設定がアプリケーションのリージョンになるため注意。
@@ -34,8 +29,7 @@ SageMaker エンドポイントを作成する。
    1. `bash setenv.sh　CloudFormationStackの名前＋-Index`を実行する（スタック名がKendraRAGなら`bash setenv.sh KendraRAG-Index`となる）。このスクリプトで以下の処理が行われる。
       - `amplify/backend/api/fargate/src/docker-compose-template.yml` を同一フォルダ内に docker-compose.yml としてコピー
       - `.env` ファイルを作成し、VITE_INDEX_ID に Kendra の Index ID を設定
-   2. (Anthropic を使用する場合) `amplify/backend/api/fargate/secrets/.secret-anthropic` ファイルを作成し、Anthropic の API キーを入れる。また、`amplify/backend/api/fargate/src/docker-compose.yml` のコメントを解除する。ファイルがない/空の場合はエラーになるため使わない場合はコメントアウトする。
-   4. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する。
+   2. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する。
       - (MUST) `AWS_REGION` を amplify を立ち上げるリージョンにする。
       - (MUST) `AWS_BEDROCK_REGION` には bedrock の利用リージョンを指定
       - (WANT) `ALLOW_ORIGINS` は Access-Control-Allow-Origin の設定値です。
@@ -44,7 +38,6 @@ SageMaker エンドポイントを作成する。
 6.  `amplify publish` でデプロイ
    1. `? Are you sure you want to continue? (Y/n) ` は Y と入力
       - もし `You are not authorized to perform this operation` というエラーが発生した場合、ユーザー に `AdministratorAccess` ポリシー を付与して再試行お願いします。
-   2. `? Secret configuration detected. Do you wish to store new values in the cloud?` Yes  # <- 初回は Secret Manager に保存する
 
 
 ## 変更のデプロイ
