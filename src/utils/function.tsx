@@ -290,7 +290,7 @@ export function kendraResultToAiSelectedInfo(searchResult: QueryResult): AiSelec
 
         selectedItem.push({
             title: result.DocumentTitle?.Text ?? "",
-            chank: result.DocumentExcerpt?.Text ?? "",
+            chunk: result.DocumentExcerpt?.Text ?? "",
             url: result.DocumentURI ?? "",
             lastUpdate: "",
             feadbackToken: result.FeedbackToken ?? ""
@@ -303,7 +303,7 @@ export function kendraResultToAiSelectedInfo(searchResult: QueryResult): AiSelec
 
         selectedItem.push({
             title: result.DocumentTitle?.Text ?? "",
-            chank: result.DocumentExcerpt?.Text ?? "",
+            chunk: result.DocumentExcerpt?.Text ?? "",
             url: result.DocumentURI ?? "",
             lastUpdate: "",
             feadbackToken: result.FeedbackToken ?? ""
@@ -325,7 +325,7 @@ export function createQuotePrompt(searchResult: AiSelectedInfo[], query: string)
     for (let idx = 0; idx < searchResult.length; idx++) {
         docs += `<document index='${idx}'>
   <title>${searchResult[idx].title}</title>
-  <document_content>${searchResult[idx].chank}</document_content>
+  <document_content>${searchResult[idx].chunk}</document_content>
   </document>`
     }
 
@@ -392,7 +392,7 @@ export function createFinalAnswerPrompt(searchResult: AiSelectedInfo[], query: s
     for (let idx = 0; idx < searchResult.length; idx++) {
         docs += `<document index='${idx}'>
   <title>${searchResult[idx].title}</title>
-  <document_content>${searchResult[idx].chank}</document_content>
+  <document_content>${searchResult[idx].chunk}</document_content>
   </document>`
     }
 

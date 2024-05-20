@@ -66,7 +66,7 @@ export interface DocumentForInf {
 // AIに選択された情報
 export interface AiSelectedInfo {
     title: string,
-    chank: string,
+    chunk: string,
     url: string,
     lastUpdate: string,
     feadbackToken: string
@@ -78,7 +78,8 @@ export interface AiAgentStatus {
     aiSelectedInfoList: AiSelectedInfo[],
     suggestedQuery: string[],
     systemLog: string[],
-    diveDeepIsEnabled: boolean
+    diveDeepIsEnabled: boolean,
+    userQuery: string
 }
 
 // AI Agentの利用履歴

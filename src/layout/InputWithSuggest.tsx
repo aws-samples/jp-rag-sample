@@ -123,7 +123,8 @@ const InputWithSuggest: React.FC = () => {
             aiSelectedInfoList: [],
             suggestedQuery: [],
             systemLog: [],
-            diveDeepIsEnabled: false
+            diveDeepIsEnabled: false,
+            userQuery: queryText
         };
         setAiAgent(prev => ({
             ...prev,

@@ -313,3 +313,11 @@ export async function* infStreamClaude(user_prompt: string) {
     }
   }
 }
+
+export async function infClaude(user_prompt: string): Promise<string> {
+  let result = '';
+  for await (const chunk of infStreamClaude(user_prompt)) {
+    result += chunk;
+  }
+  return result;
+}
