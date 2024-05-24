@@ -1,11 +1,9 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 
-import React, { ChangeEventHandler, ReactNode, useState } from "react";
+import React, { ChangeEventHandler, useState } from "react";
 import {
   Box,
-  Flex,
-  useColorModeValue,
   Text,
   VStack,
   Button,
@@ -183,7 +181,6 @@ const RangeNumBox: React.FC<{
   )
 }
 
-
 const RangeDateBox: React.FC<{
   onStartDateChange: ChangeEventHandler<HTMLInputElement>
   onEndDateChange: ChangeEventHandler<HTMLInputElement>
@@ -219,7 +216,6 @@ const RangeDateBox: React.FC<{
   )
 }
 
-
 const ContainStringBox: React.FC<{
   onInsertTag: (
     value: string
@@ -230,7 +226,6 @@ const ContainStringBox: React.FC<{
 }> = ({ onInsertTag, onDeleteTag, title, currentTags }) => {
   //言語設定
   const { t } = useTranslation();
-
 
   // 文字列
   const [text, setText] = useState("");
@@ -268,8 +263,7 @@ const ContainStringBox: React.FC<{
   )
 }
 
-
-export default function FilterBar({ children }: { children: ReactNode }) {
+export default function FilterArea({}: {}) {
   //言語設定
   const { t } = useTranslation();
   // 画面左にあるフィルター
@@ -325,20 +319,12 @@ export default function FilterBar({ children }: { children: ReactNode }) {
     return filter_id
   }
 
-  return (
-    <Box h="92vh"
-      mt="10vh"
-      borderRight="1px"
-      borderRightColor={useColorModeValue('gray.200', 'gray.700')}>
-      <Box
-        w="15vw"
-        bg={'white'}
-        pos="absolute">
+    return (
+        <Box w="15%" bg={'white'}>
         <VStack p={"5"} align={"left"}>
-
           <div>
             {
-              filterOptions.map((tmpCheckBoxItem: Filter, tmpCheckBoxItemId: number) => (
+              filterOptions.filter(option => option !== undefined).map((tmpCheckBoxItem: Filter, tmpCheckBoxItemId: number) => (
                 (() => {
                   // 言語設定
                   if (tmpCheckBoxItem.filterType === "LAUNGUAGE_SETTING" && isArrayString(tmpCheckBoxItem.selected)) {
@@ -498,10 +484,5 @@ export default function FilterBar({ children }: { children: ReactNode }) {
           }}>{t("left_side_bar.parts.apply")}</Button>
         </VStack>
       </Box>
-      {/* 本体 */}
-      <Flex mt="10vh" ml="15vw" w="85vw" h="92vh">
-        {children}
-      </Flex>
-    </Box>
-  );
+    )
 }

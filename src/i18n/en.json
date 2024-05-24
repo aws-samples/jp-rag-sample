@@ -35,7 +35,10 @@
     },
     "body" : {
         "query": "query",
-        "related_sentence": "related sentence",
+        "related_sentence": "Related sentence",
+        "faq": "FAQ",
+        "featured_result": "Featured Result",
+        "excerpt_result": "Excerpt Result",
         "no_result": "no result",
         "you": "YOU",
         "ai_response": "AI RESPONSE",
@@ -45,10 +48,12 @@
         "mfa_success": "MFA was set",
         "invalid_filter": "Error (invalid filter)",
         "fail_kendra": "Error (fail to call kendra)",
-        "pinned": "clicked text was pinned",
         "thanks_feedback": "Thank you for your feedback"
     },
     "right_side_bar": {
-        "pinned_text": "PINNED TEXT"
+        "ai_agent": "AI Agent",
+        "quote": "Quote",
+        "suggest_query": "Suggested Next Query",
+        "dive_deep_button": "Dive Deep"
     }
 }

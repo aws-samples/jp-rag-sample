@@ -62,13 +62,36 @@ export interface DocumentForInf {
     content: string,
     type: DocTypeForInf
 }
-type SpeakerTypeForInf = "AI" | "Human";
-interface UtteranceForInf {
-    utterance: string,
-    type: SpeakerTypeForInf
+
+// AIに選択された情報
+export interface AiSelectedInfo {
+    title: string,
+    chunk: string,
+    url: string,
+    lastUpdate: string,
+    feadbackToken: string
 }
-export interface DataForInf {
-    userUtterance: string,
-    history: UtteranceForInf[],
-    documents: DocumentForInf[],
+
+// AI Agentのステータス
+export interface AiAgentStatus {
+    aiAgentResponse: string,
+    aiSelectedInfoList: AiSelectedInfo[],
+    suggestedQuery: string[],
+    systemLog: string[],
+    diveDeepIsEnabled: boolean,
+    userQuery: string
+}
+
+// AI Agentの利用履歴
+export interface AiAgentHistory {
+    [queryId: string]: AiAgentStatus
+}
+
+export interface Quote {
+    documentIndex: number;
+    text: string;
+}
+
+export interface Answer {
+    quotes: Quote[];
 }

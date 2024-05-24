@@ -1,7 +1,7 @@
 // Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 
-import { 
+import {
   AttributeFilter,
   DescribeIndexCommand,
   ListDataSourcesCommand,
@@ -10,11 +10,14 @@ import {
   QueryCommandOutput,
   SortingConfiguration,
   SubmitFeedbackCommand,
-  ListDataSourcesCommandOutput
-} from "@aws-sdk/client-kendra";
-import { DataForInf, Dic, Filter, selectItemType } from "./interface";
+  ListDataSourcesCommandOutput} from "@aws-sdk/client-kendra";
+import { InvokeWithResponseStreamCommand, LambdaClient } from '@aws-sdk/client-lambda';
+import { fromCognitoIdentityPool } from '@aws-sdk/credential-provider-cognito-identity';
+import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
+
+import { Dic, Filter, selectItemType } from "./interface";
 import { DEFAULT_SORT_ATTRIBUTE, DEFAULT_SORT_ORDER } from "./constant";
-import { Amplify } from 'aws-amplify';
+import { Amplify, Auth } from 'aws-amplify';
 import awsconfig from "../aws-exports";
 
 const _loadingErrors = [];
@@ -22,6 +25,21 @@ const _loadingErrors = [];
 if (!import.meta.env.VITE_INDEX_ID) {
   _loadingErrors.push(
     "環境変数にINDEX_IDがありません"
+  );
+}
+if (!import.meta.env.VITE_STREAM_FUNC_NAME) {
+  _loadingErrors.push(
+    "環境変数にSTREAM_FUNC_ARNがありません"
+  );
+}
+if (!import.meta.env.VITE_MODEL_ID) {
+  _loadingErrors.push(
+    "環境変数にMODEL_IDがありません"
+  );
+}
+if (!import.meta.env.VITE_BEDROCK_REGION) {
+  _loadingErrors.push(
+    "環境変数にBEDROCK_REGIONがありません"
   );
 }
 const hasErrors = _loadingErrors.length > 0;
@@ -32,10 +50,13 @@ if (hasErrors) {
 export const initAWSError: string[] = _loadingErrors;
 
 export const indexId: string = import.meta.env.VITE_INDEX_ID ?? ""
+const stream_func_name: string = import.meta.env.VITE_STREAM_FUNC_NAME ?? ""
 const local_server = import.meta.env.VITE_SERVER_URL ?? ""
 const remote_server = awsconfig.aws_cloud_logic_custom[0].endpoint ?? ""
 export const serverUrl: string = local_server ? local_server : remote_server;
-let jwtToken = ""
+const model_id: string = import.meta.env.VITE_MODEL_ID ?? ""
+const bedrock_region: string = import.meta.env.VITE_BEDROCK_REGION ?? ""
+let jwtToken = "";
 
 Amplify.configure({
   ...awsconfig,
@@ -170,15 +191,15 @@ export async function getDatasourceInfo(): Promise<Dic> {
     },
     body: JSON.stringify(command)
   })
-  .then(response => response.json())
-  .then((r: ListDataSourcesCommandOutput) => {
-    // Datasource list を {id:name} の dict に変換
-    const datasourceDic: Dic = {}
-    for (const datasourceItem of r.SummaryItems ?? []) {
-      datasourceDic[datasourceItem.Id ?? ""] = datasourceItem.Name ?? "";
-    }
-    return datasourceDic
-  })
+    .then(response => response.json())
+    .then((r: ListDataSourcesCommandOutput) => {
+      // Datasource list を {id:name} の dict に変換
+      const datasourceDic: Dic = {}
+      for (const datasourceItem of r.SummaryItems ?? []) {
+        datasourceDic[datasourceItem.Id ?? ""] = datasourceItem.Name ?? "";
+      }
+      return datasourceDic
+    })
 
   return data
 }
@@ -233,26 +254,83 @@ export async function getSortOrderFromIndex(): Promise<Filter> {
 
 }
 
-
-export async function inference(data: DataForInf) {
+export async function* infStreamClaude(user_prompt: string) {
   /**
-   * LLM で推論し作文
+   * Claude で ストリーミング推論
    */
-  const r = await fetch(`${serverUrl}/v2/llm-with-doc`, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${jwtToken}`,
-    },
-    body: JSON.stringify(data)
-  })
-  let respondedText: string = await r.json()
+  // 認証情報
+  const region_name = awsconfig.aws_project_region;
+  const userPoolId = awsconfig.aws_user_pools_id;
+  const providerName = `cognito-idp.${region_name}.amazonaws.com/${userPoolId}`;
+  const lambda_client = new LambdaClient({
+    region: region_name,
+    credentials: fromCognitoIdentityPool({
+      client: new CognitoIdentityClient({ region: region_name }),
+      identityPoolId: awsconfig.aws_cognito_identity_pool_id,
+      logins: {
+        [providerName]: (await Auth.currentSession()).getIdToken().getJwtToken()
+      }
+    })
+  });
 
-  // ノイズを除去
-  const last_id = respondedText.lastIndexOf('。');
-  if (last_id > 0) {
-    respondedText = respondedText.substring(0, last_id + 1);
+  // ペイロード
+  const body = {
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": user_prompt
+          }
+        ]
+      }
+    ],
+    "max_tokens": 500,
+    "anthropic_version": "bedrock-2023-05-31",
+    "temperature": 0,
+    "top_k": 1,
+    "stop_sequences": [
+      "Human: "
+    ],
   }
-  return respondedText
+  const req = {
+    "body": {
+      "bedrockRegion": bedrock_region,
+      "modelId": model_id,
+      "accept": "application/json",
+      "contentType": "application/json",
+      "body": JSON.stringify(body)
+    }
+  }
+
+  // ストリーミング推論
+  const lambda_command = new InvokeWithResponseStreamCommand({
+    FunctionName: stream_func_name,
+    Payload: JSON.stringify(req),
+  })
+  const res = await lambda_client.send(lambda_command);
+
+  // チャンクを表示
+  const events = res.EventStream;
+  if (!events) {
+    return;
+  }
+  for await (const event of events) {
+    if (event.PayloadChunk) {
+      yield new TextDecoder('utf-8').decode(event.PayloadChunk.Payload);
+    }
+
+    if (event.InvokeComplete) {
+      break;
+    }
+  }
+}
+
+export async function infClaude(user_prompt: string): Promise<string> {
+  let result = '';
+  for await (const chunk of infStreamClaude(user_prompt)) {
+    result += chunk;
+  }
+  return result;
 }

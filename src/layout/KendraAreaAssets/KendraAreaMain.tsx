@@ -2,9 +2,7 @@
 // Licensed under the MIT-0 License (https://github.com/aws/mit-0)
 
 import { Conversation } from "../../utils/interface";
-import AICore from "./components/AICore";
 import { FeaturedResultsItem, QueryResultItem } from "@aws-sdk/client-kendra";
-import Human from "./Human";
 import { useEffect, useState } from "react";
 import { KendraResultFeatured } from "./components/KendraResultFeatured";
 import { KendraResultExcerpt } from "./components/KendraResultExcerpt";
@@ -63,8 +61,6 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
 
     return (
         <>
-            {/* aiResult があれば出力 */}
-            {data.aiResponse && <AICore data={data.aiResponse} />}
             {/* FeaturedResultを表示 */}
             <KendraResultFeatured queryId={data.kendraResponse?.QueryId} resultItems={featuredItems} />
             {/* FAQを表示 */}
@@ -73,8 +69,6 @@ const Kendra: React.FC<{ data: Conversation }> = ({ data }) => {
             <KendraResultExcerpt queryId={data.kendraResponse?.QueryId} resultItems={excerptItems} />
             {/* 文章のリストを表示 */}
             <KendraResultDoc queryId={data.kendraResponse?.QueryId} resultItems={docItems} />
-            {/* 人の入力を表示 */}
-            <Human data={data} />
         </>
     )
 
