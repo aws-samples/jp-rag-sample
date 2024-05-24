@@ -8,8 +8,6 @@ const {
   ThrottlingException,
 } = require('@aws-sdk/client-bedrock-runtime');
 
-const client = new BedrockRuntimeClient();
-
 
 const extractOutputTextClaude3Message = (body) => {
   if (body.type === 'message') {
@@ -20,7 +18,9 @@ const extractOutputTextClaude3Message = (body) => {
   return '';
 };
 
-async function* invokeStream(input) {
+async function* invokeStream(region, input) {
+  const client = new BedrockRuntimeClient({ region });
+
   try {
     
     const command = new InvokeModelWithResponseStreamCommand(input);
@@ -63,7 +63,7 @@ exports.handler = awslambda.streamifyResponse(
   async (event, responseStream, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     
-    for await (const token of invokeStream?.(event.body) ?? []) {
+    for await (const token of invokeStream?.(event.body.bedrockRegion, event.body) ?? []) {
       responseStream.write(token);
     }
     responseStream.end();

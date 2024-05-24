@@ -32,6 +32,16 @@ if (!import.meta.env.VITE_STREAM_FUNC_NAME) {
     "環境変数にSTREAM_FUNC_ARNがありません"
   );
 }
+if (!import.meta.env.VITE_MODEL_ID) {
+  _loadingErrors.push(
+    "環境変数にMODEL_IDがありません"
+  );
+}
+if (!import.meta.env.VITE_BEDROCK_REGION) {
+  _loadingErrors.push(
+    "環境変数にBEDROCK_REGIONがありません"
+  );
+}
 const hasErrors = _loadingErrors.length > 0;
 if (hasErrors) {
   console.error(JSON.stringify(_loadingErrors));
@@ -44,6 +54,8 @@ const stream_func_name: string = import.meta.env.VITE_STREAM_FUNC_NAME ?? ""
 const local_server = import.meta.env.VITE_SERVER_URL ?? ""
 const remote_server = awsconfig.aws_cloud_logic_custom[0].endpoint ?? ""
 export const serverUrl: string = local_server ? local_server : remote_server;
+const model_id: string = import.meta.env.VITE_MODEL_ID ?? ""
+const bedrock_region: string = import.meta.env.VITE_BEDROCK_REGION ?? ""
 let jwtToken = "";
 
 Amplify.configure({
@@ -284,7 +296,8 @@ export async function* infStreamClaude(user_prompt: string) {
   }
   const req = {
     "body": {
-      "modelId": "anthropic.claude-3-haiku-20240307-v1:0",
+      "bedrockRegion": bedrock_region,
+      "modelId": model_id,
       "accept": "application/json",
       "contentType": "application/json",
       "body": JSON.stringify(body)

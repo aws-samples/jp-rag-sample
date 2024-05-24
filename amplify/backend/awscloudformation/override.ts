@@ -55,6 +55,23 @@ export function override(resources: AmplifyRootStackTemplate, amplifyProjectInfo
     envContent += `\nVITE_STREAM_FUNC_NAME=streamClaude3-${envName}`;
   }
 
+  // VITE_MODEL_ID の値を追加
+  const modelId = "anthropic.claude-3-haiku-20240307-v1:0"
+  const modelIdPattern = /^VITE_MODEL_ID=.*/gm;
+  if (modelIdPattern.test(envContent)) {
+    envContent = envContent.replace(modelIdPattern, `VITE_MODEL_ID=${modelId}`);
+  } else {
+    envContent += `\nVITE_MODEL_ID=${modelId}`;
+  }
+
+  // VITE_BEDROCK_REGION の値を追加
+  const bedrockRegionPattern = /^VITE_BEDROCK_REGION=.*/gm;
+  if (bedrockRegionPattern.test(envContent)) {
+    envContent = envContent.replace(bedrockRegionPattern, `VITE_BEDROCK_REGION=${region_name}`);
+  } else {
+    envContent += `\nVITE_BEDROCK_REGION=${region_name}`;
+  }
+
   // .env ファイルに書き込む
   fs.writeFileSync('.env', envContent);
 }
