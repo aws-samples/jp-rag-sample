@@ -1,0 +1,33 @@
+{
+  "name": "cdk",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "lint": "eslint . --ext ts --report-unused-disable-directives --max-warnings 0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.137",
+    "@types/node": "20.12.7",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "aws-cdk": "2.139.0",
+    "eslint": "^8.56.0",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.4.5"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cognito-identitypool-alpha": "^2.22.0-alpha.0",
+    "@aws-cdk/aws-lambda-python-alpha": "2.139.0-alpha.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.549.0",
+    "@aws-sdk/client-kendra": "^3.549.0",
+    "@aws-sdk/client-s3": "^3.549.0",
+    "@aws-sdk/s3-request-presigner": "^3.549.0",
+    "@aws-solutions-constructs/aws-cloudfront-s3": "^2.54.1",
+    "aws-cdk-lib": "2.139.0",
+    "constructs": "^10.0.0",
+    "deploy-time-build": "^0.3.17",
+    "source-map-support": "^0.5.21"
+  }
+}

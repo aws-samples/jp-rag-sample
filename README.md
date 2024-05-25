@@ -1,5 +1,9 @@
 # JP RAG SOLUTION
 
+> [!IMPORTANT]
+> v0.4.0 より Amplify v1 から CDK に移行しました。以前のバージョンをお使いの方は[移行ガイド](docs/CDKMigration.md)をご覧ください。
+
+
 このソリューションは AWS 上で検索用途の Retrieval Augmented Generation (RAG) を構築するサンプルコードです。
 
 ![](docs/png/rag-screenshot.png)
@@ -11,7 +15,6 @@ Retrieval Augmented Generation(RAG)とは、生成系の言語 AI モデルに�
 このソリューションは以下のような構成になっています。
 
 ![](docs/png/rag-architecture.png)
-
 
 ## Point / 特徴
 
@@ -42,6 +45,14 @@ Amazon Kendra でのドキュメント検索のフィルター条件を指定す
 
 2023/07/19 時点で英語のドキュメントに限定されますが、増分学習が可能です。検索結果の各ドキュメントの左下に表示される Goodボタン、Badボタン を押すことで、次回以降の検索結果に反映されます。
 
+#### (3) セキュリティ機能
+
+- [x] AWS WAF
+- [x] MFA
+- [x] IP、国でのアクセス制限
+- [x] セルフサインアップの無効化
+- [x] メールドメインの制限
+- [x] SAML 連携
 
 ## Search Flow / 検索の流れ
 
@@ -55,16 +66,26 @@ Amazon Kendra でのドキュメント検索のフィルター条件を指定す
 
 ## コスト
 
-|               リソース             | 1月あたりのコスト ($USD) |
-| --------------------------------- | ---------------------:|
-| Kendra Index                      |  810   |
-| Fargate (0.5 vCPU, 1 GB Memory)   |  18    |
-| Amplify                           |  5     |
-| 合計                               |  833  |  
+|    サービス   |  項目     |  数量   |   単価   | 料金 (USD) |
+| :------------|----------|--------- | --------|------------:|
+| Amazon Kendra | Developer Edition | 730h | $1.125 / h |  810 |
+| | Connector でスキャンしたドキュメント数 | 5,000 ドキュメント | 0.000001 USD/ドキュメント | 0.01 |
+| | Connector でスキャンした時間 | 30 時間 | 0.35 USD/時間 | 10.50 |
+| Amazon Bedrock  | Claud 3 Haiku 入力トークン | 11,000,000 トークン | 0.00025 USD/1000 トークン | 2.75 |
+| | Claud 3 Haiku 出力トークン | 4,400,000 トークン | 0.00125 USD/1000 トークン | 5.5 |
+| AWS Lambda | 割り当てたメモリと実行時間 | 37,500 GB-秒 | 0.000016667 USD/GB-秒あたり | 0.63 |
+| | Lambda HTTP 応答ストリーム処理バイト | 1 GB | 0.008 USD/GB | 0.01  |
+| Amazon API Gateway  | REST API リクエスト数 | 15,000 リクエスト | 4.25 USD/100 万リクエスト | 0.06 |
+|Amazon S3 | ストレージ容量 | 0.01 GB | 0.025 USD/GB | 0 |
+| | GET、SELECT リクエスト数 | 1,000 リクエスト | 0.00037 USD/1000 リクエスト | 0 |
+| Amazon CloudFront | データ転送 (OUT) | 1 GB | 0.114 USD/時間 | 0.11 |
+| |HTTPS リクエスト | 30,000 リクエスト | 0.012 USD/1万リクエスト | 0.04 |
+| Amazon Cognito | アクティブユーザー数	| 50 ユーザー | $0.0055 /ユーザー    |  0.28  |
+| 合計     |        |        |            |  829.89   |  
 
-* 価格は 開発時点での内容になります。最新情報は AWS 公式ウェブサイト（https://aws.amazon.com/ ）にてご確認ください。
+* 価格は執筆時点での内容になります。最新情報は AWS 公式ウェブサイト（https://aws.amazon.com/ ）にてご確認ください。
 
 ## LICENSE
 
-Copyright 2023 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright 2024 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 Licensed under the MIT-0 License (https://github.com/aws/mit-0)
