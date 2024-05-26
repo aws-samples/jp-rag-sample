@@ -19,15 +19,7 @@ const AuthWithUserpool: React.FC = () => {
   I18n.setLanguage('ja');
 
   return (
-    <Authenticator
-      hideSignUp={!selfSignUpEnabled}
-      components={{
-        Header: () => (
-          <div className="text-aws-font-color mb-5 mt-10 flex justify-center text-3xl">
-            JP RAG Sample
-          </div>
-        ),
-      }}>
+    <Authenticator hideSignUp={!selfSignUpEnabled}>
       <App />
     </Authenticator>
   );

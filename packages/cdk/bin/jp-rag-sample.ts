@@ -94,7 +94,7 @@ new JpRagSampleStack(app, 'JpRagSampleStack', {
   allowedIpV6AddressRanges,
   allowedCountryCodes,
   description: anonymousUsageTracking
-    ? 'JP RAG Sample'
+    ? 'JP RAG Sample (uksb-6g16jk2y91)'
     : undefined,
   cert: cloudFrontWafStack?.cert,
   hostName,

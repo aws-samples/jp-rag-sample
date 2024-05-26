@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import App from '../App.tsx';
-import { Button, Text, Loader } from '@aws-amplify/ui-react';
+import { Button, Text } from '@aws-amplify/ui-react';
 import { Amplify, Auth } from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
+import { Box, Spinner } from '@chakra-ui/react';
 
 const samlCognitoDomainName: string = import.meta.env
   .VITE_APP_SAML_COGNITO_DOMAIN_NAME;
@@ -41,7 +42,7 @@ const AuthWithSAML: React.FC = () => {
       identityPoolId: import.meta.env.VITE_APP_IDENTITY_POOL_ID,
       oauth: {
         domain: samlCognitoDomainName, // cdk.json の値を指定
-        scope: ['openid', 'email', 'profile'],
+        scope: ['openid', 'email', 'profile', 'aws.cognito.signin.user.admin'],
         // CloudFront で展開している Web ページを動的に取得
         redirectSignIn: window.location.origin,
         redirectSignOut: window.location.origin,
@@ -53,20 +54,34 @@ const AuthWithSAML: React.FC = () => {
   return (
     <>
       {loading ? (
-        <div className="grid grid-cols-1 justify-items-center gap-4">
-          <Text className="mt-12 text-center">Loading...</Text>
-          <Loader width="5rem" height="5rem" />
-        </div>
+        <Box
+          display="grid"
+          gridTemplateColumns="1fr"
+          justifyItems="center"
+          gap={4}>
+          <Text marginTop={12} textAlign="center">
+            Loading...
+          </Text>
+          <Spinner size="xl" />
+        </Box>
       ) : !authenticated ? (
-        <div className="grid grid-cols-1 justify-items-center gap-4">
-          <Text className="mt-12 text-center text-3xl">JP RAG Sample</Text>
+        <Box
+          display="grid"
+          gridTemplateColumns="1fr"
+          justifyItems="center"
+          gap={4}>
+          <Text marginTop={12} textAlign="center" fontSize="3xl">
+            JP RAG Sample
+          </Text>
           <Button
-            variation="primary"
+            color="blue"
             onClick={() => signIn()}
-            className="mt-6 w-60">
+            marginTop={6}
+            width="60"
+            fontSize="md">
             ログイン
           </Button>
-        </div>
+        </Box>
       ) : (
         <App />
       )}

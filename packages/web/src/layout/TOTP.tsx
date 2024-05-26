@@ -23,6 +23,9 @@ import {
 // i18
 import { useTranslation } from 'react-i18next';
 
+const samlAuthEnabled: boolean =
+  import.meta.env.VITE_APP_SAMLAUTH_ENABLED === 'true';
+
 interface CustomSetupTOTPProps {
   user: AmplifyUser | undefined;
   issuer: string;
@@ -121,6 +124,7 @@ export function CustomSetupTOTP(props: CustomSetupTOTPProps) {
   };
 
   if (mfaEnabled) return null;
+  if (samlAuthEnabled) return null;
 
   return (
     <>
