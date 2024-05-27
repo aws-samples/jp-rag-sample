@@ -74,7 +74,7 @@ export class Rag extends Construct {
       );
 
       const index = new kendra.CfnIndex(this, 'KendraIndex', {
-        name: 'generative-ai-use-cases-index',
+        name: 'jp-rag-sample',
         edition: 'DEVELOPER_EDITION',
         roleArn: indexRole.roleArn,
 
