@@ -132,14 +132,14 @@ export async function submitFeedback(
   return data;
 }
 
-export function getKendraQuery(
+export async function getKendraQuery(
   /**
    * Kendra Query API への request Bodyを作成
    */
   queryText: string,
   attributeFilter: AttributeFilter,
   sortingConfiguration: SortingConfiguration | undefined
-): QueryCommandInput {
+): Promise<QueryCommandInput> {
   return {
     IndexId: indexId,
     PageNumber: 1,
@@ -147,21 +147,29 @@ export function getKendraQuery(
     QueryText: queryText,
     AttributeFilter: attributeFilter,
     SortingConfiguration: sortingConfiguration,
+    UserContext: {
+      Token: (await Auth.currentAuthenticatedUser()).signInUserSession
+        .accessToken.jwtToken,
+    },
   };
 }
 
-export function overwriteQuery(
+export async function overwriteQuery(
   /**
    * Kendra Query API への request Bodyへフィルタリング情報を付与
    */
   prevQuery: QueryCommandInput,
   newAttributeFilter: AttributeFilter,
   newSortingConfiguration: SortingConfiguration | undefined
-): QueryCommandInput {
+): Promise<QueryCommandInput> {
   return {
     ...prevQuery,
     AttributeFilter: newAttributeFilter,
     SortingConfiguration: newSortingConfiguration,
+    UserContext: {
+      Token: (await Auth.currentAuthenticatedUser()).signInUserSession
+        .accessToken.jwtToken,
+    },
   };
 }
 

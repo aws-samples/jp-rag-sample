@@ -537,7 +537,7 @@ export default function FilterArea() {
               // F-1. currentConversation.userQuery があるとき (top barから検索済みであること)を確認
               if (currentConversation?.userQuery !== undefined) {
                 // F-2. currentConversation.userQuery の言語設定、ソート順、フィルタを変更しクエリを再実行
-                const q = overwriteQuery(
+                const q = await overwriteQuery(
                   currentConversation.userQuery,
                   getAttributeFilter(filterOptions),
                   getCurrentSortOrder(filterOptions)

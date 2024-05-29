@@ -18,10 +18,9 @@ export const defaultModel: Model = {
 // Model Params
 
 const CLAUDE_MESSAGE_DEFAULT_PARAMS: ClaudeMessageParams = {
-  max_tokens: 3000,
-  temperature: 0.1,
-  top_k: 300,
-  top_p: 0.8,
+  max_tokens: 500,
+  temperature: 0,
+  top_k: 1,
 };
 export type ClaudeMessageParamsUsecases = Record<string, ClaudeMessageParams>;
 const CLAUDE_MESSAGE_USECASE_PARAMS: ClaudeMessageParamsUsecases = {

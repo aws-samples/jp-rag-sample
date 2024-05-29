@@ -92,7 +92,7 @@ const InputWithSuggest: React.FC = () => {
       filterOptions[1], // ソート順序
     ]);
     // K-3. 現在設定中のfilterは見ずに、言語設定とソート順序だけを反映させてKendraへQuery
-    const q = getKendraQuery(
+    const q = await getKendraQuery(
       queryText,
       getAttributeFilter(filterOptions),
       getCurrentSortOrder(filterOptions)

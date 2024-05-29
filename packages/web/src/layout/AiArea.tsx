@@ -145,15 +145,14 @@ export default function AiArea() {
 
                       // 並列で複数のクエリを実行
                       const kendraResults = await Promise.all(
-                        suggestedQueries.map((query) =>
-                          kendraQuery(
-                            getKendraQuery(
-                              query,
-                              getAttributeFilter(filterOptions),
-                              getCurrentSortOrder(filterOptions)
-                            )
-                          )
-                        )
+                        suggestedQueries.map(async (query) => {
+                          const kendraQueryInput = await getKendraQuery(
+                            query,
+                            getAttributeFilter(filterOptions),
+                            getCurrentSortOrder(filterOptions)
+                          );
+                          return kendraQuery(kendraQueryInput);
+                        })
                       );
                       console.log('[検索結果] kendraResults');
                       console.log(kendraResults);

@@ -1,6 +1,7 @@
 import * as kendra from 'aws-cdk-lib/aws-kendra';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { Token, Arn, RemovalPolicy } from 'aws-cdk-lib';
@@ -151,6 +152,77 @@ export class Rag extends Construct {
         },
       });
       dataSource.addDependency(index);
+
+      const dataSource2 = new kendra.CfnDataSource(this, 'WebDataSource', {
+        indexId: index.ref,
+        type: 'WEBCRAWLER',
+        name: 'web-data-source',
+        roleArn: s3DataSourceRole.roleArn,
+        languageCode: 'ja',
+        dataSourceConfiguration: {
+          webCrawlerConfiguration: {
+            urlInclusionPatterns: [
+              '.*https://docs.aws.amazon.com/ja_jp/lex/.*',
+              '.*https://docs.aws.amazon.com/ja_jp/kendra/.*',
+              '.*https://docs.aws.amazon.com/ja_jp/sagemaker/.*',
+            ],
+            urls: {
+              siteMapsConfiguration: {
+                siteMaps: [
+                  'https://docs.aws.amazon.com/ja_jp/lex/latest/dg/sitemap.xml',
+                  'https://docs.aws.amazon.com/ja_jp/kendra/latest/dg/sitemap.xml',
+                  'https://docs.aws.amazon.com/ja_jp/sagemaker/latest/dg/sitemap.xml',
+                ],
+              },
+            },
+          },
+        },
+      });
+      dataSource2.addDependency(index);
+
+      // 初回構築時に Sync
+      const dataSourceSyncLambda = new NodejsFunction(
+        this,
+        'DataSourceSyncLambda',
+        {
+          runtime: Runtime.NODEJS_18_X,
+          entry: './lambda/kendraSync.ts',
+          bundling: {
+            // 新しい Kendra の機能を使うため、AWS SDK を明示的にバンドルする
+            externalModules: [],
+          },
+          environment: {
+            INDEX_ID: kendraIndexId,
+            DS_ID: dataSource2.attrId,
+          },
+        }
+      );
+      dataSourceSyncLambda.addToRolePolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          resources: ['*'],
+          actions: ['kendra:StartDataSourceSyncJob'],
+        })
+      );
+      const dataSourceSync = new cr.AwsCustomResource(this, 'DataSourceSync', {
+        onCreate: {
+          service: 'Lambda',
+          action: 'invoke',
+          parameters: {
+            FunctionName: dataSourceSyncLambda.functionName,
+            Payload: JSON.stringify({}),
+          },
+          physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromStatements([
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['lambda:InvokeFunction'],
+            resources: [dataSourceSyncLambda.functionArn],
+          }),
+        ]),
+      });
+      dataSourceSync.node.addDependency(index);
 
       this.kendraIndexId = index.ref;
     }
