@@ -1,92 +1,139 @@
-# Developer Guide
+# 開発者ガイド (Developer Guide)
 
 ## デプロイ
 
-### 1. Kendra のインデックスを作成
+> [!IMPORTANT]
+> このリポジトリでは、デフォルトでバージニア北部リージョン (us-east-1) の Anthropic Claude 3 Haiku モデルを利用する設定になっています。[Model access 画面 (us-east-1)](https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/modelaccess)を開き、Anthropic Claude 3 Haiku にチェックして Save changes してください。
 
-Kendra のインデックスを作成する。
-- 参考：指定したサイトから自動でデータをクローリングしてインデックスする [CloudFormation Template サンプル](../kendra/kendra-docs-index.yaml)
-- __このCloudFormationテンプレートで作成するスタックの名前は必ず控えておいてください。後で使います__
+JP-RAG-Sample のデプロイには [AWS Cloud Development Kit](https://aws.amazon.com/jp/cdk/)（以降 CDK）を利用します。CDK がインストールされていない方は事前に [CDK をインストール](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) してください。
 
-### 2. アプリのデプロイ
+まず、以下のコマンドを実行してください。全てのコマンドはリポジトリのルートで実行してください。
 
-1. `npm install -g @aws-amplify/cli@12.12.0` で Amplify CLI のインストール
-2. `amplify configure` で認証情報を設定。リージョンの設定がアプリケーションのリージョンになるため注意。
-   1. `? region:  (Use arrow keys) ` は、最重要です。amplifyを立ち上げるリージョンを選択ください。ここで指定したリージョンを以降の設定でもご利用いただきます。
-   2. `to complete the user creation in the AWS console` が表示されたら、自動で表示される以下のURLの指示に従って amplify を作成するユーザを作成ください 例: amplify-dev ユーザー
-      - https://docs.amplify.aws/cli/start/install/#configure-the-amplify-cli
-      - ユーザーには、`Administrator-Access-Amplify` policyを付与お願いします。
-   3. `Enter the access key of the newly created user:` が表示されましたら、作成したユーザーの アクセストークン、シークレットアクセストークン を設定ください
-   4. `Profile Name:  (default) ` が表示されましたら、ローカル プロファイルとして保存する名前を指定ください。default プロファイルにする場合はなにも入力せずに Enterを押してください。
-   5. 以降、Amplifyを利用する場合は、本プロファイルに切り替えた上でご利用することを前提とします。
-3. `npm i` でライブラリをインストール
-4. `amplify init` でプロジェクトを初期化
-   1. `? Do you want to use an existing environment?:` n 
-   2. `? Enter a name for the environment:` mydev (好きな名前：プロンプトでは2〜10文字と表示されているが長い文字数ではこの後のプロセスでエラーが発生することがあるので、5文字以内に収めることを推奨)  # <- `amplify/team-provider-info.json` に書かれている既存の環境と同じ名前は使えない。先にファイルごと削除してしまっても問題ない。
-   3. `? Select the authentication method you want to use:` AWS profile
-   4. `? Please choose the profile you want to use:` は `amplify configure` の時に作成したプロファイルを選択
-5. バックエンド・フロントエンドの環境変数を設定する
-   1. `bash setenv.sh　CloudFormationStackの名前＋-Index`を実行する（スタック名がKendraRAGなら`bash setenv.sh KendraRAG-Index`となる）。このスクリプトで以下の処理が行われる。
-      - `amplify/backend/api/fargate/src/docker-compose-template.yml` を同一フォルダ内に docker-compose.yml としてコピー
-      - `.env` ファイルを作成し、VITE_INDEX_ID に Kendra の Index ID を設定
-   2. `amplify/backend/api/fargate/src/docker-compose.yml` の環境変数を必要に応じて変更する。
-      - (MUST) `AWS_REGION` を amplify を立ち上げるリージョンにする。
-      - (MUST) `AWS_BEDROCK_REGION` には bedrock の利用リージョンを指定
-      - (WANT) `ALLOW_ORIGINS` は Access-Control-Allow-Origin の設定値です。
-      - (WANT) `SAGEMAKER_ENDPOINT_NAME` は立ち上げた SageMaker エンドポイント名です。deploy_llm.sh で立ち上げた場合、変更の必要はありません。
-      - (WANT) `LLM` は、rinna, claude, claude_bedrock を指定可能。 Anthropicを利用する場合は claudeを指定する。
-6.  `amplify publish` でデプロイ
-   1. `? Are you sure you want to continue? (Y/n) ` は Y と入力
-      - もし `You are not authorized to perform this operation` というエラーが発生した場合、ユーザー に `AdministratorAccess` ポリシー を付与して再試行お願いします。
+```bash
+npm ci
+```
+
+CDK を利用したことがない場合、初回のみ [Bootstrap](https://docs.aws.amazon.com/ja_jp/cdk/v2/guide/bootstrapping.html) 作業が必要です。すでに Bootstrap された環境では以下のコマンドは不要です。
+
+```bash
+npx -w packages/cdk cdk bootstrap
+```
+
+続いて、以下のコマンドで AWS リソースをデプロイします。デプロイが完了するまで、お待ちください（20 分程度かかる場合があります）。
+
+```bash
+npm run cdk:deploy
+```
+
+## デプロイオプション
+
+[packages/cdk/cdk.json](/packages/cdk/cdk.json) で設定を管理しており、以下のような設定が可能です。
+
+#### 既存の Kendra Index を利用する
+
+デフォルトでは新規の Kendra Index が作成されますが、既存の Kendra Index をインポートして使用することが可能です。
+
+context の `kendraIndexArn` に Index の ARN を指定します。もし、既存の Kendra Index で S3 データソースを利用している場合は、`kendraDataSourceBucketName` にバケット名を指定します。
 
 
-## 変更のデプロイ
+```
+"kendraIndexArn": "arn:aws:kendra:<region>:<account_id>:index/<index_id>",
+"kendraDataSourceBucketName": "<Kendra S3 Data Source Bucket Name>",
+```
 
-1. フロントエンドの `.env` ファイルの `VITE_SERVER_URL` をコメントアウトする 
-2. デプロイ
-   - 以下、状況に応じて使い分けてください。
-      - バックエンドのみデプロイ：`amplify push -y`
-      - 全てデプロイ：`amplify publish -y`
+#### アクセス制限の設定
 
+デフォルトでは公開されている URL より新規のアカウントが発行可能ですが、新規アカウント発行を無効化することが可能です。管理者のみがアカウント発行するケースなどで利用できます。
+
+```
+"selfSignUpEnabled": false,
+```
+
+また、サインアップできる E メールのドメインを制限することも可能です。自社の社員のみサインアップ可能にしたい場合などに利用できます。
+
+```
+"allowedSignUpEmailDomains": ["xxx.co.jp"],
+```
+
+また、Google Workspace や Microsoft Entra ID (旧 Azure Active Directory) などの IdP が提供する SAML 認証機能と連携ができます。次に詳細な連携手順があります。こちらもご活用ください。
+
+- [Google Workspace と SAML 連携](https://github.com/aws-samples/generative-ai-use-cases-jp/blob/898ea5edb3bb6327a897a752747dbef3124010dc/docs/SAML_WITH_GOOGLE_WORKSPACE.md)
+- [Microsoft Entra ID と SAML 連携](https://github.com/aws-samples/generative-ai-use-cases-jp/blob/898ea5edb3bb6327a897a752747dbef3124010dc/docs/SAML_WITH_ENTRA_ID.md)
+
+[packages/cdk/cdk.json](/packages/cdk/cdk.json)　にて以下を編集してください。
+
+- samlAuthEnabled : `true` にすることで、SAML 専用の認証画面に切り替わります。Cognito user pools を利用した従来の認証機能は利用できなくなります。
+- samlCognitoDomainName : Cognito の App integration で設定する Cognito Domain 名を指定します。
+- samlCognitoFederatedIdentityProviderName : Cognito の Sign-in experience で設定する Identity Provider の名前を指定します。
+
+```
+"samlAuthEnabled": true,
+"samlCognitoDomainName": "your-preferred-name.auth.ap-northeast-1.amazoncognito.com",
+"samlCognitoFederatedIdentityProviderName": "EntraID",
+```
+
+Web アプリへのアクセスを IP で制限したい場合、AWS WAF による IP 制限を有効化することができます。[packages/cdk/cdk.json](/packages/cdk/cdk.json) の `allowedIpV4AddressRanges` では許可する IPv4 の CIDR を配列で指定することができ、`allowedIpV6AddressRanges` では許可する IPv6 の CIDR を配列で指定することができます。
+
+```
+"allowedIpV4AddressRanges": ["192.0.2.44/32"],
+"allowedIpV6AddressRanges": ["0:0:0:0:0:ffff:c000:22c/128"],
+```
+
+Web アプリへのアクセスをアクセス元の国で制限したい場合、AWS WAF による地理的制限を有効化することができます。[packages/cdk/cdk.json](/packages/cdk/cdk.json) の `allowedCountryCodes` で許可する国を Country Code の配列で指定することができます。
+指定する国の Country Code は[ISO 3166-2 from wikipedia](https://en.wikipedia.org/wiki/ISO_3166-2)をご参照ください。
+
+```
+"allowedCountryCodes": ["JP"],
+```
+
+#### モデルの設定を変更する
+
+デフォルトでは `us-east-1` の `anthropic.claude-3-haiku-20240307-v1:0` を使用していますが、他のリージョン・モデルに切り替えることも可能です。
+
+```
+"modelRegion": "us-east-1",
+"modelIds": [
+   "anthropic.claude-3-haiku-20240307-v1:0"
+],
+```
+
+#### 独自ドメイン
+
+Web サイトの URL としてカスタムドメインを使用することができます。同一 AWS アカウントの Route53 にパブリックホストゾーンが作成済みであることが必要です。パブリックホストゾーンについてはこちらをご参照ください: [パブリックホストゾーンの使用 - Amazon Route 53](https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html)
+
+同一 AWS アカウントにパブリックホストゾーンを持っていない場合は、AWS ACM による SSL 証明書の検証時に手動で DNS レコードを追加する方法や、Eメール検証を行う方法もあります。これらの方法を利用する場合は、CDK のドキュメントを参照してカスタマイズしてください: [aws-cdk-lib.aws_certificatemanager module · AWS CDK](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_certificatemanager-readme.html)
+
+cdk.json には以下の値を設定します。
+
+- `hostName` ... Web サイトのホスト名です。A レコードは CDK によって作成されます。事前に作成する必要はありません
+- `domainName` ... 事前に作成したパブリックホストゾーンのドメイン名です
+- `hostedZoneId` ... 事前に作成したパブリックホストゾーンのIDです
+
+```
+"hostName": "genai",
+"domainName": "example.com",
+"hostedZoneId": "XXXXXXXXXXXXXXXXXXXX",
+```
 
 ## ローカル開発
 
 ### バックエンド
 
-[バックエンドのローカル開発の方法はこちら](../amplify/backend/api/fargate/src/langchain/README.md)
+`packages/cdk` ディレクトリで `cdk watch` を実行すると Lambda への変更が高速で反映されます。詳細については[ドキュメント](https://cdkworkshop.com/ja/20-typescript/30-hello-cdk/300-cdk-watch.html) をご確認ください。
 
 ### フロントエンド
 
-[フロントエンドのローカル開発の方法はこちら](../src/README.md)
+以下のコマンドで CloudFormation のアウトプットから必要な情報を取得しローカル環境を立ち上げます。Windows ユーザーの方も Git Bash で利用できます。
 
+```bash
+npm run web:devw
+```
 
 ## プロジェクト構造についての解説
 
 ```
-.
-|-- src                            # フロントエンド
-|-- amplify
-|   |-- team-provider-info.json    # Amplify の環境設定
-|   |-- backend
-|       |-- api/fargate            # バックエンド API
-|       |-- auth                   # Cognito 設定
-|       |-- hosting                # ホスティング 設定
-|-- kendra
-|   |-- kendra-docs-index.yaml     # Kendra 構築の CloudFormation サンプル
-|-- llm                            # SageMaker エンドポイントをデプロイするサンプルスクリプト
+packages
+|-- web                            # フロントエンド
+|-- cdk                            # バックエンド
+|-- types                          # 共通の型定義
 ```
-
-- フロントエンドは Amplify Hosting でデプロイされます。その際、Amplify により生成されるバックエンドの情報（ `src/aws-exports.js`）および ローカルの環境変数（`.env` ファイルの内容）を使用してビルドします。Kendra のインデックス情報は環境変数（`VITE_INDEX_ID`）で反映する必要があります。ローカルのバックエンドでテストする際には `VITE_SERVER_URL` でローカルのエンドポイントを指定することでエンドポイントを上書きすることができます。
-- バックエンド API は Amplify の [Serverless Container](https://docs.amplify.aws/cli/usage/containers/) 機能を利用しています。裏側では CodePipeline + CodeBuild でイメージをビルドし、Fargate にデプロイしており、API Gateway + Service Discovery によりリクエストをルーティングしています。これらは CloduFormation nested stack から確認することが可能です。
-- バックエンドの環境変数は Amplify がデプロイの際に `amplify/backend/api/fargate/src/docker-compose.yml` の内容を読み取り`amplify/backend/api/fargate/fargate-cloudformation-template.json` を書き換えコンテナの環境変数として渡しています。 
-
-## セキュリティ上の推奨事項
-
-- このサンプルは MFA を登録することが可能です。
-- このサンプルは Cognito の高度なセキュリティ機能を有効化しています。
-- 必要に応じて Cognito の Federated Identity Provider 機能を利用して SAML もしくは Open ID Connect 経由でのサインインを設定することができます。
-- コンテナのロギング有効になっています。
-- デフォルトでは API Gateway のロギングが有効化されていませんが有効化することを推奨します。
-  - CloudWatch コンソールから新たに CloudWatch Log Group を作成します。（例：`/aws/apigateway/amplify-jpragsampleamplif-API-Gateway`）
-  - API Gateway > Logging > $default から LogGroup の ARN およびログ形式を指定し設定します。
-- Fargate のビルドを行う CodeBuild のイメージは 2023/03/31 に Deprecated になった `aws/codebuild/standard:4.0`を使用しています。現状はまだ利用できますがご注意ください。([Amplify Issue](https://github.com/aws-amplify/amplify-category-api/issues/1715))

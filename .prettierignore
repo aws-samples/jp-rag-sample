@@ -1,0 +1,8 @@
+**/*.json
+**/*.md
+**/*.txt
+**/node_modules
+**/dist
+
+cdk.out
+packages/web/dev-dist

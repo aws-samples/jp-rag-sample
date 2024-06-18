@@ -1,0 +1,8 @@
+{
+    "name": "@types/jp-rag-sample",
+    "types": "src/index.d.ts",
+    "private": true,
+    "dependencies": {
+        "@aws-sdk/client-kendra": "^3.549.0"
+    }
+}
